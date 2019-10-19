@@ -21,8 +21,13 @@ defmodule RkBackend.Repo.Auth do
       [%User{}, ...]
 
   """
-  def list_users do
-    Repo.all(User)
+  def list_users(_root, _args, _info) do
+    try do
+      {:ok, Repo.all(User)}
+    rescue
+      Ecto.NoResultsError ->
+        {:error, :rescued}
+    end
   end
 
   @doc """
@@ -53,7 +58,7 @@ defmodule RkBackend.Repo.Auth do
       {:error, "ID: id not found"}
 
   """
-  def get_user(id) do
+  def get_user(_root, %{id: id} = _args, _info) do
     try do
       {:ok, get_user!(id)}
     rescue
@@ -240,8 +245,13 @@ defmodule RkBackend.Repo.Auth do
       [%Role{}, ...]
 
   """
-  def list_roles do
-    Repo.all(Role)
+  def list_roles(_root, _args, _info) do
+    try do
+      {:ok, Repo.all(Role)}
+    rescue
+      Ecto.NoResultsError ->
+        {:error, :rescued}
+    end
   end
 
   @doc """

@@ -7,6 +7,10 @@ defmodule RkBackend.Middlewares.Auth do
     opts
   end
 
+  def call(resolution = %{context: %{user_id: _user_id}}, []) do
+    resolution
+  end
+
   def call(resolution = %{context: %{user_id: user_id}}, config) do
     case Auth.user_has_any_role?(user_id, config) do
       true ->
