@@ -1,9 +1,10 @@
 defmodule RkBackend.Logic.Auth.SignIn do
   alias RkBackend.Repo.Auth
   alias Comeonin.Argon2
+  alias Phoenix.Token
 
   @salt "RKApplicationDefaultSalt"
-  @max_age 86400
+  @max_age 7200
   @secret Application.get_env(:rk_backend, RkBackendWeb.Endpoint)[:secret_key_base]
 
   @doc """
@@ -18,7 +19,7 @@ defmodule RkBackend.Logic.Auth.SignIn do
       {:error, reason}
   """
   def is_valid_token(auth_token) do
-    Phoenix.Token.verify(@secret, @salt, auth_token, max_age: @max_age)
+    Token.verify(@secret, @salt, auth_token, max_age: @max_age)
   end
 
   @doc """
@@ -35,7 +36,7 @@ defmodule RkBackend.Logic.Auth.SignIn do
   def sign_in(%{email: email, password: password}, _info) do
     with {:ok, user} <- Auth.find_user_by_email(email),
          {:ok, user} <- Argon2.check_pass(user, password) do
-      token_value = Phoenix.Token.sign(@secret, @salt, user.id)
+      token_value = Token.sign(@secret, @salt, user.id)
 
       case Auth.find_token_by_user(user.id) do
         nil -> Auth.create_token(%{token: token_value, user_id: user.id})
