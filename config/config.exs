@@ -30,7 +30,7 @@ config :logger,
 # configuration for the {LoggerFileBackend, :error_log} backend
 config :logger,
   backends: [:console, {LoggerFileBackend, :error_log}],
-  format: "[$level] $message\n"
+  format: "[$date][$time][$level] $message\n"
 
 config :logger, :error_log,
   path: "/Temp/Logs/Rk.log",
