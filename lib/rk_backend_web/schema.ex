@@ -31,35 +31,22 @@ defmodule RkBackendWeb.Schema do
     @desc "Get a list of users"
     field :users, list_of(:user) do
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
-
-      resolve(fn _parent, _args, _resolution ->
-        {:ok, RkBackend.Repo.Auth.list_users()}
-      end)
-
+      resolve(&RkBackend.Repo.Auth.list_users/3)
       middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Get an user"
     field :user, :user do
       arg(:id, non_null(:integer))
-
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
-
-      resolve(fn _parent, args, _resolution ->
-        RkBackend.Repo.Auth.get_user(args.id)
-      end)
-
+      resolve(&RkBackend.Repo.Auth.get_user/3)
       middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Get a list of available roles"
     field :roles, list_of(:role) do
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
-
-      resolve(fn _parent, _args, _resolution ->
-        {:ok, RkBackend.Repo.Auth.list_roles()}
-      end)
-
+      resolve(&RkBackend.Repo.Auth.list_roles/3)
       middleware(RkBackend.Middlewares.HandleErrors)
     end
   end
@@ -83,7 +70,6 @@ defmodule RkBackendWeb.Schema do
     @desc "Create an user"
     field :create_user, :user do
       arg(:user_details, non_null(:user_details))
-
       resolve(&RkBackend.Repo.Auth.create_user/3)
       middleware(RkBackend.Middlewares.HandleErrors)
     end
@@ -91,7 +77,6 @@ defmodule RkBackendWeb.Schema do
     @desc "Update an user"
     field :update_user, :user do
       arg(:user_update_details, non_null(:user_update_details))
-
       resolve(&RkBackend.Repo.Auth.update_user/2)
       middleware(RkBackend.Middlewares.HandleErrors)
     end
@@ -99,7 +84,6 @@ defmodule RkBackendWeb.Schema do
     @desc "Create a role"
     field :create_role, :role do
       arg(:type, non_null(:string))
-
       resolve(&RkBackend.Repo.Auth.create_role/3)
       middleware(RkBackend.Middlewares.HandleErrors)
     end

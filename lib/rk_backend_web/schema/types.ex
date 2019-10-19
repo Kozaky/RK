@@ -12,7 +12,6 @@ defmodule RkBackendWeb.Schema.Types do
     field :id, :id
     field :email, :string
     field :full_name, :string
-    field :password_hash, :string
     field :role, list_of(:role), resolve: assoc(:role)
   end
 end
