@@ -5,7 +5,7 @@ defmodule RkBackend.MixProject do
     [
       app: :rk_backend,
       version: "0.1.0",
-      elixir: "~> 1.5",
+      elixir: "~> 1.9.2",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -33,20 +33,19 @@ defmodule RkBackend.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.4.3"},
-      {:phoenix_pubsub, "~> 1.1"},
+      {:phoenix, "~> 1.4.10"},
+      {:phoenix_pubsub, "~> 1.1.2"},
       {:phoenix_ecto, "~> 4.0"},
-      {:ecto_sql, "~> 3.0"},
+      {:ecto_sql, "~> 3.2.0"},
       {:postgrex, ">= 0.0.0"},
-      {:gettext, "~> 0.11"},
-      {:plug_cowboy, "~> 2.0"},
+      {:gettext, "~> 0.17.0"},
+      {:plug_cowboy, "~> 2.1.0"},
       {:absinthe, "~> 1.4.16"},
       {:absinthe_ecto, "~> 0.1.3"},
-      {:absinthe_plug, "~> 1.4.6"},
-      {:jason, "~> 1.1.0"},
-      {:logger_file_backend, "~> 0.0.10"},
-      {:argon2_elixir, "~> 1.2"},
-      {:comeonin, "~> 4.0"}
+      {:absinthe_plug, "~> 1.4.7"},
+      {:jason, "~> 1.1.2"},
+      {:logger_file_backend, "~> 0.0.11"},
+      {:argon2_elixir, "~> 2.1.0"}
     ]
   end
 

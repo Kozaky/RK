@@ -1,6 +1,6 @@
 defmodule RkBackend.Logic.Auth.SignIn do
   alias RkBackend.Repo.Auth
-  alias Comeonin.Argon2
+  alias Argon2
   alias Phoenix.Token
 
   @salt "RKApplicationDefaultSalt"

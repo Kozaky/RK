@@ -41,5 +41,5 @@ defmodule RkBackend.Repo.Auth.User do
 
   defp put_password_hash(changeset), do: changeset
 
-  defp hash_password(password), do: Comeonin.Argon2.hashpwsalt(password)
+  defp hash_password(password), do: Argon2.hash_pwd_salt(password)
 end
