@@ -56,8 +56,8 @@ defmodule RkBackend.Logic.Auth.SessionService do
   @doc """
   Updates the roles of this user
   """
-  @spec update_role!(GenServer.server(), %Role{}) :: {:ok, :role_updated}
-  def update_role!(pid, role), do: GenServer.call(pid, {:update_role, role})
+  @spec update_role(GenServer.server(), %Role{}) :: :ok
+  def update_role(pid, role), do: GenServer.cast(pid, {:update_role, role})
 
   @doc """
   Gets the current state
@@ -98,12 +98,12 @@ defmodule RkBackend.Logic.Auth.SessionService do
   end
 
   @impl true
-  def handle_call({:update_role, role}, _from, state) do
-    state = %{state | role: role}
-    {:reply, {:ok, :role_updated}, state}
-  end
-
   def handle_call({:get_state}, _from, state) do
     {:reply, state, state}
+  end
+
+  @impl true
+  def handle_cast({:update_role, role}, state) do
+    {:noreply, %{state | role: role}}
   end
 end
