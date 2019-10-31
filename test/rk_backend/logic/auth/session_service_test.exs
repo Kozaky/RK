@@ -27,25 +27,25 @@ defmodule RkBackend.Logic.Auth.SessionServiceTest do
 
     test "assert user has_any_role" do
       {:ok, pid} = SessionService.lookup(@process)
-      SessionService.update_role!(pid, %Role{type: "ADMIN"})
+      SessionService.update_role(pid, %Role{type: "ADMIN"})
       assert true = SessionService.has_any_role?(pid, ["ADMIN"])
     end
 
     test "assert user has_any_role multiple values" do
       {:ok, pid} = SessionService.lookup(@process)
-      SessionService.update_role!(pid, %Role{type: "ADMIN"})
+      SessionService.update_role(pid, %Role{type: "ADMIN"})
       assert true == SessionService.has_any_role?(pid, ["ADMIN", "USER", "CONSULTANT"])
     end
 
     test "assert user does not has_any_role" do
       {:ok, pid} = SessionService.lookup(@process)
-      SessionService.update_role!(pid, %Role{type: "ADMIN"})
+      SessionService.update_role(pid, %Role{type: "ADMIN"})
       assert false == SessionService.has_any_role?(pid, ["USER"])
     end
 
     test "assert role is updated" do
       {:ok, pid} = SessionService.lookup(@process)
-      SessionService.update_role!(pid, %Role{type: "CONSULTANT"})
+      SessionService.update_role(pid, %Role{type: "CONSULTANT"})
       assert %SessionService{role: %Role{type: "CONSULTANT"}} = SessionService.get_state(pid)
     end
   end
