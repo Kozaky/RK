@@ -11,9 +11,9 @@ config :logger, level: :warn
 
 # Configure your database
 config :rk_backend, RkBackend.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  database: "database-test",
+  hostname: "localhost",
   username: "rk",
   password: "D4N60",
-  database: "rk",
-  hostname: "localhost",
-  pool_size: 10,
   pool: Ecto.Adapters.SQL.Sandbox

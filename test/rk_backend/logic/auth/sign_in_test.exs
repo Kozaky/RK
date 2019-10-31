@@ -1,4 +1,4 @@
-defmodule RkBackend.Logic.AuthTest do
+defmodule RkBackend.Logic.Auth.SignInTest do
   use RkBackend.DataCase
 
   alias RkBackend.Logic.Auth.SignIn
