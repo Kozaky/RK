@@ -10,7 +10,6 @@ defmodule RkBackend.Repo.Auth.User do
     field :password_confirmation, :string, virtual: true
 
     belongs_to :role, RkBackend.Repo.Auth.Role
-    has_many :tokens, RkBackend.Repo.Auth.Token
 
     timestamps()
   end

@@ -3,8 +3,8 @@ defmodule Plugs.InjectDetect do
 
   import Plug.Conn
 
-  alias RkBackend.Repo.Auth
   alias RkBackend.Logic.Auth.SignIn
+  alias RkBackend.Logic.Auth.SessionService
 
   @impl Plug
   def init(opts) do
@@ -36,8 +36,8 @@ defmodule Plugs.InjectDetect do
   end
 
   def authorize(auth_token) do
-    with {:ok, _} <- Auth.find_token(auth_token),
-         {:ok, user_id} <- SignIn.is_valid_token(auth_token) do
+    with {:ok, user_id} <- SignIn.is_valid_token(auth_token),
+         {:ok, _pid} <- SessionService.lookup("user" <> Integer.to_string(user_id)) do
       {:ok, user_id}
     else
       {:error, :expired} ->
@@ -45,6 +45,9 @@ defmodule Plugs.InjectDetect do
 
       {:error, :invalid} ->
         {:error, "Invalid Token"}
+
+      {:error, :not_found} ->
+        {:error, "Session not found"}
 
       {:error, reason} ->
         {:error, reason}

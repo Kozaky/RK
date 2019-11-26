@@ -2,18 +2,18 @@ defmodule RkBackend.Logic.Auth.SessionService do
   use GenServer
 
   alias RkBackend.Repo.Auth.User
-  alias RkBackend.Repo.Auth.Role
+  alias RkBackend.Logic.Auth.SignIn
 
-  defstruct user_id: nil, token: nil, role: nil
+  defstruct user: nil, token: nil
 
   @type t :: %__MODULE__{
-          user_id: integer(),
-          token: String.t(),
-          role: %Role{}
+          user: User.t(),
+          token: String.t()
         }
 
   @registry SessionService.Registry
   @supervisor SessionService.Supervisor
+  @max_token_refresh_time 300
 
   require Logger
 
@@ -23,20 +23,25 @@ defmodule RkBackend.Logic.Auth.SessionService do
 
   @moduledoc """
   Documentation for SessionStore.
-  Store user tokens and roles
+  Stores users' token and role
   """
 
   @doc """
   Initiate a SessionService
   """
-  @spec start(User.__struct__(), integer()) :: DynamicSupervisor.on_start_child()
-  def start(%User{id: user_id, role: role}, token) do
+  @spec start(User.__struct__(), String.t()) :: DynamicSupervisor.on_start_child()
+  def start(%User{} = user, token) do
     opts = [
-      user_id: user_id,
+      user: user,
       token: token,
-      role: role,
-      name: {:via, Registry, {@registry, "user" <> Integer.to_string(user_id)}}
+      name: {:via, Registry, {@registry, "user" <> Integer.to_string(user.id)}}
     ]
+
+    Process.send_after(
+      self(),
+      :terminate_session_when_token_not_refreshed,
+      SignIn.get_max_age() + @max_token_refresh_time
+    )
 
     DynamicSupervisor.start_child(@supervisor, {__MODULE__, opts})
   end
@@ -56,13 +61,13 @@ defmodule RkBackend.Logic.Auth.SessionService do
   @doc """
   Updates the roles of this user
   """
-  @spec update_role(GenServer.server(), %Role{}) :: :ok
-  def update_role(pid, role), do: GenServer.cast(pid, {:update_role, role})
+  @spec update_role(GenServer.server(), %{field: any()}) :: :ok
+  def update_role(pid, attrs), do: GenServer.cast(pid, {:update_role, attrs})
 
   @doc """
   Gets the current state
   """
-  @spec get_state(GenServer.server()) :: %__MODULE__{}
+  @spec get_state(GenServer.server()) :: __MODULE__.t()
   def get_state(pid), do: GenServer.call(pid, {:get_state})
 
   @doc """
@@ -81,12 +86,11 @@ defmodule RkBackend.Logic.Auth.SessionService do
   ## -----------##
 
   @impl true
-  @spec init(keyword) :: {:ok, RkBackend.Logic.Auth.SessionService.t()}
+  @spec init(keyword) :: {:ok, __MODULE__.t()}
   def init(opts) do
     state = %__MODULE__{
-      user_id: Keyword.fetch!(opts, :user_id),
-      token: Keyword.fetch!(opts, :token),
-      role: Keyword.fetch!(opts, :role)
+      user: Keyword.fetch!(opts, :user),
+      token: Keyword.fetch!(opts, :token)
     }
 
     {:ok, state}
@@ -94,7 +98,7 @@ defmodule RkBackend.Logic.Auth.SessionService do
 
   @impl true
   def handle_call({:has_any_role, roles}, _from, state) do
-    {:reply, state.role.type in roles, state}
+    {:reply, state.user.role.type in roles, state}
   end
 
   @impl true
@@ -103,7 +107,25 @@ defmodule RkBackend.Logic.Auth.SessionService do
   end
 
   @impl true
-  def handle_cast({:update_role, role}, state) do
-    {:noreply, %{state | role: role}}
+  def handle_cast({:update_role, attrs}, state) do
+    {:noreply, put_in(state.user.role.type, attrs.type)}
+  end
+
+  @impl true
+  def handle_cast({:terminate_session_when_token_not_refreshed, _attrs}, state) do
+    case SignIn.is_valid_token(state.token) do
+      {:ok, _} ->
+        Process.send_after(
+          self(),
+          :terminate_session_when_token_not_refreshed,
+          SignIn.get_max_age() + @max_token_refresh_time
+        )
+
+      {:error, _} ->
+        {:ok, pid} = lookup("user" <> Integer.to_string(state.user.id))
+        DynamicSupervisor.terminate_child(@supervisor, pid)
+    end
+
+    {:stop, :session_expired, state}
   end
 end

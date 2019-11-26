@@ -1,7 +1,7 @@
 defmodule RkBackend.Middlewares.Auth do
   @behaviour Absinthe.Middleware
 
-  alias RkBackend.Repo.Auth
+  alias RkBackend.Logic.Auth.SessionService
 
   def init(opts) do
     opts
@@ -12,7 +12,9 @@ defmodule RkBackend.Middlewares.Auth do
   end
 
   def call(resolution = %{context: %{user_id: user_id}}, config) do
-    case Auth.user_has_any_role?(user_id, config) do
+    {:ok, pid} = SessionService.lookup("user" <> Integer.to_string(user_id))
+
+    case SessionService.has_any_role?(pid, config) do
       true ->
         resolution
 
