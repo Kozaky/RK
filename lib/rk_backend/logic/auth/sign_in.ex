@@ -2,8 +2,8 @@ defmodule RkBackend.Logic.Auth.SignIn do
   alias RkBackend.Repo.Auth
   alias Argon2
   alias Phoenix.Token
-  alias RkBackend.Logic.Auth.SessionService
   alias RkBackend.Repo
+  alias RkBackend.Logic.Auth.SessionService
 
   @salt "RKApplicationDefaultSalt"
   @max_age 7200
@@ -76,7 +76,7 @@ defmodule RkBackend.Logic.Auth.SignIn do
       throws
   """
   def resolve_user(_args, %{context: %{user_id: user_id}}) do
-    {:ok, pid} = SessionService.lookup("user" <> Integer.to_string(user_id))
+    {:ok, pid} = SessionService.lookup({SessionService, user_id})
     %SessionService{user: user} = SessionService.get_state(pid)
 
     {:ok, user}

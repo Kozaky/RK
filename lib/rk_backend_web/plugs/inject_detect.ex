@@ -37,7 +37,7 @@ defmodule Plugs.InjectDetect do
 
   def authorize(auth_token) do
     with {:ok, user_id} <- SignIn.is_valid_token(auth_token),
-         {:ok, _pid} <- SessionService.lookup("user" <> Integer.to_string(user_id)) do
+         {:ok, _pid} <- SessionService.lookup({SessionService, user_id}) do
       {:ok, user_id}
     else
       {:error, :expired} ->

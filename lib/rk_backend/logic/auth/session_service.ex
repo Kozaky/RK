@@ -34,7 +34,7 @@ defmodule RkBackend.Logic.Auth.SessionService do
     opts = [
       user: user,
       token: token,
-      name: {:via, Registry, {@registry, "user" <> Integer.to_string(user.id)}}
+      name: {:via, Registry, {@registry, {__MODULE__, user.id}}}
     ]
 
     Process.send_after(
@@ -73,7 +73,7 @@ defmodule RkBackend.Logic.Auth.SessionService do
   @doc """
   Look up the given process_name in the Registry
   """
-  @spec lookup(String.t()) :: {:ok, pid()} | {:error, :not_found}
+  @spec lookup({atom(), integer()}) :: {:ok, pid()} | {:error, :not_found}
   def lookup(process_name) do
     case Registry.lookup(@registry, process_name) do
       [{pid, _}] -> {:ok, pid}
@@ -122,7 +122,7 @@ defmodule RkBackend.Logic.Auth.SessionService do
         )
 
       {:error, _} ->
-        {:ok, pid} = lookup("user" <> Integer.to_string(state.user.id))
+        {:ok, pid} = lookup({__MODULE__, state.user.id})
         DynamicSupervisor.terminate_child(@supervisor, pid)
     end
 

@@ -12,7 +12,7 @@ defmodule RkBackend.Middlewares.Auth do
   end
 
   def call(resolution = %{context: %{user_id: user_id}}, config) do
-    {:ok, pid} = SessionService.lookup("user" <> Integer.to_string(user_id))
+    {:ok, pid} = SessionService.lookup({SessionService, user_id})
 
     case SessionService.has_any_role?(pid, config) do
       true ->
