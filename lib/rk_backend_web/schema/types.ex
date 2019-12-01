@@ -5,7 +5,6 @@ defmodule RkBackendWeb.Schema.Types do
   object :role do
     field :id, :id
     field :type, :string
-    field :users, list_of(:user), resolve: assoc(:users)
   end
 
   object :user do
