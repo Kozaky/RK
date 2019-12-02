@@ -17,7 +17,7 @@ blocks:
           commands:
             - checkout
             - sudo systemctl start postgresql
-            - createdb test_db -U $POSTGRESQL_USER -P $POSTGRESQL_PASSWORD
+            - createdb database-test -U $POSTGRESQL_USER -P $POSTGRESQL_PASSWORD
             - sem-version elixir 1.9.1
             - cache restore
             - mix local.rebar --force
