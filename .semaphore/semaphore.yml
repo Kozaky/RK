@@ -16,7 +16,7 @@ blocks:
         - name: mix test
           commands:
             - checkout
-            - sudo systemctl start postgresql
+            - sem-service start postgres
             - createdb database-test -U $POSTGRESQL_USER -P $POSTGRESQL_PASSWORD
             - sem-version elixir 1.9.1
             - cache restore
