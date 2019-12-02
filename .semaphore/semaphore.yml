@@ -16,10 +16,9 @@ blocks:
         - name: mix test
           commands:
             - checkout
-            - sem-service start postgres 11
+            - createdb test_db -U $POSTGRESQL_USER -P $POSTGRESQL_PASSWORD
             - sem-version elixir 1.9.1
             - cache restore
-            - createdb test_db -U $POSTGRESQL_USER -P $POSTGRESQL_PASSWORD
             - mix local.rebar --force
             - mix deps.get
             - cache store
