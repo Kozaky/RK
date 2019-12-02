@@ -19,7 +19,7 @@ blocks:
             - sem-service start postgres 11
             - sem-version elixir 1.9.1
             - cache restore
-            - createdb test_db -U $DATABASE_POSTGRESQL_USERNAME
+            - createdb test_db -U $POSTGRESQL_USER -P $POSTGRESQL_PASSWORD
             - mix local.rebar --force
             - mix deps.get
             - cache store
