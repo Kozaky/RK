@@ -1,5 +1,5 @@
 defmodule RkBackend.Logic.Auth.SessionService do
-  use GenServer
+  use GenServer, restart: :transient
 
   alias RkBackend.Repo.Auth.User
   alias RkBackend.Logic.Auth.SignIn
@@ -13,7 +13,7 @@ defmodule RkBackend.Logic.Auth.SessionService do
 
   @registry SessionService.Registry
   @supervisor SessionService.Supervisor
-  @max_token_refresh_time 300
+  @max_token_refresh_time 300_000
 
   require Logger
 
@@ -36,12 +36,6 @@ defmodule RkBackend.Logic.Auth.SessionService do
       token: token,
       name: {:via, Registry, {@registry, {__MODULE__, user.id}}}
     ]
-
-    Process.send_after(
-      self(),
-      :terminate_session_when_token_not_refreshed,
-      SignIn.get_max_age() + @max_token_refresh_time
-    )
 
     DynamicSupervisor.start_child(@supervisor, {__MODULE__, opts})
   end
@@ -93,6 +87,12 @@ defmodule RkBackend.Logic.Auth.SessionService do
       token: Keyword.fetch!(opts, :token)
     }
 
+    Process.send_after(
+      self(),
+      :terminate_session_when_token_not_refreshed,
+      1
+    )
+
     {:ok, state}
   end
 
@@ -112,7 +112,7 @@ defmodule RkBackend.Logic.Auth.SessionService do
   end
 
   @impl true
-  def handle_cast({:terminate_session_when_token_not_refreshed, _attrs}, state) do
+  def handle_info(:terminate_session_when_token_not_refreshed, state) do
     case SignIn.is_valid_token(state.token) do
       {:ok, _} ->
         Process.send_after(
@@ -121,11 +121,10 @@ defmodule RkBackend.Logic.Auth.SessionService do
           SignIn.get_max_age() + @max_token_refresh_time
         )
 
-      {:error, _} ->
-        {:ok, pid} = lookup({__MODULE__, state.user.id})
-        DynamicSupervisor.terminate_child(@supervisor, pid)
-    end
+        {:noreply, state}
 
-    {:stop, :session_expired, state}
+      {:error, _} ->
+        {:stop, :normal, state}
+    end
   end
 end

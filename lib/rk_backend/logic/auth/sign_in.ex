@@ -84,5 +84,6 @@ defmodule RkBackend.Logic.Auth.SignIn do
 
   def resolve_user(_args, _context), do: {:error, "Not Authenticated"}
 
+  @spec get_max_age :: integer()
   def get_max_age(), do: @max_age
 end
