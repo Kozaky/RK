@@ -12,7 +12,8 @@ blocks:
           value: test
         - name: PGPASSWORD
           value: $POSTGRESQL_PASSWORD
-      name: DB
+      secrets:
+        - name: DB
       jobs:
         - name: mix test
           commands:
