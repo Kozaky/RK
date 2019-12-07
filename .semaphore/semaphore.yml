@@ -20,7 +20,7 @@ blocks:
             - checkout
             - sem-service start postgres
             - sudo apt-get install -y -qq postgresql-client
-            - createuser rk
+            - createuser rk -h 0.0.0.0
             - createdb -U rk -h 0.0.0.0 $DB_NAME
             - psql -h 0.0.0.0 -U rk -c "\l" | grep $DB_NAME
             - sem-service status postgres
