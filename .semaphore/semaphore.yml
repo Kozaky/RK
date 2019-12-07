@@ -10,15 +10,14 @@ blocks:
       env_vars:
         - name: MIX_ENV
           value: test
-      secrets:
-        - name: DB
+        - name: PGPASSWORD
+          value: $POSTGRESQL_PASSWORD
+      name: DB
       jobs:
         - name: mix test
           commands:
             - checkout
             - sem-service start postgres
-            - sudo apt-get install -y -qq postgresql-client
-            - createdb database-test -U $POSTGRESQL_USER -P $POSTGRESQL_PASSWORD
             - sem-version elixir 1.9.1
             - cache restore
             - mix local.rebar --force
