@@ -7,11 +7,11 @@ agent:
 blocks:
   - name: Test
     task:
-    	secrets:
-        - name: db
       env_vars:
         - name: MIX_ENV
           value: test
+      secrets:
+        - name: DB
       jobs:
         - name: mix test
           commands:
