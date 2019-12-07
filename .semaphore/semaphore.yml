@@ -18,12 +18,12 @@ blocks:
         - name: mix test
           commands:
             - checkout
-            - sem-service start postgres
-            - sudo apt-get install -y -qq postgresql-client
-          	- createdb -U postgres -h 0.0.0.0 $DB_NAME
-          	- psql -h 0.0.0.0 -U postgres -c "\l" | grep $DB_NAME
-         		- sem-service status postgres
             - sem-version elixir 1.9.1
+						- sem-service start postgres
+            - sudo apt-get install -y -qq postgresql-client
+            - createdb -U postgres -h 0.0.0.0 $DB_NAME
+            - psql -h 0.0.0.0 -U postgres -c "\l" | grep $DB_NAME
+            - sem-service status postgres
             - cache restore
             - mix local.rebar --force
             - mix deps.get
