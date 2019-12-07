@@ -7,9 +7,9 @@ agent:
 blocks:
   - name: Test
     task:
+    	secrets:
+        - name: db
       env_vars:
-        - name: DATABASE_URL
-          value: 'ecto://postgres:@0.0.0.0:5432/database-test'
         - name: MIX_ENV
           value: test
       jobs:
