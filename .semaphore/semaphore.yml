@@ -12,7 +12,7 @@ blocks:
           commands:
             - checkout
             - bin/setup_ci_elixir
-            - sem-version elixir 1.8.1
+            - sem-version elixir 1.9.2
             - cache restore
             - cache restore dialyzer-plt
             - mix deps.get
