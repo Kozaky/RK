@@ -14,12 +14,10 @@ blocks:
             - bin/setup_ci_elixir
             - sem-version elixir 1.9.2
             - cache restore
-            - cache restore dialyzer-plt
             - mix deps.get
-            - 'mix do compile, dialyzer --plt'
+            - 'mix do compile
             - MIX_ENV=test mix compile
             - cache store
-            - cache store dialyzer-plt priv/plts/
   - name: Analyze code
     task:
       prologue:
