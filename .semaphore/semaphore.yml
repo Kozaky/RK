@@ -14,21 +14,18 @@ blocks:
             - bin/setup_ci_elixir
             - sem-version elixir 1.9.2
             - cache restore
-            - cache restore dialyzer-plt
             - mix deps.get
-            - 'mix do compile, dialyzer --plt'
+            - mix do compile
             - MIX_ENV=test mix compile
             - cache store
-            - cache store dialyzer-plt priv/plts/
   - name: Analyze code
     task:
       prologue:
         commands:
           - checkout
           - bin/setup_ci_elixir
-          - sem-version elixir 1.8.1
+          - sem-version elixir 1.9.2
           - cache restore
-          - cache restore dialyzer-plt
       jobs:
         - name: credo
           commands:
@@ -42,7 +39,7 @@ blocks:
         commands:
           - checkout
           - bin/setup_ci_elixir
-          - sem-version elixir 1.8.1
+          - sem-version elixir 1.9.2
           - cache restore
       jobs:
         - name: ex_unit
