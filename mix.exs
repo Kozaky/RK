@@ -45,7 +45,8 @@ defmodule RkBackend.MixProject do
       {:absinthe_plug, "~> 1.4.7"},
       {:jason, "~> 1.1.2"},
       {:logger_file_backend, "~> 0.0.11"},
-      {:argon2_elixir, "~> 2.1.0"}
+      {:argon2_elixir, "~> 2.1.0"},
+      {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false}
     ]
   end
 
