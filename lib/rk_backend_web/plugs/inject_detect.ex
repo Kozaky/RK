@@ -1,6 +1,10 @@
 defmodule Plugs.InjectDetect do
   @behaviour Plug
 
+  @moduledoc """
+  Plug that take introduces the user's id in the context, if it is authenticated
+  """
+
   import Plug.Conn
 
   alias RkBackend.Logic.Auth.SignIn

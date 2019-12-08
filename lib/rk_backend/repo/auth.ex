@@ -1,6 +1,6 @@
 defmodule RkBackend.Repo.Auth do
   @moduledoc """
-  The Auth context.
+  Provide functions to manage Auth entities.
   """
 
   import Ecto.Query, warn: false

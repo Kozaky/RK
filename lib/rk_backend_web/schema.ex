@@ -1,6 +1,10 @@
 defmodule RkBackendWeb.Schema do
   use Absinthe.Schema
 
+  @moduledoc """
+  Functions supported by GraphQL in this application
+  """
+
   import_types(RkBackendWeb.Schema.Types)
 
   input_object :user_details do

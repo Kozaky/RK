@@ -1,5 +1,10 @@
 defmodule RkBackend.Middlewares.HandleErrors do
   @behaviour Absinthe.Middleware
+
+  @moduledoc """
+  Middleware to map erroros into redable messages
+  """
+
   def call(resolution, _) do
     %{resolution | errors: Enum.flat_map(resolution.errors, &handle_error/1)}
   end

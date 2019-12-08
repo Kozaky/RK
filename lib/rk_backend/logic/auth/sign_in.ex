@@ -5,6 +5,10 @@ defmodule RkBackend.Logic.Auth.SignIn do
   alias RkBackend.Repo
   alias RkBackend.Logic.Auth.SessionService
 
+  @moduledoc """
+  Provides functions related with the user's login
+  """
+
   @salt "RKApplicationDefaultSalt"
   @max_age 7200
   @secret Application.get_env(:rk_backend, RkBackendWeb.Endpoint)[:secret_key_base]
