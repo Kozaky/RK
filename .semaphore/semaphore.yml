@@ -19,9 +19,7 @@ blocks:
           commands:
             - checkout
             - sem-service start postgres
-            - sudo apt-get install -y -qq postgresql-client
             - createdb rk -U postgres
-            - psql -h 0.0.0.0 -U rk -c "\l" | grep $DB_NAME
             - sem-service status postgres
             - sem-version elixir 1.9.1
             - cache restore
