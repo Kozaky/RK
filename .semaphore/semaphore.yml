@@ -12,7 +12,7 @@ blocks:
           commands:
             - checkout
             - bin/setup_ci_elixir
-            - sem-version elixir 1.8.1
+            - sem-version elixir 1.9.2
             - cache restore
             - cache restore dialyzer-plt
             - mix deps.get
@@ -33,9 +33,6 @@ blocks:
         - name: credo
           commands:
             - mix credo -a
-        - name: dialyzer
-          commands:
-            - mix dialyzer --halt-exit-status --no-compile
         - name: formatter
           commands:
             - mix format --check-formatted
