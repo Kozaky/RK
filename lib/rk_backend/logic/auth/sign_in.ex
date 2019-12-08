@@ -58,7 +58,14 @@ defmodule RkBackend.Logic.Auth.SignIn do
       {:error, reason}
   """
   def sign_out(_args, %{context: %{user_id: user_id}}) do
-    Process.delete("user" <> Integer.to_string(user_id))
+    case SessionService.lookup({SessionService, user_id}) do
+      {:ok, pid} ->
+        SessionService.delete_session(pid)
+        {:ok, "Session Deleted"}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   @doc """

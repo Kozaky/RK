@@ -65,6 +65,12 @@ defmodule RkBackend.Logic.Auth.SessionService do
   def get_state(pid), do: GenServer.call(pid, {:get_state})
 
   @doc """
+  Delete the session
+  """
+  @spec delete_session(GenServer.server()) :: :ok
+  def delete_session(pid), do: GenServer.cast(pid, {:delete_session})
+
+  @doc """
   Look up the given process_name in the Registry
   """
   @spec lookup({atom(), integer()}) :: {:ok, pid()} | {:error, :not_found}
@@ -109,6 +115,11 @@ defmodule RkBackend.Logic.Auth.SessionService do
   @impl true
   def handle_cast({:update_role, attrs}, state) do
     {:noreply, put_in(state.user.role.type, attrs.type)}
+  end
+
+  @impl true
+  def handle_cast({:delete_session}, state) do
+    {:stop, :normal, state}
   end
 
   @impl true

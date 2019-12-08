@@ -6,7 +6,7 @@ defmodule RkBackend.Logic.Auth.SessionServiceTest do
   alias RkBackend.Repo.Auth.Role
   alias RkBackend.Repo.Auth
 
-  @process "user8080"
+  @process {SessionService, 8080}
   @user %User{
     id: 8080
   }

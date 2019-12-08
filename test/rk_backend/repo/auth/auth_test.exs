@@ -4,7 +4,6 @@ defmodule RkBackend.Repo.AuthTest do
   alias RkBackend.Repo.Auth
   alias RkBackend.Repo.Auth.Role
   alias RkBackend.Repo.Auth.User
-  alias RkBackend.Repo.Auth.Token
 
   describe "users" do
     @valid_attrs %{
@@ -36,34 +35,35 @@ defmodule RkBackend.Repo.AuthTest do
       {:ok, user} =
         attrs
         |> Enum.into(valid_attrs)
-        |> Auth.create_user()
+        |> Auth.store_user()
 
       user
     end
 
     test "list_users/0 returns all users" do
-      assert [%User{}] = Auth.list_users()
+      user_fixture(@valid_attrs)
+      assert {:ok, [%User{}]} = Auth.list_users(nil, nil, nil)
     end
 
-    test "create_user/1 with valid data creates a user" do
+    test "store_user/1 with valid data creates a user" do
       role = role_fixture()
 
       valid_attrs =
         @valid_attrs
         |> Map.put(:role_id, role.id)
 
-      assert {:ok, %User{} = user} = Auth.create_user(valid_attrs)
+      assert {:ok, %User{} = user} = Auth.store_user(valid_attrs)
       assert user.email == "some email"
       assert user.full_name == "some full_name"
       assert user.password == "password"
       assert user.role_id == role.id
     end
 
-    test "create_user/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Auth.create_user(@invalid_attrs)
+    test "store_user/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Auth.store_user(@invalid_attrs)
     end
 
-    test "create_user/3 successful" do
+    test "store_user/3 successful" do
       role = role_fixture()
 
       valid_attrs =
@@ -71,14 +71,14 @@ defmodule RkBackend.Repo.AuthTest do
         |> Map.put(:role_id, role.id)
 
       args = %{user_details: valid_attrs}
-      assert {:ok, user = %User{}} = Auth.create_user(nil, args, nil)
+      assert {:ok, user = %User{}} = Auth.store_user(nil, args, nil)
       assert user.role_id == role.id
       assert user.full_name == @valid_attrs.full_name
     end
 
-    test "create_user/3 unsuccessful" do
+    test "store_user/3 unsuccessful" do
       args = %{user_details: @valid_attrs}
-      assert {:error, changeset} = Auth.create_user(nil, args, nil)
+      assert {:error, changeset} = Auth.store_user(nil, args, nil)
     end
 
     test "get_user!/1 returns the user with given id" do
@@ -159,13 +159,14 @@ defmodule RkBackend.Repo.AuthTest do
       {:ok, role} =
         attrs
         |> Enum.into(@valid_attrs)
-        |> Auth.create_role()
+        |> Auth.store_role()
 
       role
     end
 
     test "list_roles/0 returns all roles" do
-      assert [%Role{} | tail] = Auth.list_roles()
+      role_fixture()
+      assert {:ok, [%Role{} | tail]} = Auth.list_roles(nil, nil, nil)
     end
 
     test "get_role!/1 returns the role with given id" do
@@ -173,22 +174,22 @@ defmodule RkBackend.Repo.AuthTest do
       assert Auth.get_role!(role.id) == role
     end
 
-    test "create_role/1 with valid data creates a role" do
-      assert {:ok, %Role{} = role} = Auth.create_role(@valid_attrs)
+    test "store_role/1 with valid data creates a role" do
+      assert {:ok, %Role{} = role} = Auth.store_role(@valid_attrs)
       assert role.type == "some type"
     end
 
-    test "create_role/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Auth.create_role(@invalid_attrs)
+    test "store_role/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Auth.store_role(@invalid_attrs)
     end
 
-    test "create_role/3 successful" do
-      assert {:ok, %Role{} = role} = Auth.create_role(nil, @valid_attrs, nil)
+    test "store_role/3 successful" do
+      assert {:ok, %Role{} = role} = Auth.store_role(nil, @valid_attrs, nil)
       assert role.type == "some type"
     end
 
-    test "create_role/3 unsuccessful" do
-      assert {:error, _reason} = Auth.create_role(nil, @invalid_attrs, nil)
+    test "store_role/3 unsuccessful" do
+      assert {:error, _reason} = Auth.store_role(nil, @invalid_attrs, nil)
     end
 
     test "update_role/2 with valid data updates the role" do
@@ -212,96 +213,6 @@ defmodule RkBackend.Repo.AuthTest do
     test "change_role/1 returns a role changeset" do
       role = role_fixture()
       assert %Ecto.Changeset{} = Auth.change_role(role)
-    end
-
-    test "user_has_any_role/2 successful" do
-      user = user_fixture()
-      assert true == Auth.user_has_any_role?(user.id, ["some type"])
-    end
-
-    test "user_has_any_role/2 unsuccessful" do
-      user = user_fixture()
-      assert false == Auth.user_has_any_role?(user.id, ["not found"])
-    end
-  end
-
-  describe "tokens" do
-    @valid_attrs %{
-      token: "some token"
-    }
-    @update_attrs %{
-      token: "some updated token"
-    }
-    @invalid_attrs %{
-      token: 123
-    }
-
-    def token_fixture(attrs \\ %{}) do
-      user = user_fixture()
-
-      token_attrs =
-        @valid_attrs
-        |> Map.put(:user_id, user.id)
-
-      {:ok, token} =
-        token_attrs
-        |> Enum.into(attrs)
-        |> Auth.create_token()
-
-      token
-    end
-
-    test "create_token/1 with valid data creates a token" do
-      user = user_fixture()
-
-      token_attrs =
-        @valid_attrs
-        |> Map.put(:user_id, user.id)
-
-      assert {:ok, %Token{} = token} = Auth.create_token(token_attrs)
-      assert token.token == "some token"
-    end
-
-    test "create_token/1 with invalid data returns a changeset" do
-      assert {:error, %{}} = Auth.create_token(@invalid_attrs)
-    end
-
-    test "find_token/1 with valid data returns a %Token{}" do
-      token_fixture()
-      assert {:ok, %Token{}} = Auth.find_token("some token")
-    end
-
-    test "find_token/1 with {:error, Token not found}" do
-      assert {:error, "Token Not Found"} = Auth.find_token("token not found")
-    end
-
-    test "delete_token/1 successful" do
-      token = token_fixture()
-      assert {:ok, "Session Deleted"} = Auth.delete_token(token.user_id)
-    end
-
-    test "delete_token/1 unsuccessful" do
-      assert {:error, _} = Auth.delete_token(-1)
-    end
-
-    test "update_token/1 successful" do
-      token = token_fixture()
-      assert {:ok, updated_token = %Token{}} = Auth.update_token(token, @update_attrs)
-      assert updated_token.token != token.token
-    end
-
-    test "update_token/1 invalid attributes" do
-      token = token_fixture()
-      assert {:error, _reason} = Auth.update_token(token, @invalid_attrs)
-    end
-
-    test "find_token_by_user/1 successful" do
-      token = token_fixture()
-      assert %Token{} = Auth.find_token_by_user(token.user_id)
-    end
-
-    test "find_token_by_user/1 unsuccessful" do
-      assert nil == Auth.find_token_by_user(-1)
     end
   end
 end
