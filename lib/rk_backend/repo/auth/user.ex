@@ -10,7 +10,6 @@ defmodule RkBackend.Repo.Auth.User do
     field :password_confirmation, :string, virtual: true
 
     belongs_to :role, RkBackend.Repo.Auth.Role
-    has_many :tokens, RkBackend.Repo.Auth.Token
 
     timestamps()
   end
@@ -41,5 +40,5 @@ defmodule RkBackend.Repo.Auth.User do
 
   defp put_password_hash(changeset), do: changeset
 
-  defp hash_password(password), do: Comeonin.Argon2.hashpwsalt(password)
+  defp hash_password(password), do: Argon2.hash_pwd_salt(password)
 end

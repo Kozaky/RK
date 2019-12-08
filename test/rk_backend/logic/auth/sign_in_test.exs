@@ -1,47 +1,41 @@
-defmodule RkBackend.Logic.AuthTest do
+defmodule RkBackend.Logic.Auth.SignInTest do
   use RkBackend.DataCase
 
   alias RkBackend.Logic.Auth.SignIn
   alias RkBackend.Repo.Auth
 
-  @salt "salt"
-  @secret "secret"
-
   describe "SignIn" do
-    @valid_attrs %{
+    @valid_attrs_role %{type: "some type"}
+
+    @valid_attrs_user %{
       email: "some email",
       full_name: "some full_name",
       password: "password",
-      password_confirmation: "password",
-      role_id: 1
+      password_confirmation: "password"
     }
 
-    def user_fixture(attrs \\ %{}) do
-      {:ok, user} =
+    def role_fixture(attrs \\ %{}) do
+      {:ok, role} =
         attrs
-        |> Enum.into(@valid_attrs)
-        |> Auth.create_user()
+        |> Enum.into(@valid_attrs_role)
+        |> Auth.store_role()
 
-      user
+      role
     end
 
-    @valid_attrs %{
-      token: "some token"
-    }
+    def user_fixture(attrs \\ %{}) do
+      role = role_fixture()
 
-    def token_fixture(attrs \\ %{}) do
-      user = user_fixture()
+      valid_attrs =
+        @valid_attrs_user
+        |> Map.put(:role_id, role.id)
 
-      token_attrs =
-        @valid_attrs
-        |> Map.put(:user_id, user.id)
+      {:ok, user} =
+        attrs
+        |> Enum.into(valid_attrs)
+        |> Auth.store_user()
 
-      {:ok, token} =
-        token_attrs
-        |> Enum.into(attrs)
-        |> Auth.create_token()
-
-      token
+      user
     end
 
     test "sign_in/2 successful" do
@@ -57,6 +51,7 @@ defmodule RkBackend.Logic.AuthTest do
     test "resolve_user/2 successful" do
       user = user_fixture()
 
+      assert {:ok, _token} = SignIn.sign_in(%{email: user.email, password: user.password}, %{})
       assert {:ok, %Auth.User{}} = SignIn.resolve_user(nil, %{context: %{user_id: user.id}})
     end
 
@@ -65,19 +60,17 @@ defmodule RkBackend.Logic.AuthTest do
     end
 
     test "sign_out/2 successful" do
-      token = token_fixture()
+      user = user_fixture()
 
-      assert {:ok, "Session Deleted"} =
-               SignIn.sign_out(nil, %{context: %{user_id: token.user_id}})
+      assert {:ok, _token} = SignIn.sign_in(%{email: user.email, password: user.password}, %{})
+      assert {:ok, "Session Deleted"} = SignIn.sign_out(nil, %{context: %{user_id: user.id}})
     end
 
     test "sign_out/2 unsuccessful" do
-      assert {:error, _reason} = SignIn.sign_out(nil, %{context: %{user_id: -1}})
-    end
+      user = user_fixture()
 
-    test "is_valid_token successful" do
-      token_value = Phoenix.Token.sign(@secret, @salt, 1)
-      assert {:ok, 1} = SignIn.is_valid_token(token_value)
+      assert {:ok, _token} = SignIn.sign_in(%{email: user.email, password: user.password}, %{})
+      assert {:error, _reason} = SignIn.sign_out(nil, %{context: %{user_id: -1}})
     end
 
     test "is_valid_token unsuccessful" do

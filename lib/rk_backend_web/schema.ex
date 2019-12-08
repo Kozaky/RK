@@ -70,7 +70,7 @@ defmodule RkBackendWeb.Schema do
     @desc "Create an user"
     field :create_user, :user do
       arg(:user_details, non_null(:user_details))
-      resolve(&RkBackend.Repo.Auth.create_user/3)
+      resolve(&RkBackend.Repo.Auth.store_user/3)
       middleware(RkBackend.Middlewares.HandleErrors)
     end
 
@@ -84,7 +84,7 @@ defmodule RkBackendWeb.Schema do
     @desc "Create a role"
     field :create_role, :role do
       arg(:type, non_null(:string))
-      resolve(&RkBackend.Repo.Auth.create_role/3)
+      resolve(&RkBackend.Repo.Auth.store_role/3)
       middleware(RkBackend.Middlewares.HandleErrors)
     end
   end

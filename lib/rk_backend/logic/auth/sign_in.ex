@@ -1,7 +1,9 @@
 defmodule RkBackend.Logic.Auth.SignIn do
   alias RkBackend.Repo.Auth
-  alias Comeonin.Argon2
+  alias Argon2
   alias Phoenix.Token
+  alias RkBackend.Repo
+  alias RkBackend.Logic.Auth.SessionService
 
   @salt "RKApplicationDefaultSalt"
   @max_age 7200
@@ -36,14 +38,11 @@ defmodule RkBackend.Logic.Auth.SignIn do
   def sign_in(%{email: email, password: password}, _info) do
     with {:ok, user} <- Auth.find_user_by_email(email),
          {:ok, user} <- Argon2.check_pass(user, password) do
-      token_value = Token.sign(@secret, @salt, user.id)
+      token = Token.sign(@secret, @salt, user.id)
 
-      case Auth.find_token_by_user(user.id) do
-        nil -> Auth.create_token(%{token: token_value, user_id: user.id})
-        token -> Auth.update_token(token, %{token: token_value})
-      end
-
-      {:ok, token_value}
+      user = Repo.preload(user, :role)
+      SessionService.start(user, token)
+      {:ok, token}
     end
   end
 
@@ -59,7 +58,14 @@ defmodule RkBackend.Logic.Auth.SignIn do
       {:error, reason}
   """
   def sign_out(_args, %{context: %{user_id: user_id}}) do
-    user_id |> Auth.delete_token()
+    case SessionService.lookup({SessionService, user_id}) do
+      {:ok, pid} ->
+        SessionService.delete_session(pid)
+        {:ok, "Session Deleted"}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   @doc """
@@ -77,8 +83,14 @@ defmodule RkBackend.Logic.Auth.SignIn do
       throws
   """
   def resolve_user(_args, %{context: %{user_id: user_id}}) do
-    {:ok, Auth.get_user!(user_id)}
+    {:ok, pid} = SessionService.lookup({SessionService, user_id})
+    %SessionService{user: user} = SessionService.get_state(pid)
+
+    {:ok, user}
   end
 
   def resolve_user(_args, _context), do: {:error, "Not Authenticated"}
+
+  @spec get_max_age :: integer()
+  def get_max_age(), do: @max_age
 end

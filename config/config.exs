@@ -34,7 +34,7 @@ config :logger,
 
 config :logger, :error_log,
   format: "[$date][$time][$level] $message\n",
-  path: "/Temp/Logs/Rk.log",
+  path: "/Users/julio/Temp/Logs/Rk.log",
   level: :debug
 
 # Use Jason for JSON parsing in Phoenix

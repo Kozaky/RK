@@ -10,10 +10,13 @@ config :rk_backend, RkBackendWeb.Endpoint,
 config :logger, level: :warn
 
 # Configure your database
-config :rk_backend, RkBackend.Repo,
-  username: "rk",
-  password: "D4N60",
-  database: "rk",
-  hostname: "localhost",
-  pool_size: 10,
-  pool: Ecto.Adapters.SQL.Sandbox
+if url = System.get_env("DATABASE_URL") do
+  config :rk_backend, RkBackend.Repo, url: url, pool: Ecto.Adapters.SQL.Sandbox
+else
+  config :rk_backend, RkBackend.Repo,
+    database: "database_test",
+    hostname: "localhost",
+    username: "rk",
+    password: "D4N60",
+    pool: Ecto.Adapters.SQL.Sandbox
+end
