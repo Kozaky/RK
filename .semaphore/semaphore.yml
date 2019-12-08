@@ -15,7 +15,7 @@ blocks:
             - sem-version elixir 1.9.2
             - cache restore
             - mix deps.get
-            - 'mix do compile
+            - mix do compile
             - MIX_ENV=test mix compile
             - cache store
   - name: Analyze code
