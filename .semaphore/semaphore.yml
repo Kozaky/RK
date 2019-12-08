@@ -18,9 +18,6 @@ blocks:
         - name: mix test
           commands:
             - checkout
-            - sem-service start postgres
-            - createdb rk -U postgres
-            - sem-service status postgres
             - sem-version elixir 1.9.1
             - cache restore
             - mix local.rebar --force
