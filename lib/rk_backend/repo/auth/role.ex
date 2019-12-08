@@ -2,6 +2,10 @@ defmodule RkBackend.Repo.Auth.Role do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @moduledoc """
+  Role Entity and basic functions
+  """
+
   schema "roles" do
     field :type, :string
 

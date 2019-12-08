@@ -2,6 +2,10 @@ defmodule RkBackendWeb.Schema.Types do
   use Absinthe.Schema.Notation
   use Absinthe.Ecto, repo: RkBackend.Repo
 
+  @moduledoc """
+  Types supported by GraphQL in this application
+  """
+
   object :role do
     field :id, :id
     field :type, :string

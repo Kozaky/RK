@@ -2,6 +2,10 @@ defmodule RkBackend.Repo.Auth.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @moduledoc """
+  User Entity and basic functions
+  """
+
   schema "users" do
     field :email, :string
     field :full_name, :string
@@ -35,7 +39,7 @@ defmodule RkBackend.Repo.Auth.User do
     |> put_password_hash
   end
 
-  defp put_password_hash(changeset = %Ecto.Changeset{valid?: true, changes: %{password: pass}}),
+  defp put_password_hash(%Ecto.Changeset{changes: %{password: pass}} = changeset),
     do: put_change(changeset, :password_hash, hash_password(pass))
 
   defp put_password_hash(changeset), do: changeset

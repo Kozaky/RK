@@ -1,17 +1,21 @@
 defmodule RkBackend.Middlewares.Auth do
   @behaviour Absinthe.Middleware
 
+  @moduledoc """
+  Middleware used to detect if an user is authenticated and has enough privileges
+  """
+
   alias RkBackend.Logic.Auth.SessionService
 
   def init(opts) do
     opts
   end
 
-  def call(resolution = %{context: %{user_id: _user_id}}, []) do
+  def call(%{context: %{user_id: _user_id}} = resolution, []) do
     resolution
   end
 
-  def call(resolution = %{context: %{user_id: user_id}}, config) do
+  def call(%{context: %{user_id: user_id}} = resolution, config) do
     {:ok, pid} = SessionService.lookup({SessionService, user_id})
 
     case SessionService.has_any_role?(pid, config) do
