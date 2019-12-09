@@ -151,6 +151,7 @@ defmodule RkBackend.Repo.Auth do
         {:ok, user}
       else
         nil ->
+          user_update = get_user_update(user_update)
           {:error, "ID: #{user_update.id} not found"}
 
         {:error, changeset} ->
