@@ -60,6 +60,8 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "store_user/1 with invalid data returns error changeset" do
+      role_fixture()
+
       assert {:error, %Ecto.Changeset{}} = Auth.store_user(@invalid_attrs)
     end
 
@@ -77,7 +79,9 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "store_user/3 unsuccessful" do
-      args = %{user_details: @valid_attrs}
+      role_fixture()
+
+      args = %{user_details: @invalid_attrs}
       assert {:error, changeset} = Auth.store_user(nil, args, nil)
     end
 
@@ -151,7 +155,7 @@ defmodule RkBackend.Repo.AuthTest do
   end
 
   describe "roles" do
-    @valid_attrs %{type: "some type"}
+    @valid_attrs %{type: "USER"}
     @update_attrs %{type: "some updated type"}
     @invalid_attrs %{type: nil}
 
@@ -176,7 +180,7 @@ defmodule RkBackend.Repo.AuthTest do
 
     test "store_role/1 with valid data creates a role" do
       assert {:ok, %Role{} = role} = Auth.store_role(@valid_attrs)
-      assert role.type == "some type"
+      assert role.type == "USER"
     end
 
     test "store_role/1 with invalid data returns error changeset" do
@@ -185,7 +189,7 @@ defmodule RkBackend.Repo.AuthTest do
 
     test "store_role/3 successful" do
       assert {:ok, %Role{} = role} = Auth.store_role(nil, @valid_attrs, nil)
-      assert role.type == "some type"
+      assert role.type == "USER"
     end
 
     test "store_role/3 unsuccessful" do
