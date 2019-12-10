@@ -12,7 +12,6 @@ defmodule RkBackendWeb.Schema do
     field :full_name, non_null(:string)
     field :password, non_null(:string)
     field :password_confirmation, non_null(:string)
-    field :role_id, non_null(:integer)
   end
 
   input_object :user_update_details do
@@ -21,7 +20,11 @@ defmodule RkBackendWeb.Schema do
     field :full_name, :string
     field :password, :string
     field :password_confirmation, :string
-    field :role_id, :integer
+  end
+
+  input_object :user_update_role do
+    field :id, non_null(:integer)
+    field :role_id, non_null(:integer)
   end
 
   query do
@@ -85,9 +88,18 @@ defmodule RkBackendWeb.Schema do
       middleware(RkBackend.Middlewares.HandleErrors)
     end
 
+    @desc "Update user's role"
+    field :update_users_role, :user do
+      arg(:user_update_role, non_null(:user_update_role))
+      middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
+      resolve(&RkBackend.Repo.Auth.update_user/2)
+      middleware(RkBackend.Middlewares.HandleErrors)
+    end
+
     @desc "Create a role"
     field :create_role, :role do
       arg(:type, non_null(:string))
+      middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
       resolve(&RkBackend.Repo.Auth.store_role/3)
       middleware(RkBackend.Middlewares.HandleErrors)
     end

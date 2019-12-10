@@ -5,7 +5,7 @@ defmodule RkBackend.Logic.Auth.SignInTest do
   alias RkBackend.Repo.Auth
 
   describe "SignIn" do
-    @valid_attrs_role %{type: "some type"}
+    @valid_attrs_role %{type: "USER"}
 
     @valid_attrs_user %{
       email: "some email",
