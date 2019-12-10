@@ -69,6 +69,8 @@ defmodule RkBackend.Repo.Auth do
   @doc """
   Stores an user.
 
+  Users will have the role 'USER' by default.
+
   ## Examples
 
       iex> store_user(%{field: value})
@@ -79,6 +81,9 @@ defmodule RkBackend.Repo.Auth do
 
   """
   def store_user(attrs \\ %{}) do
+    users_role = Repo.get_by!(Role, type: "USER")
+    attrs = Map.put(attrs, :role_id, users_role.id)
+
     %User{}
     |> User.changeset(attrs)
     |> Repo.insert()
@@ -138,14 +143,16 @@ defmodule RkBackend.Repo.Auth do
       {:error, :string}
 
   """
-  def update_user(%{user_update_details: user_update_details}, _info) do
+  def update_user(user_update, _info) do
     try do
-      with user = %User{} <- Repo.get(User, user_update_details.id),
-           {:ok, user} <- update_user(user, user_update_details) do
+      with user_update = %{} <- get_user_update(user_update),
+           user = %User{} <- Repo.get(User, user_update.id),
+           {:ok, user} <- update_user(user, user_update) do
         {:ok, user}
       else
         nil ->
-          {:error, "ID: #{user_update_details.id} not found"}
+          user_update = get_user_update(user_update)
+          {:error, "ID: #{user_update.id} not found"}
 
         {:error, changeset} ->
           errors = RkBackend.Utils.changeset_errors_to_string(changeset)
@@ -157,6 +164,14 @@ defmodule RkBackend.Repo.Auth do
         Logger.error("Invalid argument given")
         {:error, "Invalid argument given"}
     end
+  end
+
+  defp get_user_update(%{user_update_details: user_update}) do
+    user_update
+  end
+
+  defp get_user_update(%{user_update_role: user_update}) do
+    user_update
   end
 
   @doc """
