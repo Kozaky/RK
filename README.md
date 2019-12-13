@@ -1,5 +1,7 @@
 # RkBackend
 
+Rk will provide public and private organisations with a service that will register complains or advises. This registration will be analysed and classified by an AI system.
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
