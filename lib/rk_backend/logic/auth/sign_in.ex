@@ -46,7 +46,7 @@ defmodule RkBackend.Logic.Auth.SignIn do
 
       user = Repo.preload(user, :role)
       SessionService.start(user, token)
-      {:ok, token}
+      {:ok, Map.merge(user, %{token: token})}
     end
   end
 
