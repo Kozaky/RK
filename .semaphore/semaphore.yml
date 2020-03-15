@@ -24,7 +24,7 @@ blocks:
         commands:
           - checkout
           - bin/setup_ci_elixir
-          - sem-version elixir 1.9.2
+          - sem-version elixir 1.9.4
           - cache restore
       jobs:
         - name: credo
@@ -39,7 +39,7 @@ blocks:
         commands:
           - checkout
           - bin/setup_ci_elixir
-          - sem-version elixir 1.9.2
+          - sem-version elixir 1.9.4
           - cache restore
       jobs:
         - name: ex_unit
