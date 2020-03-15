@@ -39,7 +39,7 @@ defmodule RkBackendWeb.Endpoint do
     store: :cookie,
     key: "_rk_backend_key",
     signing_salt: "LMznRLk4"
-  
+
   plug Corsica,
     origins: "*",
     allow_credentials: true,
