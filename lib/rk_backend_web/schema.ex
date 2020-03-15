@@ -60,7 +60,7 @@ defmodule RkBackendWeb.Schema do
 
   mutation do
     @desc "Sign In"
-    field :sign_in, :string do
+    field :sign_in, :logged_in_user do
       arg(:email, non_null(:string))
       arg(:password, non_null(:string))
       resolve(&RkBackend.Logic.Auth.SignIn.sign_in/2)
