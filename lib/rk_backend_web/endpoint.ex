@@ -41,7 +41,7 @@ defmodule RkBackendWeb.Endpoint do
     signing_salt: "LMznRLk4"
   
   plug Corsica,
-    origins: "http://localhost:3000",
+    origins: "*",
     allow_credentials: true,
     allow_headers: ["Content-Type"],
     log: [rejected: :error, invalid: :warn, accepted: :debug]
