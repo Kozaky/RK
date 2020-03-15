@@ -39,9 +39,9 @@ defmodule RkBackendWeb.Endpoint do
     store: :cookie,
     key: "_rk_backend_key",
     signing_salt: "LMznRLk4"
-  
+
   plug Corsica,
-    origins: "http://localhost:3000",
+    origins: "*",
     allow_credentials: true,
     allow_headers: ["Content-Type"],
     log: [rejected: :error, invalid: :warn, accepted: :debug]
