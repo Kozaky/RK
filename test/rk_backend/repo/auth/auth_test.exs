@@ -213,10 +213,5 @@ defmodule RkBackend.Repo.AuthTest do
       assert {:ok, %Role{}} = Auth.delete_role(role)
       assert_raise Ecto.NoResultsError, fn -> Auth.get_role!(role.id) end
     end
-
-    test "change_role/1 returns a role changeset" do
-      role = role_fixture()
-      assert %Ecto.Changeset{} = Auth.change_role(role)
-    end
   end
 end

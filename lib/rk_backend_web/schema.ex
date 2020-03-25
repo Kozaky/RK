@@ -5,7 +5,14 @@ defmodule RkBackendWeb.Schema do
   Functions supported by GraphQL in this application
   """
 
+  import_types(Absinthe.Plug.Types)
   import_types(RkBackendWeb.Schema.Types)
+  import_types(Absinthe.Type.Custom)
+
+  input_object :sort_order do
+    field :order_asc, :string
+    field :order_desc, :string
+  end
 
   input_object :user_details do
     field :email, non_null(:string)
@@ -25,6 +32,50 @@ defmodule RkBackendWeb.Schema do
   input_object :user_update_role do
     field :id, non_null(:integer)
     field :role_id, non_null(:integer)
+  end
+
+  input_object :reklama_details do
+    field :title, non_null(:string)
+    field :content, non_null(:string)
+    field :images, list_of(:reklama_image_details)
+    field :topic_id, non_null(:integer)
+  end
+
+  input_object :update_reklama_details do
+    field :id, non_null(:integer)
+    field :title, :string
+    field :content, :string
+    field :images, list_of(:update_reklama_image_details)
+    field :topic_id, :integer
+  end
+
+  input_object :update_reklama_image_details do
+    field :id, :integer
+    field :name, :string
+    field :image, :upload
+  end
+
+  input_object :reklama_filter do
+    field :id, :integer
+    field :title, :string
+    field :topic_id, :integer
+    field :inserted_before, :naive_datetime
+    field :inserted_after, :naive_datetime
+  end
+
+  input_object :reklama_image_details do
+    field :image, non_null(:upload)
+  end
+
+  input_object :topic_details do
+    field :title, non_null(:string)
+    field :description, non_null(:string)
+    field :image, non_null(:upload)
+  end
+
+  input_object :message_details do
+    field :content, non_null(:string)
+    field :reklama_id, non_null(:integer)
   end
 
   query do
@@ -56,6 +107,25 @@ defmodule RkBackendWeb.Schema do
       resolve(&RkBackend.Repo.Auth.list_roles/3)
       middleware(RkBackend.Middlewares.HandleErrors)
     end
+
+    @desc "Get a reklama"
+    field :reklama, :reklama do
+      arg(:id, non_null(:integer))
+      middleware(RkBackend.Middlewares.Auth)
+      resolve(&RkBackend.Repo.Complaint.get_reklama/3)
+      middleware(RkBackend.Middlewares.HandleErrors)
+    end
+
+    @desc "Get a list of reklamas"
+    field :reklamas, :paginated_reklama do
+      arg(:filter, :reklama_filter)
+      arg(:order, :sort_order)
+      arg(:page, non_null(:integer))
+      arg(:per_page, non_null(:integer))
+      middleware(RkBackend.Middlewares.Auth)
+      resolve(&RkBackend.Repo.Complaint.list_reklamas/3)
+      middleware(RkBackend.Middlewares.HandleErrors)
+    end
   end
 
   mutation do
@@ -84,6 +154,7 @@ defmodule RkBackendWeb.Schema do
     @desc "Update an user"
     field :update_user, :user do
       arg(:user_update_details, non_null(:user_update_details))
+      middleware(RkBackend.Middlewares.Auth)
       resolve(&RkBackend.Repo.Auth.update_user/2)
       middleware(RkBackend.Middlewares.HandleErrors)
     end
@@ -101,6 +172,38 @@ defmodule RkBackendWeb.Schema do
       arg(:type, non_null(:string))
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
       resolve(&RkBackend.Repo.Auth.store_role/3)
+      middleware(RkBackend.Middlewares.HandleErrors)
+    end
+
+    @desc "Create a reklama"
+    field :create_reklama, :reklama do
+      arg(:reklama_details, non_null(:reklama_details))
+      middleware(RkBackend.Middlewares.Auth)
+      resolve(&RkBackend.Repo.Complaint.store_reklama/3)
+      middleware(RkBackend.Middlewares.HandleErrors)
+    end
+
+    @desc "Update a reklama"
+    field :update_reklama, :reklama do
+      arg(:update_reklama_details, non_null(:update_reklama_details))
+      middleware(RkBackend.Middlewares.Auth)
+      resolve(&RkBackend.Repo.Complaint.update_reklama/3)
+      middleware(RkBackend.Middlewares.HandleErrors)
+    end
+
+    @desc "Create a topic"
+    field :create_topic, :topic do
+      arg(:topic_details, non_null(:topic_details))
+      middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
+      resolve(&RkBackend.Repo.Complaint.store_topic/3)
+      middleware(RkBackend.Middlewares.HandleErrors)
+    end
+
+    @desc "Create a message"
+    field :create_message, :message do
+      arg(:message_details, non_null(:message_details))
+      middleware(RkBackend.Middlewares.Auth)
+      resolve(&RkBackend.Repo.Complaint.store_message/3)
       middleware(RkBackend.Middlewares.HandleErrors)
     end
   end

@@ -14,6 +14,8 @@ defmodule RkBackend.Repo.Auth.User do
     field :password_confirmation, :string, virtual: true
 
     belongs_to :role, RkBackend.Repo.Auth.Role
+    has_many :reklamas, RkBackend.Repo.Complaint.Reklama
+    has_many :messages, RkBackend.Repo.Complaint.Message
 
     timestamps()
   end
@@ -27,15 +29,17 @@ defmodule RkBackend.Repo.Auth.User do
     |> validate_required(@required)
     |> unique_constraint(:email)
     |> validate_confirmation(:password, message: "does not match password")
+    |> foreign_key_constraint(:role_id)
     |> put_password_hash
   end
 
   @doc false
-  def changeset_update(user, attrs) do
+  def update_changeset(user, attrs) do
     user
     |> cast(attrs, @required ++ @optional)
     |> unique_constraint(:email)
     |> validate_confirmation(:password, message: "does not match password")
+    |> foreign_key_constraint(:role_id)
     |> put_password_hash
   end
 

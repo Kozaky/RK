@@ -3,7 +3,7 @@ defmodule RkBackend.Repo.Migrations.CreateRoles do
 
   def change do
     create table(:roles) do
-      add :type, :string
+      add :type, :string, null: false
 
       timestamps()
     end
