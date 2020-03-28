@@ -314,21 +314,13 @@ defmodule RkBackend.Repo.Complaint do
     case Repo.get(Reklama, id) do
       %Reklama{} = reklama ->
         reklama
-        |> preloadImages(args)
+        |> Repo.dynamically_preload(args)
         |> Reklama.update_changeset(args)
         |> Repo.update()
 
       nil ->
         {:error, "Reklama not found"}
     end
-  end
-
-  defp preloadImages(reklama, %{images: _images}) do
-    Repo.preload(reklama, :images)
-  end
-
-  defp preloadImages(reklama, _images) do
-    reklama
   end
 
   @doc """
