@@ -5,7 +5,7 @@ defmodule RkBackend.UtilsTest do
   alias RkBackend.Repo.Auth.User
 
   describe "utils" do
-    @invalid_attrs %{
+    @invalid_args %{
       email: "some email",
       full_name: "some full_name",
       password: "pass",
@@ -13,8 +13,8 @@ defmodule RkBackend.UtilsTest do
     }
 
     test "changeset_errors_to_string/1 returns a string of the changeset's errors" do
-      changeset = User.changeset(%User{}, @invalid_attrs)
-      errors = Utils.changeset_errors_to_string(changeset)
+      changeset = User.changeset(%User{}, @invalid_args)
+      errors = Utils.errors_to_string(changeset)
       assert is_bitstring(errors)
     end
   end
