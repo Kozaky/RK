@@ -11,9 +11,9 @@ defmodule RkBackend.Logic.Auth.SessionServiceTest do
     id: 8080
   }
 
-  def role_fixture(attrs \\ %{}) do
+  def role_fixture(args \\ %{}) do
     {:ok, role} =
-      attrs
+      args
       |> Enum.into(%{type: "ADMIN"})
       |> Auth.store_role()
 
