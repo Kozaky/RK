@@ -4,6 +4,10 @@ defmodule RkBackend.Repo.Complaint.Reklama do
 
   alias RkBackend.Repo.Complaint.Reklama.ReklamaImage
 
+  @moduledoc """
+  Reklama Entity and basic functions
+  """
+
   schema "reklamas" do
     field :title, :string
     field :content, :string
@@ -11,7 +15,7 @@ defmodule RkBackend.Repo.Complaint.Reklama do
     belongs_to :user, RkBackend.Repo.Auth.User
     belongs_to :topic, RkBackend.Repo.Complaint.Topic
     has_many :messages, RkBackend.Repo.Complaint.Message
-    has_many :images, RkBackend.Repo.Complaint.Reklama.ReklamaImage
+    has_many :images, RkBackend.Repo.Complaint.Reklama.ReklamaImage, on_replace: :delete
 
     timestamps()
   end
@@ -19,9 +23,9 @@ defmodule RkBackend.Repo.Complaint.Reklama do
   @required [:title, :content, :user_id, :topic_id]
   @optional []
   @doc false
-  def changeset(reklama, attrs) do
+  def changeset(reklama, args) do
     reklama
-    |> cast(attrs, @required ++ @optional)
+    |> cast(args, @required ++ @optional)
     |> cast_assoc(:images, required: false)
     |> foreign_key_constraint(:topic_id)
     |> foreign_key_constraint(:user_id)
@@ -31,9 +35,9 @@ defmodule RkBackend.Repo.Complaint.Reklama do
   @update_required []
   @update_optional [:title, :content, :user_id, :topic_id]
   @doc false
-  def update_changeset(reklama, attrs) do
+  def update_changeset(reklama, args) do
     reklama
-    |> cast(attrs, @update_required ++ @update_optional)
+    |> cast(args, @update_required ++ @update_optional)
     |> cast_assoc(:images, required: false, with: &ReklamaImage.update_changeset/2)
     |> foreign_key_constraint(:topic_id)
     |> foreign_key_constraint(:user_id)

@@ -6,15 +6,26 @@ defmodule RkBackend.Repo do
   @doc """
   Returns a dynamic preload from absinthe inputs
   """
-  def dynamically_preload(struct, attrs) do
-    preload(struct, gen_preload(attrs))
+  def dynamically_preload(struct, args) do
+    preload(struct, gen_preload(args))
   end
 
   @doc """
   Returns a dynamic preload list from absinthe inputs
+
+  ## Examples
+
+      iex> gen_preload(%{name: "name", association: %{ name: "name" }})
+      [association: []]
+
+      iex> gen_preload(%{name: "name"})
+      []
+
+      iex> gen_preload(%{name: "name", associations: [ %{ name: "name", role: %{ type: "admin" }} ]})
+      [associations: [role: []]]
   """
-  def gen_preload(%{} = attrs) do
-    Enum.reduce(attrs, [], fn x, acc ->
+  def gen_preload(%{} = args) do
+    Enum.reduce(args, [], fn x, acc ->
       case x do
         {name, %{} = association} ->
           [{name, gen_preload(association)} | acc]

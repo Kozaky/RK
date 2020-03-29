@@ -23,9 +23,9 @@ defmodule RkBackend.Repo.Auth.User do
   @required [:email, :full_name, :password, :password_confirmation, :role_id]
   @optional []
   @doc false
-  def changeset(user, attrs) do
+  def changeset(user, args) do
     user
-    |> cast(attrs, @required ++ @optional)
+    |> cast(args, @required ++ @optional)
     |> validate_required(@required)
     |> unique_constraint(:email)
     |> validate_confirmation(:password, message: "does not match password")
@@ -34,9 +34,9 @@ defmodule RkBackend.Repo.Auth.User do
   end
 
   @doc false
-  def update_changeset(user, attrs) do
+  def update_changeset(user, args) do
     user
-    |> cast(attrs, @required ++ @optional)
+    |> cast(args, @required ++ @optional)
     |> unique_constraint(:email)
     |> validate_confirmation(:password, message: "does not match password")
     |> foreign_key_constraint(:role_id)

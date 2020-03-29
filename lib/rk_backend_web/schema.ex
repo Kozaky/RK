@@ -51,7 +51,6 @@ defmodule RkBackendWeb.Schema do
 
   input_object :update_reklama_image_details do
     field :id, :integer
-    field :name, :string
     field :image, :upload
   end
 
@@ -71,6 +70,13 @@ defmodule RkBackendWeb.Schema do
     field :title, non_null(:string)
     field :description, non_null(:string)
     field :image, non_null(:upload)
+  end
+
+  input_object :update_topic_details do
+    field :id, non_null(:integer)
+    field :title, :string
+    field :description, :string
+    field :images, :upload
   end
 
   input_object :message_details do
@@ -191,6 +197,14 @@ defmodule RkBackendWeb.Schema do
       middleware(RkBackend.Middlewares.HandleErrors)
     end
 
+    @desc "Delete a reklama"
+    field :delete_reklama, :reklama do
+      arg(:id, non_null(:integer))
+      middleware(RkBackend.Middlewares.Auth)
+      resolve(&RkBackend.Repo.Complaint.delete_reklama/3)
+      middleware(RkBackend.Middlewares.HandleErrors)
+    end
+
     @desc "Create a topic"
     field :create_topic, :topic do
       arg(:topic_details, non_null(:topic_details))
@@ -199,11 +213,35 @@ defmodule RkBackendWeb.Schema do
       middleware(RkBackend.Middlewares.HandleErrors)
     end
 
+    @desc "Update a topic"
+    field :update_topic, :topic do
+      arg(:update_topic_details, non_null(:update_topic_details))
+      middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
+      resolve(&RkBackend.Repo.Complaint.update_topic/3)
+      middleware(RkBackend.Middlewares.HandleErrors)
+    end
+
+    @desc "Delete a topic"
+    field :delete_topic, :topic do
+      arg(:id, non_null(:integer))
+      middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
+      resolve(&RkBackend.Repo.Complaint.delete_topic/3)
+      middleware(RkBackend.Middlewares.HandleErrors)
+    end
+
     @desc "Create a message"
     field :create_message, :message do
       arg(:message_details, non_null(:message_details))
       middleware(RkBackend.Middlewares.Auth)
       resolve(&RkBackend.Repo.Complaint.store_message/3)
+      middleware(RkBackend.Middlewares.HandleErrors)
+    end
+
+    @desc "Delete a message"
+    field :delete_message, :message do
+      arg(:id, non_null(:integer))
+      middleware(RkBackend.Middlewares.Auth)
+      resolve(&RkBackend.Repo.Complaint.delete_message/3)
       middleware(RkBackend.Middlewares.HandleErrors)
     end
   end

@@ -1,4 +1,4 @@
-defmodule RkBackend.Repo.AuthTest do
+defmodule RkBackend.Repo.RepoTest do
   use RkBackend.DataCase
 
   alias RkBackend.Repo
@@ -76,38 +76,29 @@ defmodule RkBackend.Repo.AuthTest do
     }
 
     test "gen_preload_list/1 struct with complex associations" do
-      {time_in_microseconds, list} = :timer.tc(&Repo.gen_preload(&1), [@map_with_associations])
-      IO.puts("execution time: #{time_in_microseconds / 1_000} ms")
+      list = Repo.gen_preload(@map_with_associations)
 
-      correct_list = [
-        role: [],
-        reklama: [
-          topic: [image: []],
-          images: [reklama: [user: [role: [order: [], command: [], type: []]]]]
-        ]
-      ]
-
-      assert correct_list = list
+      assert [
+               role: [],
+               reklama: [
+                 topic: [image: []],
+                 images: [reklama: [user: [role: [order: [], command: [], type: []]]]]
+               ]
+             ] = list
     end
 
     test "gen_preload_list/1 struct with simple associations" do
-      {time_in_microseconds, list} = :timer.tc(&Repo.gen_preload(&1), [@simple_map])
-      IO.puts("execution time: #{time_in_microseconds / 1_000} ms")
+      list = Repo.gen_preload(@simple_map)
 
-      correct_list = [
-        images: []
-      ]
-
-      assert correct_list = list
+      assert [
+               images: []
+             ] = list
     end
 
     test "gen_preload_list/1 struct without associations" do
-      {time_in_microseconds, list} = :timer.tc(&Repo.gen_preload(&1), [@map_without_associations])
-      IO.puts("execution time: #{time_in_microseconds / 1_000} ms")
+      list = Repo.gen_preload(@map_without_associations)
 
-      correct_list = []
-
-      assert correct_list = list
+      assert [] = list
     end
   end
 end

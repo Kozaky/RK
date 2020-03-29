@@ -80,12 +80,12 @@ defmodule RkBackend.Repo.Auth do
       {:error, %Ecto.Changeset{}}
 
   """
-  def store_user(attrs) do
+  def store_user(args) do
     users_role = Repo.get_by!(Role, type: "USER")
-    attrs = Map.put(attrs, :role_id, users_role.id)
+    args = Map.put(args, :role_id, users_role.id)
 
     %User{}
-    |> User.changeset(attrs)
+    |> User.changeset(args)
     |> Repo.insert()
   end
 
@@ -125,9 +125,9 @@ defmodule RkBackend.Repo.Auth do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_user(%User{} = user, attrs) do
+  def update_user(%User{} = user, args) do
     user
-    |> User.update_changeset(attrs)
+    |> User.update_changeset(args)
     |> Repo.update()
   end
 
@@ -268,9 +268,9 @@ defmodule RkBackend.Repo.Auth do
       {:error, %Ecto.Changeset{}}
 
   """
-  def store_role(attrs) do
+  def store_role(args) do
     %Role{}
-    |> Role.changeset(attrs)
+    |> Role.changeset(args)
     |> Repo.insert()
   end
 
@@ -310,9 +310,9 @@ defmodule RkBackend.Repo.Auth do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_role(%Role{} = role, attrs) do
+  def update_role(%Role{} = role, args) do
     role
-    |> Role.changeset(attrs)
+    |> Role.changeset(args)
     |> Repo.update()
   end
 

@@ -24,20 +24,30 @@ defmodule RkBackend.Repo.Complaint do
       {:error, %Ecto.Changeset{}}
 
   """
-  def store_reklama(attrs) do
+  def store_reklama(args) do
+    args = put_images(args)
+
+    %Reklama{}
+    |> Reklama.changeset(args)
+    |> Repo.insert()
+  end
+
+  defp put_images(%{images: images} = args) when is_list(images) do
     images =
-      Enum.map(attrs.images, fn image_detail ->
+      Enum.map(args.images, fn image_detail ->
+        {id, _result} = Map.pop(image_detail, :id)
         name = image_detail.image.filename
         {:ok, image_binary} = File.read(image_detail.image.path)
 
-        %{name: name, image: image_binary}
+        %{id: id, name: name, image: image_binary}
       end)
 
-    attrs = attrs |> Map.put(:images, images)
+    args
+    |> Map.put(:images, images)
+  end
 
-    %Reklama{}
-    |> Reklama.changeset(attrs)
-    |> Repo.insert()
+  defp put_images(args) do
+    args
   end
 
   @doc """
@@ -63,6 +73,28 @@ defmodule RkBackend.Repo.Complaint do
         errors = RkBackend.Utils.errors_to_string(errors)
         Logger.error(errors)
         {:error, errors}
+    end
+  end
+
+  @doc """
+  Deletes a reklama.
+
+  ## Examples
+
+      iex> delete_reklama(_, %{id: value}, _)
+      {:ok, %Reklama{}}
+
+      iex> delete_reklama(%{field: bad_value})
+      {:error, :string}
+
+  """
+  def delete_reklama(_root, %{id: id}, _info) do
+    case Repo.get(Reklama, id) do
+      %Reklama{} = reklama ->
+        Repo.delete(reklama)
+
+      nil ->
+        {:error, "Reklama not found"}
     end
   end
 
@@ -203,105 +235,11 @@ defmodule RkBackend.Repo.Complaint do
   end
 
   @doc """
-  Stores a topic.
-
-  ## Examples
-
-      iex> store_topic(%{field: value})
-      {:ok, %Topic{}}
-
-      iex> store_topic(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def store_topic(attrs) do
-    image_name = attrs.image.filename
-    {:ok, image_binary} = File.read(attrs.image.path)
-
-    attrs =
-      attrs
-      |> Map.put(:image, image_binary)
-      |> Map.put(:image_name, image_name)
-
-    %Topic{}
-    |> Topic.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Stores a topic.
-
-  ## Examples
-
-      iex> store_topic(_, %{field: value}, _)
-      {:ok, %Topic{}}
-
-      iex> store_topic(%{field: bad_value})
-      {:error, :string}
-
-  """
-  def store_topic(_root, args, _info) do
-    case store_topic(args.topic_details) do
-      {:ok, topic} ->
-        {:ok, topic}
-
-      {:error, errors} ->
-        errors = RkBackend.Utils.errors_to_string(errors)
-        Logger.error(errors)
-        {:error, errors}
-    end
-  end
-
-  @doc """
-  Stores a message.
-
-  ## Examples
-
-      iex> store_message(%{field: value})
-      {:ok, %Message{}}
-
-      iex> store_message(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def store_message(attrs) do
-    %Message{}
-    |> Message.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Stores a message.
-
-  ## Examples
-
-      iex> store_message(_, %{field: value}, _)
-      {:ok, %Message{}}
-
-      iex> store_message(%{field: bad_value})
-      {:error, :string}
-
-  """
-  def store_message(_root, args, %{context: %{user_id: user_id}}) do
-    args = Map.put(args.message_details, :user_id, user_id)
-
-    case store_message(args) do
-      {:ok, message} ->
-        {:ok, message}
-
-      {:error, errors} ->
-        errors = RkBackend.Utils.errors_to_string(errors)
-        Logger.error(errors)
-        {:error, errors}
-    end
-  end
-
-  @doc """
   Updates a reklama
 
   ## Examples
 
-      iex> update_reklama(_, %{field: value}, _)
+      iex> update_reklama(%{field: value})
       {:ok, %Reklama{}}
 
       iex> update_reklama(%{field: bad_value})
@@ -310,6 +248,7 @@ defmodule RkBackend.Repo.Complaint do
   """
   def update_reklama(args) do
     {id, args} = Map.pop(args, :id)
+    args = put_images(args)
 
     case Repo.get(Reklama, id) do
       %Reklama{} = reklama ->
@@ -344,6 +283,203 @@ defmodule RkBackend.Repo.Complaint do
         errors = RkBackend.Utils.errors_to_string(errors)
         Logger.error(errors)
         {:error, errors}
+    end
+  end
+
+  @doc """
+  Stores a topic.
+
+  ## Examples
+
+      iex> store_topic(%{field: value})
+      {:ok, %Topic{}}
+
+      iex> store_topic(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def store_topic(args) do
+    args = put_image(args)
+
+    %Topic{}
+    |> Topic.changeset(args)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Stores a topic.
+
+  ## Examples
+
+      iex> store_topic(_, %{field: value}, _)
+      {:ok, %Topic{}}
+
+      iex> store_topic(%{field: bad_value})
+      {:error, :string}
+
+  """
+  def store_topic(_root, args, _info) do
+    case store_topic(args.topic_details) do
+      {:ok, topic} ->
+        {:ok, topic}
+
+      {:error, errors} ->
+        errors = RkBackend.Utils.errors_to_string(errors)
+        Logger.error(errors)
+        {:error, errors}
+    end
+  end
+
+  @doc """
+  Updates a topic
+
+  ## Examples
+
+      iex> update_topic(%{field: value})
+      {:ok, %Topic{}}
+
+      iex> update_topic(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_topic(args) do
+    {id, args} = Map.pop(args, :id)
+    args = put_image(args)
+
+    case Repo.get(Topic, id) do
+      %Topic{} = topic ->
+        topic
+        |> Repo.dynamically_preload(args)
+        |> Topic.update_changeset(args)
+        |> Repo.update()
+
+      nil ->
+        {:error, "Topic not found"}
+    end
+  end
+
+  defp put_image(%{image: image} = args) do
+    image_name = image.filename
+    {:ok, image_binary} = File.read(image.path)
+
+    args
+    |> Map.put(:image, image_binary)
+    |> Map.put(:image_name, image_name)
+  end
+
+  defp put_image(args) do
+    args
+  end
+
+  @doc """
+  Updates a topic
+
+  ## Examples
+
+      iex> update_topic(_, %{field: value}, _)
+      {:ok, %Topic{}}
+
+      iex> update_topic(%{field: bad_value})
+      {:error, :string}
+
+  """
+  def update_topic(_root, args, _info) do
+    case update_topic(args.update_topic_details) do
+      {:ok, topic} ->
+        {:ok, topic}
+
+      {:error, errors} ->
+        errors = RkBackend.Utils.errors_to_string(errors)
+        Logger.error(errors)
+        {:error, errors}
+    end
+  end
+
+  @doc """
+  Deletes a topic.
+
+  ## Examples
+
+      iex> delete_topic(_, %{id: value}, _)
+      {:ok, %Topic{}}
+
+      iex> delete_topic(%{field: bad_value})
+      {:error, :string}
+
+  """
+  def delete_topic(_root, %{id: id}, _info) do
+    case Repo.get(Topic, id) do
+      %Topic{} = topic ->
+        Repo.delete(topic)
+
+      nil ->
+        {:error, "Topic not found"}
+    end
+  end
+
+  @doc """
+  Stores a message.
+
+  ## Examples
+
+      iex> store_message(%{field: value})
+      {:ok, %Message{}}
+
+      iex> store_message(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def store_message(args) do
+    %Message{}
+    |> Message.changeset(args)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Stores a message.
+
+  ## Examples
+
+      iex> store_message(_, %{field: value}, _)
+      {:ok, %Message{}}
+
+      iex> store_message(%{field: bad_value})
+      {:error, :string}
+
+  """
+  def store_message(_root, args, %{context: %{user_id: user_id}}) do
+    args = Map.put(args.message_details, :user_id, user_id)
+
+    case store_message(args) do
+      {:ok, message} ->
+        {:ok, message}
+
+      {:error, errors} ->
+        errors = RkBackend.Utils.errors_to_string(errors)
+        Logger.error(errors)
+        {:error, errors}
+    end
+  end
+
+  @doc """
+  Deletes a Message.
+
+  ## Examples
+
+      iex> delete_message(_, %{id: value}, _)
+      {:ok, %Message{}}
+
+      iex> delete_message(%{field: bad_value})
+      {:error, :string}
+
+  """
+  def delete_message(_root, %{id: id}, _info) do
+    case Repo.get(Message, id) do
+      %Message{} = message ->
+        Repo.delete(message)
+
+      nil ->
+        {:error, "Message not found"}
     end
   end
 end
