@@ -5,34 +5,34 @@ defmodule RkBackend.Logic.Auth.SignInTest do
   alias RkBackend.Repo.Auth
 
   describe "SignIn" do
-    @valid_attrs_role %{type: "USER"}
+    @valid_args_role %{type: "USER"}
 
-    @valid_attrs_user %{
+    @valid_args_user %{
       email: "some email",
       full_name: "some full_name",
       password: "password",
       password_confirmation: "password"
     }
 
-    def role_fixture(attrs \\ %{}) do
+    def role_fixture(args \\ %{}) do
       {:ok, role} =
-        attrs
-        |> Enum.into(@valid_attrs_role)
+        args
+        |> Enum.into(@valid_args_role)
         |> Auth.store_role()
 
       role
     end
 
-    def user_fixture(attrs \\ %{}) do
+    def user_fixture(args \\ %{}) do
       role = role_fixture()
 
-      valid_attrs =
-        @valid_attrs_user
+      valid_args =
+        @valid_args_user
         |> Map.put(:role_id, role.id)
 
       {:ok, user} =
-        attrs
-        |> Enum.into(valid_attrs)
+        args
+        |> Enum.into(valid_args)
         |> Auth.store_user()
 
       user
