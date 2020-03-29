@@ -12,7 +12,7 @@ defmodule RkBackend.Repo.Auth do
   require Logger
 
   @doc """
-  Returns the list of users.
+  Returns a list of users.
 
   ## Examples
 
@@ -80,12 +80,12 @@ defmodule RkBackend.Repo.Auth do
       {:error, %Ecto.Changeset{}}
 
   """
-  def store_user(attrs \\ %{}) do
+  def store_user(args) do
     users_role = Repo.get_by!(Role, type: "USER")
-    attrs = Map.put(attrs, :role_id, users_role.id)
+    args = Map.put(args, :role_id, users_role.id)
 
     %User{}
-    |> User.changeset(attrs)
+    |> User.changeset(args)
     |> Repo.insert()
   end
 
@@ -106,8 +106,8 @@ defmodule RkBackend.Repo.Auth do
       {:ok, user} ->
         {:ok, user}
 
-      {:error, changeset} ->
-        errors = RkBackend.Utils.changeset_errors_to_string(changeset)
+      {:error, errors} ->
+        errors = RkBackend.Utils.errors_to_string(errors)
         Logger.error(errors)
         {:error, errors}
     end
@@ -125,9 +125,9 @@ defmodule RkBackend.Repo.Auth do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_user(%User{} = user, attrs) do
+  def update_user(%User{} = user, args) do
     user
-    |> User.changeset_update(attrs)
+    |> User.update_changeset(args)
     |> Repo.update()
   end
 
@@ -154,8 +154,8 @@ defmodule RkBackend.Repo.Auth do
           user_update = get_user_update(user_update)
           {:error, "ID: #{user_update.id} not found"}
 
-        {:error, changeset} ->
-          errors = RkBackend.Utils.changeset_errors_to_string(changeset)
+        {:error, errors} ->
+          errors = RkBackend.Utils.errors_to_string(errors)
           Logger.error(errors)
           {:error, errors}
       end
@@ -223,7 +223,7 @@ defmodule RkBackend.Repo.Auth do
   end
 
   @doc """
-  Returns the list of roles.
+  Returns a list of roles.
 
   ## Examples
 
@@ -268,9 +268,9 @@ defmodule RkBackend.Repo.Auth do
       {:error, %Ecto.Changeset{}}
 
   """
-  def store_role(attrs \\ %{}) do
+  def store_role(args) do
     %Role{}
-    |> Role.changeset(attrs)
+    |> Role.changeset(args)
     |> Repo.insert()
   end
 
@@ -291,8 +291,8 @@ defmodule RkBackend.Repo.Auth do
       {:ok, changeset} ->
         {:ok, changeset}
 
-      {:error, changeset} ->
-        errors = RkBackend.Utils.changeset_errors_to_string(changeset)
+      {:error, errors} ->
+        errors = RkBackend.Utils.errors_to_string(errors)
         Logger.error(errors)
         {:error, errors}
     end
@@ -310,9 +310,9 @@ defmodule RkBackend.Repo.Auth do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_role(%Role{} = role, attrs) do
+  def update_role(%Role{} = role, args) do
     role
-    |> Role.changeset(attrs)
+    |> Role.changeset(args)
     |> Repo.update()
   end
 
@@ -330,18 +330,5 @@ defmodule RkBackend.Repo.Auth do
   """
   def delete_role(%Role{} = role) do
     Repo.delete(role)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking role changes.
-
-  ## Examples
-
-      iex> change_role(role)
-      %Ecto.Changeset{source: %Role{}}
-
-  """
-  def change_role(%Role{} = role) do
-    Role.changeset(role, %{})
   end
 end
