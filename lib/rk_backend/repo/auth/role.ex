@@ -17,9 +17,9 @@ defmodule RkBackend.Repo.Auth.Role do
   @required [:type]
   @optional []
   @doc false
-  def changeset(role, attrs) do
+  def changeset(role, args) do
     role
-    |> cast(attrs, @required ++ @optional)
+    |> cast(args, @required ++ @optional)
     |> validate_required(@required)
     |> unique_constraint(:type)
   end

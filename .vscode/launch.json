@@ -1,6 +1,8 @@
 {
     "version": "0.2.0",
     "configurations": [
+      
+
         {
             "type": "mix_task",
             "name": "mix (Default task)",
@@ -23,12 +25,11 @@
             ]
         },
         {
-            "type": "mix_task",
-            "request": "launch",
-            "name": "mix phx.server",
-            "task": "phx.server",
-            "taskArgs": [],
-            "projectDir": "${workspaceRoot}",
+          "type": "mix_task",
+          "name": "mix phx.server",
+          "request": "launch",
+          "projectDir": "${workspaceRoot}",
+          "task": "phx.server"
         }
     ]
 }
