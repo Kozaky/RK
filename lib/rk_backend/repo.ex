@@ -62,18 +62,16 @@ defmodule RkBackend.Repo do
           [{name, associations} | acc]
 
         index ->
-          case Enum.empty?(associations) do
-            true ->
-              acc
-
-            false ->
-              List.replace_at(
-                acc,
-                index,
-                {name, merge(Enum.at(acc, index), {name, associations})}
-              )
-          end
+          merge_nested_list(name, associations, acc, index)
       end
     end)
+  end
+
+  defp merge_nested_list(_name, [], acc, _index) do
+    acc
+  end
+
+  defp merge_nested_list(name, associations, acc, index) do
+    List.replace_at(acc, index, {name, merge(Enum.at(acc, index), {name, associations})})
   end
 end
