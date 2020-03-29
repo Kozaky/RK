@@ -62,7 +62,7 @@ defmodule RkBackend.Repo do
           [{name, associations} | acc]
 
         index ->
-          case length(associations) == 0 do
+          case Enum.empty?(associations) do
             true ->
               acc
 

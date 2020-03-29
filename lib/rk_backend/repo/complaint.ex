@@ -123,7 +123,7 @@ defmodule RkBackend.Repo.Complaint do
       []
       |> validate_page(args)
 
-    if length(errors) == 0, do: {:ok, args}, else: {:error, errors}
+    if Enum.empty?(errors), do: {:ok, args}, else: {:error, errors}
   end
 
   defp validate_page(errors, %{page: page}) when page > 0 do
