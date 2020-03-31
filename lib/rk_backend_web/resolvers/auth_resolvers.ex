@@ -7,6 +7,10 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
 
   require Logger
 
+  @moduledoc """
+  Module with resolvers for Auth queries and mutations
+  """
+
   def sign_in(%{email: email, password: password}, _info) do
     SignIn.sign_in(email, password)
   end

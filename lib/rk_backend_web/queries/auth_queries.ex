@@ -2,6 +2,10 @@ defmodule RkBackendWeb.Schema.Queries.AuthQueries do
   use Absinthe.Schema.Notation
   alias RkBackendWeb.Schema.Resolvers.AuthResolvers
 
+  @moduledoc """
+  Module with queries and mutations for Auth
+  """
+
   object :auth_queries do
     @desc "Get the current user"
     field :resolve_user, :user do

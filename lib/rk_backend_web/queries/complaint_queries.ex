@@ -2,6 +2,10 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries do
   use Absinthe.Schema.Notation
   alias RkBackendWeb.Schema.Resolvers.ComplaintResolvers
 
+  @moduledoc """
+  Module with queries and mutations for Complaint
+  """
+
   object :complaint_queries do
     @desc "Get a reklama"
     field :reklama, :reklama do

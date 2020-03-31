@@ -8,6 +8,10 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
 
   require Logger
 
+  @moduledoc """
+  Module with resolvers for Complaint queries and mutations
+  """
+
   def store_reklama(args, %{context: %{user_id: user_id}}) do
     args = Map.put(args.reklama_details, :user_id, user_id)
 
