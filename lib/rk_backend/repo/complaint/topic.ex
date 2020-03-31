@@ -26,14 +26,4 @@ defmodule RkBackend.Repo.Complaint.Topic do
     |> validate_required(@required)
     |> unique_constraint(:title)
   end
-
-  @update_required []
-  @update_optional [:title, :description, :image_name, :image]
-  @doc false
-  def update_changeset(reklama, args) do
-    reklama
-    |> cast(args, @update_required ++ @update_optional)
-    |> validate_required(@update_required)
-    |> unique_constraint(:title)
-  end
 end
