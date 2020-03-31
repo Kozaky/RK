@@ -24,14 +24,4 @@ defmodule RkBackend.Repo.Complaint.Reklama.ReklamaImage do
     |> validate_required(@required)
     |> foreign_key_constraint(:reklama_id)
   end
-
-  @update_required []
-  @update_optional [:name, :image]
-  @doc false
-  def update_changeset(reklama_image, args) do
-    reklama_image
-    |> cast(args, @update_required ++ @update_optional)
-    |> validate_required(@update_required)
-    |> foreign_key_constraint(:reklama_id)
-  end
 end

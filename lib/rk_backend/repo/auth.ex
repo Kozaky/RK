@@ -69,7 +69,7 @@ defmodule RkBackend.Repo.Auth do
       %User{} = user ->
         user
         |> Repo.dynamically_preload(args)
-        |> User.update_changeset(args)
+        |> User.changeset(args)
         |> Repo.update()
 
       nil ->
@@ -165,7 +165,7 @@ defmodule RkBackend.Repo.Auth do
       %Role{} = role ->
         role
         |> Repo.dynamically_preload(args)
-        |> Role.update_changeset(args)
+        |> Role.changeset(args)
         |> Repo.update()
 
       nil ->
