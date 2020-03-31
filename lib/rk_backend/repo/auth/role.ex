@@ -23,4 +23,13 @@ defmodule RkBackend.Repo.Auth.Role do
     |> validate_required(@required)
     |> unique_constraint(:type)
   end
+
+  @update_required []
+  @update_optional [:type]
+  @doc false
+  def update_changeset(role, args) do
+    role
+    |> cast(args, @update_required ++ @update_optional)
+    |> unique_constraint(:type)
+  end
 end

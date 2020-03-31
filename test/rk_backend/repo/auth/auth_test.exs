@@ -86,14 +86,24 @@ defmodule RkBackend.Repo.AuthTest do
 
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
-      assert {:ok, %User{} = user} = Auth.update_user(user, @update_args)
+
+      update_args =
+        @update_args
+        |> Map.put(:id, user.id)
+
+      assert {:ok, %User{} = user} = Auth.update_user(update_args)
       assert user.email == "some updated email"
       assert user.full_name == "some updated full_name"
     end
 
     test "update_user/2 with invalid data returns error changeset" do
       user = user_fixture()
-      assert {:error, %Ecto.Changeset{}} = Auth.update_user(user, @invalid_args)
+
+      invalid_args =
+        @invalid_args
+        |> Map.put(:id, user.id)
+
+      assert {:error, %Ecto.Changeset{}} = Auth.update_user(invalid_args)
     end
 
     test "update_user/2 successful" do
@@ -103,7 +113,7 @@ defmodule RkBackend.Repo.AuthTest do
         @update_args
         |> Map.put(:id, user.id)
 
-      assert {:ok, user = %User{}} = Auth.update_user(user, update_args)
+      assert {:ok, user = %User{}} = Auth.update_user(update_args)
       assert user.password == "password2"
     end
 
@@ -114,7 +124,7 @@ defmodule RkBackend.Repo.AuthTest do
         @invalid_args
         |> Map.put(:id, user.id)
 
-      assert {:error, reason} = Auth.update_user(user, update_args)
+      assert {:error, reason} = Auth.update_user(update_args)
       assert reason = "password_confirmation: does not match password\n"
     end
 
@@ -173,14 +183,23 @@ defmodule RkBackend.Repo.AuthTest do
 
     test "update_role/2 with valid data updates the role" do
       role = role_fixture()
-      assert {:ok, %Role{} = role} = Auth.update_role(role, @update_args)
+
+      update_args =
+        @update_args
+        |> Map.put(:id, role.id)
+
+      assert {:ok, %Role{} = role} = Auth.update_role(update_args)
       assert role.type == "some updated type"
     end
 
     test "update_role/2 with invalid data returns error changeset" do
       role = role_fixture()
-      assert {:error, %Ecto.Changeset{}} = Auth.update_role(role, @invalid_args)
-      assert role == Auth.get_role!(role.id)
+
+      invalid_args =
+        @invalid_args
+        |> Map.put(:id, role.id)
+
+      assert_raise Postgrex.Error, fn -> Auth.update_role(invalid_args) end
     end
 
     test "delete_role/1 deletes the role" do

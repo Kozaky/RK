@@ -51,7 +51,7 @@ defmodule RkBackend.Repo.Auth do
   end
 
   @doc """
-  Updates a user.
+  Updates an user.
 
   ## Examples
 
@@ -62,10 +62,19 @@ defmodule RkBackend.Repo.Auth do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_user(%User{} = user, args) do
-    user
-    |> User.update_changeset(args)
-    |> Repo.update()
+  def update_user(args) do
+    {id, args} = Map.pop(args, :id)
+
+    case Repo.get(User, id) do
+      %User{} = user ->
+        user
+        |> Repo.dynamically_preload(args)
+        |> User.update_changeset(args)
+        |> Repo.update()
+
+      nil ->
+        {:error, "User not found"}
+    end
   end
 
   @doc """
@@ -149,10 +158,19 @@ defmodule RkBackend.Repo.Auth do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_role(%Role{} = role, args) do
-    role
-    |> Role.changeset(args)
-    |> Repo.update()
+  def update_role(args) do
+    {id, args} = Map.pop(args, :id)
+
+    case Repo.get(Role, id) do
+      %Role{} = role ->
+        role
+        |> Repo.dynamically_preload(args)
+        |> Role.update_changeset(args)
+        |> Repo.update()
+
+      nil ->
+        {:error, "Role not found"}
+    end
   end
 
   @doc """
