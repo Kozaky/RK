@@ -12,24 +12,6 @@ defmodule RkBackend.Repo.Auth do
   require Logger
 
   @doc """
-  Returns a list of users.
-
-  ## Examples
-
-      iex> list_users()
-      [%User{}, ...]
-
-  """
-  def list_users(_root, _args, _info) do
-    try do
-      {:ok, Repo.all(User)}
-    rescue
-      Ecto.NoResultsError ->
-        {:error, :rescued}
-    end
-  end
-
-  @doc """
   Gets a single user.
 
   Raises `Ecto.NoResultsError` if the User does not exist.
@@ -44,27 +26,6 @@ defmodule RkBackend.Repo.Auth do
 
   """
   def get_user!(id), do: Repo.get!(User, id)
-
-  @doc """
-  Get a single user.
-
-  ## Examples
-
-      iex> get_user!(123)
-      {:ok, %User{}}
-
-      iex> get_user!(456)
-      {:error, "ID: id not found"}
-
-  """
-  def get_user(_root, %{id: id} = _args, _info) do
-    try do
-      {:ok, get_user!(id)}
-    rescue
-      Ecto.NoResultsError ->
-        {:error, "ID: #{id} not found"}
-    end
-  end
 
   @doc """
   Stores an user.
@@ -90,30 +51,6 @@ defmodule RkBackend.Repo.Auth do
   end
 
   @doc """
-  Stores an user.
-
-  ## Examples
-
-      iex> store_user(_, %{field: value}, _)
-      {:ok, %User{}}
-
-      iex> store_user(%{field: bad_value})
-      {:error, :string}
-
-  """
-  def store_user(_root, args, _info) do
-    case store_user(args.user_details) do
-      {:ok, user} ->
-        {:ok, user}
-
-      {:error, errors} ->
-        errors = RkBackend.Utils.errors_to_string(errors)
-        Logger.error(errors)
-        {:error, errors}
-    end
-  end
-
-  @doc """
   Updates a user.
 
   ## Examples
@@ -129,49 +66,6 @@ defmodule RkBackend.Repo.Auth do
     user
     |> User.update_changeset(args)
     |> Repo.update()
-  end
-
-  @doc """
-  Updates an user.
-
-  ## Examples
-
-      iex> update_user(_, %{field: value}, _)
-      {:ok, %User{}}
-
-      iex> update_user(%{field: bad_value})
-      {:error, :string}
-
-  """
-  def update_user(user_update, _info) do
-    try do
-      with user_update = %{} <- get_user_update(user_update),
-           user = %User{} <- Repo.get(User, user_update.id),
-           {:ok, user} <- update_user(user, user_update) do
-        {:ok, user}
-      else
-        nil ->
-          user_update = get_user_update(user_update)
-          {:error, "ID: #{user_update.id} not found"}
-
-        {:error, errors} ->
-          errors = RkBackend.Utils.errors_to_string(errors)
-          Logger.error(errors)
-          {:error, errors}
-      end
-    rescue
-      ArgumentError ->
-        Logger.error("Invalid argument given")
-        {:error, "Invalid argument given"}
-    end
-  end
-
-  defp get_user_update(%{user_update_details: user_update}) do
-    user_update
-  end
-
-  defp get_user_update(%{user_update_role: user_update}) do
-    user_update
   end
 
   @doc """
@@ -191,19 +85,6 @@ defmodule RkBackend.Repo.Auth do
   end
 
   @doc """
-  Returns an `%Ecto.Changeset{}` for tracking user changes.
-
-  ## Examples
-
-      iex> change_user(user)
-      %Ecto.Changeset{source: %User{}}
-
-  """
-  def change_user(%User{} = user) do
-    User.changeset(user, %{})
-  end
-
-  @doc """
   Returns an `%Auth.User{}` with the selected email.
 
   ## Examples
@@ -219,24 +100,6 @@ defmodule RkBackend.Repo.Auth do
     case Repo.get_by(User, email: email) do
       nil -> {:error, "User not found"}
       user -> {:ok, user}
-    end
-  end
-
-  @doc """
-  Returns a list of roles.
-
-  ## Examples
-
-      iex> list_roles()
-      [%Role{}, ...]
-
-  """
-  def list_roles(_root, _args, _info) do
-    try do
-      {:ok, Repo.all(Role)}
-    rescue
-      Ecto.NoResultsError ->
-        {:error, :rescued}
     end
   end
 
@@ -272,30 +135,6 @@ defmodule RkBackend.Repo.Auth do
     %Role{}
     |> Role.changeset(args)
     |> Repo.insert()
-  end
-
-  @doc """
-  Stores a role.
-
-  ## Examples
-
-      iex> store_role(_, %{field: value}, _)
-      {:ok, %Role{}}
-
-      iex> store_role(_, %{field: bad_value}, _)
-      {:error, :string}
-
-  """
-  def store_role(_root, args, _info) do
-    case store_role(args) do
-      {:ok, changeset} ->
-        {:ok, changeset}
-
-      {:error, errors} ->
-        errors = RkBackend.Utils.errors_to_string(errors)
-        Logger.error(errors)
-        {:error, errors}
-    end
   end
 
   @doc """
