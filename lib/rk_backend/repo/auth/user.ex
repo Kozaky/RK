@@ -33,10 +33,12 @@ defmodule RkBackend.Repo.Auth.User do
     |> put_password_hash
   end
 
+  @update_required []
+  @update_optional [:email, :full_name, :password, :password_confirmation, :role_id]
   @doc false
   def update_changeset(user, args) do
     user
-    |> cast(args, @required ++ @optional)
+    |> cast(args, @update_required ++ @update_optional)
     |> unique_constraint(:email)
     |> validate_confirmation(:password, message: "does not match password")
     |> foreign_key_constraint(:role_id)
