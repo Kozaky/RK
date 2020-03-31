@@ -51,90 +51,6 @@ defmodule RkBackend.Repo.Complaint do
   end
 
   @doc """
-  Stores a reklama.
-
-  ## Examples
-
-      iex> store_reklama(_, %{field: value}, _)
-      {:ok, %Reklama{}}
-
-      iex> store_reklama(%{field: bad_value})
-      {:error, :string}
-
-  """
-  def store_reklama(_root, args, %{context: %{user_id: user_id}}) do
-    args = Map.put(args.reklama_details, :user_id, user_id)
-
-    case store_reklama(args) do
-      {:ok, reklama} ->
-        {:ok, reklama}
-
-      {:error, errors} ->
-        errors = RkBackend.Utils.errors_to_string(errors)
-        Logger.error(errors)
-        {:error, errors}
-    end
-  end
-
-  @doc """
-  Deletes a reklama.
-
-  ## Examples
-
-      iex> delete_reklama(_, %{id: value}, _)
-      {:ok, %Reklama{}}
-
-      iex> delete_reklama(%{field: bad_value})
-      {:error, :string}
-
-  """
-  def delete_reklama(_root, %{id: id}, _info) do
-    case Repo.get(Reklama, id) do
-      %Reklama{} = reklama ->
-        Repo.delete(reklama)
-
-      nil ->
-        {:error, "Reklama not found"}
-    end
-  end
-
-  @doc """
-  Returns a list of reklamas.
-
-  ## Examples
-
-      iex> list_reklamas()
-      {:ok, [%Reklama{}, ...]}
-
-  """
-  def list_reklamas(_root, args, _info) do
-    case validate_args(args) do
-      {:ok, args} ->
-        reklamas = list_reklamas(args)
-        {:ok, reklamas}
-
-      {:error, msg} ->
-        {:error, msg}
-    end
-  end
-
-  defp validate_args(args) do
-    errors =
-      []
-      |> validate_page(args)
-
-    if Enum.empty?(errors), do: {:ok, args}, else: {:error, errors}
-  end
-
-  defp validate_page(errors, %{page: page}) when page > 0 do
-    errors
-  end
-
-  defp validate_page(errors, _args) do
-    ["Page: must be bigger than 0" | errors]
-  end
-
-  @doc """
   Returns a list of reklamas.
 
   ## Examples
@@ -213,28 +129,6 @@ defmodule RkBackend.Repo.Complaint do
   end
 
   @doc """
-  Get a single reklama.
-
-  ## Examples
-
-      iex> get_reklama!(123)
-      {:ok, %Reklama{}}
-
-      iex> get_reklama!(456)
-      {:error, "ID: id not found"}
-
-  """
-  def get_reklama(_root, %{id: id} = _args, _info) do
-    case Repo.get(Reklama, id) do
-      {:ok, reklama} ->
-        {:ok, reklama}
-
-      nil ->
-        {:error, "This reklama could not be found"}
-    end
-  end
-
-  @doc """
   Updates a reklama
 
   ## Examples
@@ -263,30 +157,6 @@ defmodule RkBackend.Repo.Complaint do
   end
 
   @doc """
-  Updates a reklama
-
-  ## Examples
-
-      iex> update_reklama(_, %{field: value}, _)
-      {:ok, %Reklama{}}
-
-      iex> update_reklama(%{field: bad_value})
-      {:error, :string}
-
-  """
-  def update_reklama(_root, args, _info) do
-    case update_reklama(args.update_reklama_details) do
-      {:ok, reklama} ->
-        {:ok, reklama}
-
-      {:error, errors} ->
-        errors = RkBackend.Utils.errors_to_string(errors)
-        Logger.error(errors)
-        {:error, errors}
-    end
-  end
-
-  @doc """
   Stores a topic.
 
   ## Examples
@@ -304,30 +174,6 @@ defmodule RkBackend.Repo.Complaint do
     %Topic{}
     |> Topic.changeset(args)
     |> Repo.insert()
-  end
-
-  @doc """
-  Stores a topic.
-
-  ## Examples
-
-      iex> store_topic(_, %{field: value}, _)
-      {:ok, %Topic{}}
-
-      iex> store_topic(%{field: bad_value})
-      {:error, :string}
-
-  """
-  def store_topic(_root, args, _info) do
-    case store_topic(args.topic_details) do
-      {:ok, topic} ->
-        {:ok, topic}
-
-      {:error, errors} ->
-        errors = RkBackend.Utils.errors_to_string(errors)
-        Logger.error(errors)
-        {:error, errors}
-    end
   end
 
   @doc """
@@ -372,52 +218,6 @@ defmodule RkBackend.Repo.Complaint do
   end
 
   @doc """
-  Updates a topic
-
-  ## Examples
-
-      iex> update_topic(_, %{field: value}, _)
-      {:ok, %Topic{}}
-
-      iex> update_topic(%{field: bad_value})
-      {:error, :string}
-
-  """
-  def update_topic(_root, args, _info) do
-    case update_topic(args.update_topic_details) do
-      {:ok, topic} ->
-        {:ok, topic}
-
-      {:error, errors} ->
-        errors = RkBackend.Utils.errors_to_string(errors)
-        Logger.error(errors)
-        {:error, errors}
-    end
-  end
-
-  @doc """
-  Deletes a topic.
-
-  ## Examples
-
-      iex> delete_topic(_, %{id: value}, _)
-      {:ok, %Topic{}}
-
-      iex> delete_topic(%{field: bad_value})
-      {:error, :string}
-
-  """
-  def delete_topic(_root, %{id: id}, _info) do
-    case Repo.get(Topic, id) do
-      %Topic{} = topic ->
-        Repo.delete(topic)
-
-      nil ->
-        {:error, "Topic not found"}
-    end
-  end
-
-  @doc """
   Stores a message.
 
   ## Examples
@@ -433,53 +233,5 @@ defmodule RkBackend.Repo.Complaint do
     %Message{}
     |> Message.changeset(args)
     |> Repo.insert()
-  end
-
-  @doc """
-  Stores a message.
-
-  ## Examples
-
-      iex> store_message(_, %{field: value}, _)
-      {:ok, %Message{}}
-
-      iex> store_message(%{field: bad_value})
-      {:error, :string}
-
-  """
-  def store_message(_root, args, %{context: %{user_id: user_id}}) do
-    args = Map.put(args.message_details, :user_id, user_id)
-
-    case store_message(args) do
-      {:ok, message} ->
-        {:ok, message}
-
-      {:error, errors} ->
-        errors = RkBackend.Utils.errors_to_string(errors)
-        Logger.error(errors)
-        {:error, errors}
-    end
-  end
-
-  @doc """
-  Deletes a Message.
-
-  ## Examples
-
-      iex> delete_message(_, %{id: value}, _)
-      {:ok, %Message{}}
-
-      iex> delete_message(%{field: bad_value})
-      {:error, :string}
-
-  """
-  def delete_message(_root, %{id: id}, _info) do
-    case Repo.get(Message, id) do
-      %Message{} = message ->
-        Repo.delete(message)
-
-      nil ->
-        {:error, "Message not found"}
-    end
   end
 end

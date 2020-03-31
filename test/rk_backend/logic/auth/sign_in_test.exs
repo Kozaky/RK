@@ -41,36 +41,32 @@ defmodule RkBackend.Logic.Auth.SignInTest do
     test "sign_in/2 successful" do
       user = user_fixture()
 
-      assert {:ok, _token} = SignIn.sign_in(%{email: user.email, password: user.password}, %{})
+      assert {:ok, _token} = SignIn.sign_in(user.email, user.password)
     end
 
     test "sign_in/2 unsuccessful" do
-      assert {:error, _token} = SignIn.sign_in(%{email: "mail", password: "pass"}, %{})
+      assert {:error, _token} = SignIn.sign_in("mail", "pass")
     end
 
     test "resolve_user/2 successful" do
       user = user_fixture()
 
-      assert {:ok, _token} = SignIn.sign_in(%{email: user.email, password: user.password}, %{})
-      assert {:ok, %Auth.User{}} = SignIn.resolve_user(nil, %{context: %{user_id: user.id}})
-    end
-
-    test "resolve_user/2 unsuccessful" do
-      assert {:error, "Not Authenticated"} = SignIn.resolve_user(nil, nil)
+      assert {:ok, _token} = SignIn.sign_in(user.email, user.password)
+      assert {:ok, %Auth.User{}} = SignIn.resolve_user(user.id)
     end
 
     test "sign_out/2 successful" do
       user = user_fixture()
 
-      assert {:ok, _token} = SignIn.sign_in(%{email: user.email, password: user.password}, %{})
-      assert {:ok, "Session Deleted"} = SignIn.sign_out(nil, %{context: %{user_id: user.id}})
+      assert {:ok, _token} = SignIn.sign_in(user.email, user.password)
+      assert {:ok, "Session Deleted"} = SignIn.sign_out(user.id)
     end
 
     test "sign_out/2 unsuccessful" do
       user = user_fixture()
 
-      assert {:ok, _token} = SignIn.sign_in(%{email: user.email, password: user.password}, %{})
-      assert {:error, _reason} = SignIn.sign_out(nil, %{context: %{user_id: -1}})
+      assert {:ok, _token} = SignIn.sign_in(user.email, user.password)
+      assert {:error, _reason} = SignIn.sign_out(-1)
     end
 
     test "is_valid_token unsuccessful" do

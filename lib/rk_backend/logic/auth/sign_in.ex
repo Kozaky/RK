@@ -39,7 +39,7 @@ defmodule RkBackend.Logic.Auth.SignIn do
       iex> sign_in(email, password)
       {:error, reason}
   """
-  def sign_in(%{email: email, password: password}, _info) do
+  def sign_in(email, password) do
     with {:ok, user} <- Auth.find_user_by_email(email),
          {:ok, user} <- Argon2.check_pass(user, password) do
       token = Token.sign(@secret, @salt, user.id)
@@ -55,13 +55,13 @@ defmodule RkBackend.Logic.Auth.SignIn do
 
   ## Examples
 
-      iex> sign_out(_args, %{context: %{user_id: user_id}})
+      iex> sign_out(user_id)
       {:ok, "Session Deleted"}
 
-      iex> sign_out(email, password)
+      iex> sign_out(wrong_args)
       {:error, reason}
   """
-  def sign_out(_args, %{context: %{user_id: user_id}}) do
+  def sign_out(user_id) do
     case SessionService.lookup({SessionService, user_id}) do
       {:ok, pid} ->
         SessionService.delete_session(pid)
@@ -77,23 +77,15 @@ defmodule RkBackend.Logic.Auth.SignIn do
 
   ## Examples
 
-      iex> resolve_user(_arg, %{context: %{user_id: user_id}})
+      iex> resolve_user(user_id)
       {:ok, %User{}}
-
-      iex> resolve_user(_arg, %{context: %{user_id: user_id}})
-      {:error, "Not Authenticated"}
-
-      iex> resolve_user(_arg, %{context: %{user_id: user_id}})
-      throws
   """
-  def resolve_user(_args, %{context: %{user_id: user_id}}) do
+  def resolve_user(user_id) do
     {:ok, pid} = SessionService.lookup({SessionService, user_id})
     %SessionService{user: user} = SessionService.get_state(pid)
 
     {:ok, user}
   end
-
-  def resolve_user(_args, _context), do: {:error, "Not Authenticated"}
 
   @spec get_max_age :: integer()
   def get_max_age(), do: @max_age

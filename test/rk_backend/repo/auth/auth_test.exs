@@ -40,11 +40,6 @@ defmodule RkBackend.Repo.AuthTest do
       user
     end
 
-    test "list_users/0 returns all users" do
-      user_fixture(@valid_args)
-      assert {:ok, [%User{}]} = Auth.list_users(nil, nil, nil)
-    end
-
     test "store_user/1 with valid data creates a user" do
       role = role_fixture()
 
@@ -72,8 +67,7 @@ defmodule RkBackend.Repo.AuthTest do
         @valid_args
         |> Map.put(:role_id, role.id)
 
-      args = %{user_details: valid_args}
-      assert {:ok, user = %User{}} = Auth.store_user(nil, args, nil)
+      assert {:ok, user = %User{}} = Auth.store_user(valid_args)
       assert user.role_id == role.id
       assert user.full_name == @valid_args.full_name
     end
@@ -82,7 +76,7 @@ defmodule RkBackend.Repo.AuthTest do
       role_fixture()
 
       args = %{user_details: @invalid_args}
-      assert {:error, changeset} = Auth.store_user(nil, args, nil)
+      assert {:error, changeset} = Auth.store_user(args)
     end
 
     test "get_user!/1 returns the user with given id" do
@@ -109,17 +103,8 @@ defmodule RkBackend.Repo.AuthTest do
         @update_args
         |> Map.put(:id, user.id)
 
-      assert {:ok, user = %User{}} = Auth.update_user(%{user_update_details: update_args}, nil)
+      assert {:ok, user = %User{}} = Auth.update_user(user, update_args)
       assert user.password == "password2"
-    end
-
-    test "update_user/2 with user not found" do
-      update_args =
-        @update_args
-        |> Map.put(:id, -1)
-
-      assert {:error, reason} = Auth.update_user(%{user_update_details: update_args}, nil)
-      assert reason == "ID: -1 not found"
     end
 
     test "update_user/2 with bad update" do
@@ -129,7 +114,7 @@ defmodule RkBackend.Repo.AuthTest do
         @invalid_args
         |> Map.put(:id, user.id)
 
-      assert {:error, reason} = Auth.update_user(%{user_update_details: update_args}, nil)
+      assert {:error, reason} = Auth.update_user(user, update_args)
       assert reason = "password_confirmation: does not match password\n"
     end
 
@@ -137,11 +122,6 @@ defmodule RkBackend.Repo.AuthTest do
       user = user_fixture()
       assert {:ok, %User{}} = Auth.delete_user(user)
       assert_raise Ecto.NoResultsError, fn -> Auth.get_user!(user.id) end
-    end
-
-    test "change_user/1 returns a user changeset" do
-      user = user_fixture()
-      assert %Ecto.Changeset{} = Auth.change_user(user)
     end
 
     test "find_user_by_email/1 successful" do
@@ -168,11 +148,6 @@ defmodule RkBackend.Repo.AuthTest do
       role
     end
 
-    test "list_roles/0 returns all roles" do
-      role_fixture()
-      assert {:ok, [%Role{} | tail]} = Auth.list_roles(nil, nil, nil)
-    end
-
     test "get_role!/1 returns the role with given id" do
       role = role_fixture()
       assert Auth.get_role!(role.id) == role
@@ -188,12 +163,12 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "store_role/3 successful" do
-      assert {:ok, %Role{} = role} = Auth.store_role(nil, @valid_args, nil)
+      assert {:ok, %Role{} = role} = Auth.store_role(@valid_args)
       assert role.type == "USER"
     end
 
     test "store_role/3 unsuccessful" do
-      assert {:error, _reason} = Auth.store_role(nil, @invalid_args, nil)
+      assert {:error, _reason} = Auth.store_role(@invalid_args)
     end
 
     test "update_role/2 with valid data updates the role" do
