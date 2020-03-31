@@ -148,7 +148,7 @@ defmodule RkBackend.Repo.Complaint do
       %Reklama{} = reklama ->
         reklama
         |> Repo.dynamically_preload(args)
-        |> Reklama.update_changeset(args)
+        |> Reklama.changeset(args)
         |> Repo.update()
 
       nil ->
@@ -196,7 +196,7 @@ defmodule RkBackend.Repo.Complaint do
       %Topic{} = topic ->
         topic
         |> Repo.dynamically_preload(args)
-        |> Topic.update_changeset(args)
+        |> Topic.changeset(args)
         |> Repo.update()
 
       nil ->

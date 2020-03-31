@@ -199,7 +199,7 @@ defmodule RkBackend.Repo.AuthTest do
         @invalid_args
         |> Map.put(:id, role.id)
 
-      assert_raise Postgrex.Error, fn -> Auth.update_role(invalid_args) end
+      assert {:error, %Ecto.Changeset{}} = Auth.update_role(invalid_args)
     end
 
     test "delete_role/1 deletes the role" do
