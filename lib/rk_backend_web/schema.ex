@@ -3,7 +3,7 @@ defmodule RkBackendWeb.Schema do
 
   def context(ctx) do
     loader =
-      Dataloader.new
+      Dataloader.new()
       |> Dataloader.add_source(RkBackend, RkBackend.rk_data())
 
     Map.put(ctx, :loader, loader)

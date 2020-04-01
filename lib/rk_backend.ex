@@ -14,5 +14,4 @@ defmodule RkBackend do
   def query(queryable, _params) do
     queryable
   end
-
 end
