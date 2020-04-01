@@ -1,6 +1,7 @@
 defmodule RkBackendWeb.Schema.Types.AuthTypes do
   use Absinthe.Schema.Notation
-  use Absinthe.Ecto, repo: RkBackend.Repo
+
+  import Absinthe.Resolution.Helpers, only: [dataloader: 1]
 
   @moduledoc """
   Auth Types supported by GraphQL in this application
@@ -33,7 +34,7 @@ defmodule RkBackendWeb.Schema.Types.AuthTypes do
     field :id, :id
     field :email, :string
     field :full_name, :string
-    field :role, :role, resolve: assoc(:role)
+    field :role, :role, resolve: dataloader(RkBackend)
 
     interface(:user_entity)
   end
@@ -43,7 +44,7 @@ defmodule RkBackendWeb.Schema.Types.AuthTypes do
     field :id, :id
     field :email, :string
     field :full_name, :string
-    field :role, :role, resolve: assoc(:role)
+    field :role, :role, resolve: dataloader(RkBackend)
     field :token, :string
 
     interface(:user_entity)

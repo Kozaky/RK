@@ -1,6 +1,18 @@
 defmodule RkBackendWeb.Schema do
   use Absinthe.Schema
 
+  def context(ctx) do
+    loader =
+      Dataloader.new()
+      |> Dataloader.add_source(RkBackend, RkBackend.rk_data())
+
+    Map.put(ctx, :loader, loader)
+  end
+
+  def plugins do
+    [Absinthe.Middleware.Dataloader] ++ Absinthe.Plugin.defaults()
+  end
+
   @moduledoc """
   Endpoints supported by GraphQL in this application
   """
