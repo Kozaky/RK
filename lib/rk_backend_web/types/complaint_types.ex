@@ -1,6 +1,7 @@
 defmodule RkBackendWeb.Schema.Types.ComplaintTypes do
   use Absinthe.Schema.Notation
-  use Absinthe.Ecto, repo: RkBackend.Repo
+
+  import Absinthe.Resolution.Helpers, only: [dataloader: 1]
 
   @moduledoc """
   Complaint Types supported by GraphQL in this application
@@ -11,10 +12,10 @@ defmodule RkBackendWeb.Schema.Types.ComplaintTypes do
     field :title, :string
     field :content, :string
     field :inserted_at, :datetime
-    field :user, :user, resolve: assoc(:user)
-    field :topic, :topic, resolve: assoc(:topic)
-    field :messages, list_of(:message), resolve: assoc(:messages)
-    field :images, list_of(:image), resolve: assoc(:images)
+    field :user, :user, resolve: dataloader(RkBackend)
+    field :topic, :topic, resolve: dataloader(RkBackend)
+    field :messages, list_of(:message), resolve: dataloader(RkBackend)
+    field :images, list_of(:image), resolve: dataloader(RkBackend)
   end
 
   object :paginated_reklama do
@@ -40,8 +41,8 @@ defmodule RkBackendWeb.Schema.Types.ComplaintTypes do
     field :id, :id
     field :content, :string
     field :inserted_at, :datetime
-    field :user, :user, resolve: assoc(:user)
-    field :reklama, :reklama, resolve: assoc(:reklama)
+    field :user, :user, resolve: dataloader(RkBackend)
+    field :reklama, :reklama, resolve: dataloader(RkBackend)
   end
 
   input_object :reklama_details do

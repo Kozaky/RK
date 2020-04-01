@@ -68,7 +68,7 @@ defmodule RkBackendWeb.Schema.Queries.AuthQueries do
       middleware(RkBackend.Middlewares.HandleErrors)
     end
 
-    @desc "Update user's role"
+    @desc "Update user ADMIN"
     field :update_users_role, :user do
       arg(:user_update_role, non_null(:user_update_role))
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])

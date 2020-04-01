@@ -59,34 +59,25 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
     end
   end
 
-  def update_user(user_update, _info) do
-    try do
-      with user_update = %{} <- get_user_update(user_update),
-           user = %User{} <- Repo.get(User, user_update.id),
-           {:ok, user} <- Auth.update_user(user, user_update) do
-        {:ok, user}
-      else
-        nil ->
-          user_update = get_user_update(user_update)
-          {:error, "ID: #{user_update.id} not found"}
+  def update_user(args, _info) do
+    update_details = get_user_update_details(args)
 
-        {:error, errors} ->
-          errors = Utils.errors_to_string(errors)
-          Logger.error(errors)
-          {:error, errors}
-      end
-    rescue
-      ArgumentError ->
-        Logger.error("Invalid argument given")
-        {:error, "Invalid argument given"}
+    case Auth.update_user(update_details) do
+      {:ok, user} ->
+        {:ok, user}
+
+      {:error, errors} ->
+        errors = Utils.errors_to_string(errors)
+        Logger.error(errors)
+        {:error, errors}
     end
   end
 
-  defp get_user_update(%{user_update_details: user_update}) do
+  defp get_user_update_details(%{user_update_details: user_update}) do
     user_update
   end
 
-  defp get_user_update(%{user_update_role: user_update}) do
+  defp get_user_update_details(%{user_update_role: user_update}) do
     user_update
   end
 
