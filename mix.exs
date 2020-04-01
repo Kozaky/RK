@@ -41,7 +41,7 @@ defmodule RkBackend.MixProject do
       {:gettext, "~> 0.17.0"},
       {:plug_cowboy, "~> 2.1.0"},
       {:absinthe, "~> 1.4.16"},
-      {:absinthe_ecto, "~> 0.1.3"},
+      {:dataloader, "~> 1.0.0"},
       {:absinthe_plug, "~> 1.4.7"},
       {:jason, "~> 1.1.2"},
       {:logger_file_backend, "~> 0.0.11"},
