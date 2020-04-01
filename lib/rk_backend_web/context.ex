@@ -1,5 +1,4 @@
 defmodule RkBackendWeb.Context do
-
   @moduledoc """
     Context for RkBackendWeb
   """
