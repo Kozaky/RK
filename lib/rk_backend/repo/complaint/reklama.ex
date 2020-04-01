@@ -2,8 +2,6 @@ defmodule RkBackend.Repo.Complaint.Reklama do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias RkBackend.Repo.Complaint.Reklama.ReklamaImage
-
   @moduledoc """
   Reklama Entity and basic functions
   """
@@ -30,17 +28,5 @@ defmodule RkBackend.Repo.Complaint.Reklama do
     |> foreign_key_constraint(:topic_id)
     |> foreign_key_constraint(:user_id)
     |> validate_required(@required)
-  end
-
-  @update_required []
-  @update_optional [:title, :content, :user_id, :topic_id]
-  @doc false
-  def update_changeset(reklama, args) do
-    reklama
-    |> cast(args, @update_required ++ @update_optional)
-    |> cast_assoc(:images, required: false, with: &ReklamaImage.update_changeset/2)
-    |> foreign_key_constraint(:topic_id)
-    |> foreign_key_constraint(:user_id)
-    |> validate_required(@update_required)
   end
 end
