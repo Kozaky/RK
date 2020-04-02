@@ -21,8 +21,8 @@ defmodule Plugs.InjectDetect do
       {:ok, context} ->
         put_private(conn, :absinthe, %{context: context})
 
-      {:error, reason} ->
-        conn |> send_resp(403, reason) |> halt()
+      {:error, reason} when is_atom(reason) ->
+        conn |> send_resp(403, Atom.to_string(reason)) |> halt()
 
       _ ->
         conn |> send_resp(400, "Bad request") |> halt()
@@ -44,17 +44,7 @@ defmodule Plugs.InjectDetect do
          {:ok, _pid} <- SessionService.lookup({SessionService, user_id}) do
       {:ok, user_id}
     else
-      {:error, :expired} ->
-        {:error, "Session Expired"}
-
-      {:error, :invalid} ->
-        {:error, "Invalid Token"}
-
-      {:error, :not_found} ->
-        {:error, "Session not found"}
-
-      {:error, reason} ->
-        {:error, reason}
+      error -> error
     end
   end
 end
