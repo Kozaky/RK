@@ -49,4 +49,8 @@ defmodule RkBackendWeb.Schema do
     import_fields(:auth_mutations)
     import_fields(:complaint_mutations)
   end
+
+  def middleware(middleware, _field, _object) do
+    Enum.map(middleware, &RkBackend.Middlewares.HandleErrors.add_error_handling/1)
+  end
 end
