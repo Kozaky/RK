@@ -152,7 +152,7 @@ defmodule RkBackend.Repo.Complaint do
         |> Repo.update()
 
       nil ->
-        {:error, "Reklama not found"}
+        {:error, :not_found}
     end
   end
 
@@ -200,7 +200,7 @@ defmodule RkBackend.Repo.Complaint do
         |> Repo.update()
 
       nil ->
-        {:error, "Topic not found"}
+        {:error, :not_found}
     end
   end
 

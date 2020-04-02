@@ -81,7 +81,7 @@ defmodule RkBackend.Repo.AuthTest do
 
     test "get_user!/1 returns the user with given id" do
       user = user_fixture()
-      assert Auth.get_user!(user.id).id == user.id
+      assert Auth.get_user(user.id).id == user.id
     end
 
     test "update_user/2 with valid data updates the user" do
@@ -131,7 +131,7 @@ defmodule RkBackend.Repo.AuthTest do
     test "delete_user/1 deletes the user" do
       user = user_fixture()
       assert {:ok, %User{}} = Auth.delete_user(user)
-      assert_raise Ecto.NoResultsError, fn -> Auth.get_user!(user.id) end
+      assert Auth.get_user(user.id) == nil
     end
 
     test "find_user_by_email/1 successful" do
@@ -140,7 +140,7 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "find_user_by_email/1 unsuccessful" do
-      assert {:error, "User not found"} = Auth.find_user_by_email("notFound@gmail.com")
+      assert {:error, :not_found} = Auth.find_user_by_email("notFound@gmail.com")
     end
   end
 
