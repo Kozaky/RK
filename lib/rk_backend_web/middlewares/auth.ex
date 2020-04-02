@@ -24,12 +24,12 @@ defmodule RkBackend.Middlewares.Auth do
 
       false ->
         resolution
-        |> Absinthe.Resolution.put_result({:error, "Not enough privileges"})
+        |> Absinthe.Resolution.put_result({:error, :not_authorized})
     end
   end
 
   def call(resolution, _config) do
     resolution
-    |> Absinthe.Resolution.put_result({:error, "Not authenticated"})
+    |> Absinthe.Resolution.put_result({:error, :not_authenticated})
   end
 end

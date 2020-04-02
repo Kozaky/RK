@@ -11,14 +11,12 @@ defmodule RkBackendWeb.Schema.Queries.AuthQueries do
     field :resolve_user, :user do
       middleware(RkBackend.Middlewares.Auth)
       resolve(&AuthResolvers.resolve_user/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Get a list of users"
     field :users, list_of(:user) do
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
       resolve(&AuthResolvers.list_users/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Get an user"
@@ -26,14 +24,12 @@ defmodule RkBackendWeb.Schema.Queries.AuthQueries do
       arg(:id, non_null(:integer))
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
       resolve(&AuthResolvers.get_user/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Get a list of available roles"
     field :roles, list_of(:role) do
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
       resolve(&AuthResolvers.list_roles/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
   end
 
@@ -43,21 +39,18 @@ defmodule RkBackendWeb.Schema.Queries.AuthQueries do
       arg(:email, non_null(:string))
       arg(:password, non_null(:string))
       resolve(&AuthResolvers.sign_in/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Sign Out"
     field :sign_out, :string do
       middleware(RkBackend.Middlewares.Auth)
       resolve(&AuthResolvers.sign_out/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Create an user"
     field :create_user, :user do
       arg(:user_details, non_null(:user_details))
       resolve(&AuthResolvers.store_user/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Update an user"
@@ -65,7 +58,6 @@ defmodule RkBackendWeb.Schema.Queries.AuthQueries do
       arg(:user_update_details, non_null(:user_update_details))
       middleware(RkBackend.Middlewares.Auth)
       resolve(&AuthResolvers.update_user/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Update user ADMIN"
@@ -73,7 +65,6 @@ defmodule RkBackendWeb.Schema.Queries.AuthQueries do
       arg(:user_update_role, non_null(:user_update_role))
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
       resolve(&AuthResolvers.update_user/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Create a role"
@@ -81,7 +72,6 @@ defmodule RkBackendWeb.Schema.Queries.AuthQueries do
       arg(:type, non_null(:string))
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
       resolve(&AuthResolvers.store_role/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
   end
 end

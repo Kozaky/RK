@@ -6,8 +6,6 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
   alias RkBackend.Repo.Complaint.Message
   alias RkBackend.Utils
 
-  require Logger
-
   @moduledoc """
   Module with resolvers for Complaint queries and mutations
   """
@@ -21,7 +19,6 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
 
       {:error, errors} ->
         errors = Utils.errors_to_string(errors)
-        Logger.error(errors)
         {:error, errors}
     end
   end
@@ -32,28 +29,22 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
         Repo.delete(reklama)
 
       nil ->
-        {:error, "Reklama not found"}
+        {:error, :not_found}
     end
   end
 
   def list_reklamas(args, _info) do
-    case validate_args(args) do
-      {:ok, args} ->
-        reklamas = Complaint.list_reklamas(args)
-        {:ok, reklamas}
-
-      {:error, msg} ->
-        {:error, msg}
-    end
+    reklamas = Complaint.list_reklamas(args)
+    {:ok, reklamas}
   end
 
   def get_reklama(%{id: id} = _args, _info) do
     case Repo.get(Reklama, id) do
-      {:ok, reklama} ->
+      %Reklama{} = reklama ->
         {:ok, reklama}
 
       nil ->
-        {:error, "This reklama could not be found"}
+        {:error, :not_found}
     end
   end
 
@@ -64,7 +55,6 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
 
       {:error, errors} ->
         errors = Utils.errors_to_string(errors)
-        Logger.error(errors)
         {:error, errors}
     end
   end
@@ -76,7 +66,6 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
 
       {:error, errors} ->
         errors = Utils.errors_to_string(errors)
-        Logger.error(errors)
         {:error, errors}
     end
   end
@@ -88,7 +77,6 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
 
       {:error, errors} ->
         errors = Utils.errors_to_string(errors)
-        Logger.error(errors)
         {:error, errors}
     end
   end
@@ -99,7 +87,7 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
         Repo.delete(topic)
 
       nil ->
-        {:error, "Topic not found"}
+        {:error, :not_found}
     end
   end
 
@@ -112,7 +100,6 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
 
       {:error, errors} ->
         errors = Utils.errors_to_string(errors)
-        Logger.error(errors)
         {:error, errors}
     end
   end
@@ -123,23 +110,7 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
         Repo.delete(message)
 
       nil ->
-        {:error, "Message not found"}
+        {:error, :not_found}
     end
-  end
-
-  defp validate_args(args) do
-    errors =
-      []
-      |> validate_page(args)
-
-    if Enum.empty?(errors), do: {:ok, args}, else: {:error, errors}
-  end
-
-  defp validate_page(errors, %{page: page}) when page > 0 do
-    errors
-  end
-
-  defp validate_page(errors, _args) do
-    ["Page: must be bigger than 0" | errors]
   end
 end
