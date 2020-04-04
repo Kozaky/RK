@@ -82,7 +82,7 @@ defmodule RkBackendWeb.Schema do
   defp put_file(args, _upload, _file_bytes_key, _filename_key) do
     args
   end
-  
+
   def middleware(middleware, _field, _object) do
     Enum.map(middleware, &RkBackend.Middlewares.HandleErrors.add_error_handling/1)
   end

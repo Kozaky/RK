@@ -136,5 +136,4 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
   def put_images(args) do
     args
   end
-  
 end
