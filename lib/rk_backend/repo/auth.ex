@@ -14,18 +14,18 @@ defmodule RkBackend.Repo.Auth do
   @doc """
   Gets a single user.
 
-  Raises `Ecto.NoResultsError` if the User does not exist.
+  Returns nil if not found
 
   ## Examples
 
-      iex> get_user!(123)
+      iex> get_user(123)
       %User{}
 
-      iex> get_user!(456)
-      ** (Ecto.NoResultsError)
+      iex> get_user(456)
+      nil
 
   """
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_user(id), do: Repo.get(User, id)
 
   @doc """
   Stores an user.
@@ -73,7 +73,7 @@ defmodule RkBackend.Repo.Auth do
         |> Repo.update()
 
       nil ->
-        {:error, "User not found"}
+        {:error, :not_found}
     end
   end
 
@@ -107,7 +107,7 @@ defmodule RkBackend.Repo.Auth do
   """
   def find_user_by_email(email) when is_binary(email) do
     case Repo.get_by(User, email: email) do
-      nil -> {:error, "User not found"}
+      nil -> {:error, :not_found}
       user -> {:ok, user}
     end
   end
@@ -169,7 +169,7 @@ defmodule RkBackend.Repo.Auth do
         |> Repo.update()
 
       nil ->
-        {:error, "Role not found"}
+        {:error, :not_found}
     end
   end
 

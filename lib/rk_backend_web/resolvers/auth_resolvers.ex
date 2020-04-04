@@ -16,10 +16,6 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
     SignIn.sign_in(email, password)
   end
 
-  def sign_in(_args, _info) do
-    {:error, "Arguments error"}
-  end
-
   def sign_out(_arg, %{context: %{user_id: user_id}}) do
     SignIn.sign_out(user_id)
   end
@@ -31,20 +27,16 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
   def resolve_user(_args, _context), do: {:error, "Not Authenticated"}
 
   def list_users(_args, _info) do
-    try do
-      {:ok, Repo.all(User)}
-    rescue
-      Ecto.NoResultsError ->
-        {:error, :rescued}
-    end
+    {:ok, Repo.all(User)}
   end
 
   def get_user(%{id: id} = _args, _info) do
-    try do
-      {:ok, Auth.get_user!(id)}
-    rescue
-      Ecto.NoResultsError ->
-        {:error, "ID: #{id} not found"}
+    case Auth.get_user(id) do
+      %User{} = user ->
+        {:ok, user}
+
+      nil ->
+        {:error, :not_found}
     end
   end
 
@@ -58,7 +50,6 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
 
       {:error, errors} ->
         errors = Utils.errors_to_string(errors)
-        Logger.error(errors)
         {:error, errors}
     end
   end
@@ -73,7 +64,6 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
 
       {:error, errors} ->
         errors = Utils.errors_to_string(errors)
-        Logger.error(errors)
         {:error, errors}
     end
   end
@@ -87,12 +77,7 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
   end
 
   def list_roles(_args, _info) do
-    try do
-      {:ok, Repo.all(Role)}
-    rescue
-      Ecto.NoResultsError ->
-        {:error, :rescued}
-    end
+    {:ok, Repo.all(Role)}
   end
 
   def store_role(args, _info) do
@@ -102,7 +87,6 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
 
       {:error, errors} ->
         errors = Utils.errors_to_string(errors)
-        Logger.error(errors)
         {:error, errors}
     end
   end
