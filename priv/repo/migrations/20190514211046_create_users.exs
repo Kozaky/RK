@@ -6,6 +6,8 @@ defmodule RkBackend.Repo.Migrations.CreateUsers do
       add :full_name, :string, null: false
       add :email, :string, null: false
       add :password_hash, :string, null: false
+      add :avatar_name, :string
+      add :avatar, :binary
 
       add :role_id, references(:roles), null: false
 
