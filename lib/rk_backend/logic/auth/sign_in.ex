@@ -47,6 +47,8 @@ defmodule RkBackend.Logic.Auth.SignIn do
       user = Repo.preload(user, :role)
       SessionService.start(user, token)
       {:ok, Map.merge(user, %{token: token})}
+    else
+      {:error, reason} -> {:error, reason}
     end
   end
 
@@ -65,7 +67,7 @@ defmodule RkBackend.Logic.Auth.SignIn do
     case SessionService.lookup({SessionService, user_id}) do
       {:ok, pid} ->
         SessionService.delete_session(pid)
-        {:ok, "Session Deleted"}
+        {:ok, :signed_out}
 
       {:error, reason} ->
         {:error, reason}

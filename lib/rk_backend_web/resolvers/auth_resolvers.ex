@@ -4,6 +4,7 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
   alias RkBackend.Repo.Auth.User
   alias RkBackend.Logic.Auth.SignIn
   alias RkBackend.Utils
+  alias RkBackendWeb.Schema
 
   require Logger
 
@@ -13,10 +14,6 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
 
   def sign_in(%{email: email, password: password}, _info) do
     SignIn.sign_in(email, password)
-  end
-
-  def sign_in(_args, _info) do
-    {:error, "Arguments error"}
   end
 
   def sign_out(_arg, %{context: %{user_id: user_id}}) do
@@ -30,45 +27,43 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
   def resolve_user(_args, _context), do: {:error, "Not Authenticated"}
 
   def list_users(_args, _info) do
-    try do
-      {:ok, Repo.all(User)}
-    rescue
-      Ecto.NoResultsError ->
-        {:error, :rescued}
-    end
+    {:ok, Repo.all(User)}
   end
 
   def get_user(%{id: id} = _args, _info) do
-    try do
-      {:ok, Auth.get_user!(id)}
-    rescue
-      Ecto.NoResultsError ->
-        {:error, "ID: #{id} not found"}
+    case Repo.get(User, id) do
+      %User{} = user ->
+        {:ok, user}
+
+      nil ->
+        {:error, :not_found}
     end
   end
 
   def store_user(args, _info) do
-    case Auth.store_user(args.user_details) do
+    args.user_details
+    |> Schema.put_upload(file_bytes: :avatar, filename: :avatar_name)
+    |> Auth.store_user()
+    |> case do
       {:ok, user} ->
         {:ok, user}
 
       {:error, errors} ->
         errors = Utils.errors_to_string(errors)
-        Logger.error(errors)
         {:error, errors}
     end
   end
 
   def update_user(args, _info) do
-    update_details = get_user_update_details(args)
-
-    case Auth.update_user(update_details) do
+    get_user_update_details(args)
+    |> Schema.put_upload(file_bytes: :avatar, filename: :avatar_name)
+    |> Auth.update_user()
+    |> case do
       {:ok, user} ->
         {:ok, user}
 
       {:error, errors} ->
         errors = Utils.errors_to_string(errors)
-        Logger.error(errors)
         {:error, errors}
     end
   end
@@ -82,22 +77,16 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
   end
 
   def list_roles(_args, _info) do
-    try do
-      {:ok, Repo.all(Role)}
-    rescue
-      Ecto.NoResultsError ->
-        {:error, :rescued}
-    end
+    {:ok, Repo.all(Role)}
   end
 
   def store_role(args, _info) do
     case Auth.store_role(args) do
-      {:ok, changeset} ->
-        {:ok, changeset}
+      {:ok, role} ->
+        {:ok, role}
 
       {:error, errors} ->
         errors = Utils.errors_to_string(errors)
-        Logger.error(errors)
         {:error, errors}
     end
   end

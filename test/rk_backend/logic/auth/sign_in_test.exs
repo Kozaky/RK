@@ -59,7 +59,7 @@ defmodule RkBackend.Logic.Auth.SignInTest do
       user = user_fixture()
 
       assert {:ok, _token} = SignIn.sign_in(user.email, user.password)
-      assert {:ok, "Session Deleted"} = SignIn.sign_out(user.id)
+      assert {:ok, :signed_out} = SignIn.sign_out(user.id)
     end
 
     test "sign_out/2 unsuccessful" do

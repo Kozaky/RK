@@ -49,4 +49,41 @@ defmodule RkBackendWeb.Schema do
     import_fields(:auth_mutations)
     import_fields(:complaint_mutations)
   end
+
+  @doc """
+  Use when you had to use Absinthe's upload type.
+
+  This method return a map compatible with Ecto's Schemas
+
+  ## Examples
+
+      iex> put_upload(%{image: %Upload{}}, file_bytes: :image, filename: :image_name)
+      %{
+        image_name: "Image Name",
+        image: [bytes]
+      }
+  """
+  def put_upload(%{} = args, [{:file_bytes, file_bytes_key}, {:filename, filename_key}]) do
+    {upload, _} = Map.pop(args, file_bytes_key)
+
+    args
+    |> put_file(upload, file_bytes_key, filename_key)
+  end
+
+  defp put_file(args, %{} = upload, file_bytes_key, filename_key) do
+    filename_value = upload.filename
+    {:ok, file_bytes_value} = File.read(upload.path)
+
+    args
+    |> Map.put(file_bytes_key, file_bytes_value)
+    |> Map.put(filename_key, filename_value)
+  end
+
+  defp put_file(args, _upload, _file_bytes_key, _filename_key) do
+    args
+  end
+
+  def middleware(middleware, _field, _object) do
+    Enum.map(middleware, &RkBackend.Middlewares.HandleErrors.add_error_handling/1)
+  end
 end

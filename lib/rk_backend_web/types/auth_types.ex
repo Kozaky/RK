@@ -16,6 +16,8 @@ defmodule RkBackendWeb.Schema.Types.AuthTypes do
     field :id, :id
     field :email, :string
     field :full_name, :string
+    field :avatar_name, :string
+    field :avatar, :base64
 
     field :role, :role do
       resolve(fn role, _, _ -> {:ok, role} end)
@@ -34,6 +36,8 @@ defmodule RkBackendWeb.Schema.Types.AuthTypes do
     field :id, :id
     field :email, :string
     field :full_name, :string
+    field :avatar_name, :string
+    field :avatar, :base64
     field :role, :role, resolve: dataloader(RkBackend)
 
     interface(:user_entity)
@@ -44,6 +48,8 @@ defmodule RkBackendWeb.Schema.Types.AuthTypes do
     field :id, :id
     field :email, :string
     field :full_name, :string
+    field :avatar_name, :string
+    field :avatar, :base64
     field :role, :role, resolve: dataloader(RkBackend)
     field :token, :string
 
@@ -55,6 +61,7 @@ defmodule RkBackendWeb.Schema.Types.AuthTypes do
     field :full_name, non_null(:string)
     field :password, non_null(:string)
     field :password_confirmation, non_null(:string)
+    field :avatar, :upload
   end
 
   input_object :user_update_details do
@@ -63,6 +70,7 @@ defmodule RkBackendWeb.Schema.Types.AuthTypes do
     field :full_name, :string
     field :password, :string
     field :password_confirmation, :string
+    field :avatar, :upload
   end
 
   input_object :user_update_role do
