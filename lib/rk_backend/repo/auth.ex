@@ -9,24 +9,6 @@ defmodule RkBackend.Repo.Auth do
   alias RkBackend.Repo.Auth.User
   alias RkBackend.Repo.Auth.Role
 
-  require Logger
-
-  @doc """
-  Gets a single user.
-
-  Returns nil if not found
-
-  ## Examples
-
-      iex> get_user(123)
-      %User{}
-
-      iex> get_user(456)
-      nil
-
-  """
-  def get_user(id), do: Repo.get(User, id)
-
   @doc """
   Stores an user.
 
@@ -78,22 +60,6 @@ defmodule RkBackend.Repo.Auth do
   end
 
   @doc """
-  Deletes an User.
-
-  ## Examples
-
-      iex> delete_user(user)
-      {:ok, %User{}}
-
-      iex> delete_user(user)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_user(%User{} = user) do
-    Repo.delete(user)
-  end
-
-  @doc """
   Returns an `%Auth.User{}` with the selected email.
 
   ## Examples
@@ -111,22 +77,6 @@ defmodule RkBackend.Repo.Auth do
       user -> {:ok, user}
     end
   end
-
-  @doc """
-  Gets a single role.
-
-  Raises `Ecto.NoResultsError` if the Role does not exist.
-
-  ## Examples
-
-      iex> get_role!(123)
-      %Role{}
-
-      iex> get_role!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_role!(id), do: Repo.get!(Role, id)
 
   @doc """
   Stores a role.
@@ -171,21 +121,5 @@ defmodule RkBackend.Repo.Auth do
       nil ->
         {:error, :not_found}
     end
-  end
-
-  @doc """
-  Deletes a Role.
-
-  ## Examples
-
-      iex> delete_role(role)
-      {:ok, %Role{}}
-
-      iex> delete_role(role)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_role(%Role{} = role) do
-    Repo.delete(role)
   end
 end

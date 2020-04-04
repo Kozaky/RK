@@ -81,7 +81,7 @@ defmodule RkBackend.Repo.AuthTest do
 
     test "get_user!/1 returns the user with given id" do
       user = user_fixture()
-      assert Auth.get_user(user.id).id == user.id
+      assert Repo.get(User, user.id).id == user.id
     end
 
     test "update_user/2 with valid data updates the user" do
@@ -144,8 +144,8 @@ defmodule RkBackend.Repo.AuthTest do
 
     test "delete_user/1 deletes the user" do
       user = user_fixture()
-      assert {:ok, %User{}} = Auth.delete_user(user)
-      assert Auth.get_user(user.id) == nil
+      assert {:ok, %User{}} = Repo.delete(user)
+      assert Repo.get(User, user.id) == nil
     end
 
     test "find_user_by_email/1 successful" do
@@ -174,7 +174,7 @@ defmodule RkBackend.Repo.AuthTest do
 
     test "get_role!/1 returns the role with given id" do
       role = role_fixture()
-      assert Auth.get_role!(role.id) == role
+      assert Repo.get(Role, role.id) == role
     end
 
     test "store_role/1 with valid data creates a role" do
@@ -214,12 +214,6 @@ defmodule RkBackend.Repo.AuthTest do
         |> Map.put(:id, role.id)
 
       assert {:error, %Ecto.Changeset{}} = Auth.update_role(invalid_args)
-    end
-
-    test "delete_role/1 deletes the role" do
-      role = role_fixture()
-      assert {:ok, %Role{}} = Auth.delete_role(role)
-      assert_raise Ecto.NoResultsError, fn -> Auth.get_role!(role.id) end
     end
   end
 end

@@ -31,7 +31,7 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
   end
 
   def get_user(%{id: id} = _args, _info) do
-    case Auth.get_user(id) do
+    case Repo.get(User, id) do
       %User{} = user ->
         {:ok, user}
 
@@ -82,8 +82,8 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
 
   def store_role(args, _info) do
     case Auth.store_role(args) do
-      {:ok, changeset} ->
-        {:ok, changeset}
+      {:ok, role} ->
+        {:ok, role}
 
       {:error, errors} ->
         errors = Utils.errors_to_string(errors)
