@@ -1,19 +1,39 @@
 defmodule RkBackend.Middlewares.HandleErrors do
-  @behaviour Absinthe.Middleware
+  require Logger
 
   @moduledoc """
   Middleware to map erroros into redable messages
   """
 
-  def call(resolution, _) do
-    %{resolution | errors: Enum.flat_map(resolution.errors, &handle_error/1)}
+  def add_error_handling(spec) do
+    fn res, config ->
+      spec
+      |> to_fun(res, config)
+      |> exec_safely(res)
+    end
   end
 
-  defp handle_error(%Ecto.Changeset{} = changeset) do
-    changeset
-    |> Ecto.Changeset.traverse_errors(fn {err, _opts} -> err end)
-    |> Enum.map(fn {k, v} -> "#{k}: #{v}" end)
+  defp to_fun({{module, function}, config}, res, _config) do
+    fn -> apply(module, function, [res, config]) end
   end
 
-  defp handle_error(error), do: [error]
+  defp to_fun({module, config}, res, _config) do
+    fn -> apply(module, :call, [res, config]) end
+  end
+
+  defp to_fun(module, res, config) when is_atom(module) do
+    fn -> apply(module, :call, [res, config]) end
+  end
+
+  defp to_fun(fun, res, config) when is_function(fun, 2) do
+    fn -> fun.(res, config) end
+  end
+
+  defp exec_safely(fun, res) do
+    fun.()
+  rescue
+    e ->
+      Logger.error(Exception.format(:error, e, __STACKTRACE__))
+      Absinthe.Resolution.put_result(res, {:error, Exception.message(e)})
+  end
 end
