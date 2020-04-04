@@ -117,6 +117,20 @@ defmodule RkBackend.Repo.AuthTest do
       assert user.password == "password2"
     end
 
+    test "update_user/2 with avatar" do
+      user = user_fixture()
+
+      update_args =
+        @update_args
+        |> Map.put(:id, user.id)
+        |> Map.put(:avatar_name, "avatar_name")
+        |> Map.put(:avatar, <<25,07,15>>)
+
+      assert {:ok, user = %User{}} = Auth.update_user(update_args)
+      assert user.avatar_name == "avatar_name"
+      assert user.avatar == <<25,07,15>>
+    end
+
     test "update_user/2 with bad update" do
       user = user_fixture()
 

@@ -5,6 +5,7 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
   alias RkBackend.Repo.Complaint.Topic
   alias RkBackend.Repo.Complaint.Message
   alias RkBackend.Utils
+  alias RkBackendWeb.Schema
 
   @moduledoc """
   Module with resolvers for Complaint queries and mutations
@@ -12,6 +13,7 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
 
   def store_reklama(args, %{context: %{user_id: user_id}}) do
     args = Map.put(args.reklama_details, :user_id, user_id)
+    args = put_images(args)
 
     case Complaint.store_reklama(args) do
       {:ok, reklama} ->
@@ -49,7 +51,10 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
   end
 
   def update_reklama(args, _info) do
-    case Complaint.update_reklama(args.update_reklama_details) do
+    args.update_reklama_details
+    |> put_images()
+    |> Complaint.update_reklama()
+    |> case do
       {:ok, reklama} ->
         {:ok, reklama}
 
@@ -60,7 +65,10 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
   end
 
   def store_topic(args, _info) do
-    case Complaint.store_topic(args.topic_details) do
+    args.topic_details
+    |> Schema.put_upload(file_bytes: :image, filename: :image_name)
+    |> Complaint.store_topic()
+    |> case do
       {:ok, topic} ->
         {:ok, topic}
 
@@ -71,7 +79,10 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
   end
 
   def update_topic(args, _info) do
-    case Complaint.update_topic(args.update_topic_details) do
+    args.topic_details
+    |> Schema.put_upload(file_bytes: :image, filename: :image_name)
+    |> Complaint.update_topic()
+    |> case do
       {:ok, topic} ->
         {:ok, topic}
 
@@ -113,4 +124,17 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
         {:error, :not_found}
     end
   end
+
+  def put_images(%{images: images} = args) do
+    args
+    |> Map.put(
+      :images,
+      Enum.map(images, &Schema.put_upload(&1, file_bytes: :image, filename: :name))
+    )
+  end
+
+  def put_images(args) do
+    args
+  end
+  
 end
