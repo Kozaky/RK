@@ -105,16 +105,12 @@ defmodule RkBackend.Repo.ComplaintTest do
     test "store_reklama/0 with images" do
       images = [
         %{
-          image: %{
-            filename: "image1",
-            path: "test/resources/images/image1.png"
-          }
+          image: <<0, 255, 42>>,
+          name: "image"
         },
         %{
-          image: %{
-            filename: "image1",
-            path: "test/resources/images/image1.png"
-          }
+          image: <<0, 255, 42>>,
+          name: "image"
         }
       ]
 
@@ -191,16 +187,12 @@ defmodule RkBackend.Repo.ComplaintTest do
     test "update_reklama/1 with associations" do
       images = [
         %{
-          image: %{
-            filename: "image1",
-            path: "test/resources/images/image1.png"
-          }
+          image: <<0, 255, 42>>,
+          name: "image"
         },
         %{
-          image: %{
-            filename: "image1",
-            path: "test/resources/images/image1.png"
-          }
+          image: <<0, 255, 42>>,
+          name: "image"
         }
       ]
 
@@ -211,18 +203,14 @@ defmodule RkBackend.Repo.ComplaintTest do
 
       images_update = [
         %{
-          image: %{
-            id: Enum.at(reklama.images, 0).id,
-            filename: "image_updated_1",
-            path: "test/resources/images/image1.png"
-          }
+          id: Enum.at(reklama.images, 0).id,
+          image: <<0, 255, 42>>,
+          name: "image_updated_1"
         },
         %{
-          image: %{
-            id: Enum.at(reklama.images, 1).id,
-            filename: "image_updated_2",
-            path: "test/resources/images/image1.png"
-          }
+          id: Enum.at(reklama.images, 1).id,
+          image: <<0, 255, 42>>,
+          name: "image_updated_2"
         }
       ]
 
@@ -240,16 +228,12 @@ defmodule RkBackend.Repo.ComplaintTest do
     test "update_reklama/1 with empty associations" do
       images = [
         %{
-          image: %{
-            filename: "image1",
-            path: "test/resources/images/image1.png"
-          }
+          image: <<0, 255, 42>>,
+          name: "image"
         },
         %{
-          image: %{
-            filename: "image1",
-            path: "test/resources/images/image1.png"
-          }
+          image: <<0, 255, 42>>,
+          name: "image"
         }
       ]
 
@@ -275,10 +259,8 @@ defmodule RkBackend.Repo.ComplaintTest do
     @valid_args %{
       title: "Some Title",
       description: "Some Description",
-      image: %{
-        filename: "image1",
-        path: "test/resources/images/image1.png"
-      }
+      image: <<0, 255, 42>>,
+      image_name: "image1"
     }
     @update_args %{
       title: "Updated Title",
@@ -326,10 +308,8 @@ defmodule RkBackend.Repo.ComplaintTest do
 
       update =
         Map.put(@update_args, :id, topic.id)
-        |> Map.put(:image, %{
-          filename: "imageUpdated",
-          path: "test/resources/images/image1.png"
-        })
+        |> Map.put(:image, <<0, 255, 42>>)
+        |> Map.put(:image_name, "imageUpdated")
 
       assert {:ok, %Topic{image_name: "imageUpdated"}} = Complaint.update_topic(update)
     end

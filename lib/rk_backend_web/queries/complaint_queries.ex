@@ -12,7 +12,6 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries do
       arg(:id, non_null(:integer))
       middleware(RkBackend.Middlewares.Auth)
       resolve(&ComplaintResolvers.get_reklama/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Get a list of reklamas"
@@ -23,7 +22,6 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries do
       arg(:per_page, non_null(:integer))
       middleware(RkBackend.Middlewares.Auth)
       resolve(&ComplaintResolvers.list_reklamas/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
   end
 
@@ -33,7 +31,6 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries do
       arg(:reklama_details, non_null(:reklama_details))
       middleware(RkBackend.Middlewares.Auth)
       resolve(&ComplaintResolvers.store_reklama/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Update a reklama"
@@ -41,7 +38,6 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries do
       arg(:update_reklama_details, non_null(:update_reklama_details))
       middleware(RkBackend.Middlewares.Auth)
       resolve(&ComplaintResolvers.update_reklama/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Delete a reklama"
@@ -49,7 +45,6 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries do
       arg(:id, non_null(:integer))
       middleware(RkBackend.Middlewares.Auth)
       resolve(&ComplaintResolvers.delete_reklama/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Create a topic"
@@ -57,7 +52,6 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries do
       arg(:topic_details, non_null(:topic_details))
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
       resolve(&ComplaintResolvers.store_topic/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Update a topic"
@@ -65,7 +59,6 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries do
       arg(:update_topic_details, non_null(:update_topic_details))
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
       resolve(&ComplaintResolvers.update_topic/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Delete a topic"
@@ -73,7 +66,6 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries do
       arg(:id, non_null(:integer))
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
       resolve(&ComplaintResolvers.delete_topic/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Create a message"
@@ -81,7 +73,6 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries do
       arg(:message_details, non_null(:message_details))
       middleware(RkBackend.Middlewares.Auth)
       resolve(&ComplaintResolvers.store_message/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
 
     @desc "Delete a message"
@@ -89,7 +80,6 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries do
       arg(:id, non_null(:integer))
       middleware(RkBackend.Middlewares.Auth)
       resolve(&ComplaintResolvers.delete_message/2)
-      middleware(RkBackend.Middlewares.HandleErrors)
     end
   end
 end
