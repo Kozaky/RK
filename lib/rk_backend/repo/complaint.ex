@@ -25,29 +25,9 @@ defmodule RkBackend.Repo.Complaint do
 
   """
   def store_reklama(args) do
-    args = put_images(args)
-
     %Reklama{}
     |> Reklama.changeset(args)
     |> Repo.insert()
-  end
-
-  defp put_images(%{images: images} = args) when is_list(images) do
-    images =
-      Enum.map(args.images, fn image_detail ->
-        {id, _result} = Map.pop(image_detail, :id)
-        name = image_detail.image.filename
-        {:ok, image_binary} = File.read(image_detail.image.path)
-
-        %{id: id, name: name, image: image_binary}
-      end)
-
-    args
-    |> Map.put(:images, images)
-  end
-
-  defp put_images(args) do
-    args
   end
 
   @doc """
@@ -142,7 +122,6 @@ defmodule RkBackend.Repo.Complaint do
   """
   def update_reklama(args) do
     {id, args} = Map.pop(args, :id)
-    args = put_images(args)
 
     case Repo.get(Reklama, id) do
       %Reklama{} = reklama ->
@@ -169,8 +148,6 @@ defmodule RkBackend.Repo.Complaint do
 
   """
   def store_topic(args) do
-    args = put_image(args)
-
     %Topic{}
     |> Topic.changeset(args)
     |> Repo.insert()
@@ -190,7 +167,6 @@ defmodule RkBackend.Repo.Complaint do
   """
   def update_topic(args) do
     {id, args} = Map.pop(args, :id)
-    args = put_image(args)
 
     case Repo.get(Topic, id) do
       %Topic{} = topic ->
@@ -202,19 +178,6 @@ defmodule RkBackend.Repo.Complaint do
       nil ->
         {:error, :not_found}
     end
-  end
-
-  defp put_image(%{image: image} = args) do
-    image_name = image.filename
-    {:ok, image_binary} = File.read(image.path)
-
-    args
-    |> Map.put(:image, image_binary)
-    |> Map.put(:image_name, image_name)
-  end
-
-  defp put_image(args) do
-    args
   end
 
   @doc """

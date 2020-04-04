@@ -4,6 +4,7 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
   alias RkBackend.Repo.Auth.User
   alias RkBackend.Logic.Auth.SignIn
   alias RkBackend.Utils
+  alias RkBackendWeb.Schema
 
   require Logger
 
@@ -40,7 +41,10 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
   end
 
   def store_user(args, _info) do
-    case Auth.store_user(args.user_details) do
+    args.user_details
+    |> Schema.put_upload(file_bytes: :avatar, filename: :avatar_name)
+    |> Auth.store_user()
+    |> case do
       {:ok, user} ->
         {:ok, user}
 
@@ -51,9 +55,10 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
   end
 
   def update_user(args, _info) do
-    update_details = get_user_update_details(args)
-
-    case Auth.update_user(update_details) do
+    get_user_update_details(args)
+    |> Schema.put_upload(file_bytes: :avatar, filename: :avatar_name)
+    |> Auth.update_user()
+    |> case do
       {:ok, user} ->
         {:ok, user}
 
