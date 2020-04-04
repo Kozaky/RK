@@ -12,6 +12,8 @@ defmodule RkBackend.Repo.Auth.User do
     field :password_hash, :string
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
+    field :avatar_name, :string
+    field :avatar, :binary
 
     belongs_to :role, RkBackend.Repo.Auth.Role
     has_many :reklamas, RkBackend.Repo.Complaint.Reklama
@@ -21,7 +23,7 @@ defmodule RkBackend.Repo.Auth.User do
   end
 
   @required [:email, :full_name, :password, :password_confirmation, :role_id]
-  @optional []
+  @optional [:avatar, :avatar_name]
   @doc false
   def changeset(user, args) do
     user
