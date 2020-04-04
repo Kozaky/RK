@@ -10,8 +10,6 @@ defmodule RkBackend.Repo.Complaint do
   alias RkBackend.Repo.Complaint.Topic
   alias RkBackend.Repo.Complaint.Message
 
-  require Logger
-
   @doc """
   Stores a reklama.
 

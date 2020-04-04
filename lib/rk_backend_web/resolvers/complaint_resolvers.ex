@@ -12,10 +12,11 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
   """
 
   def store_reklama(args, %{context: %{user_id: user_id}}) do
-    args = Map.put(args.reklama_details, :user_id, user_id)
-    args = put_images(args)
-
-    case Complaint.store_reklama(args) do
+    args.reklama_details
+    |> Map.put(:user_id, user_id)
+    |> put_images()
+    |> Complaint.store_reklama()
+    |> case do
       {:ok, reklama} ->
         {:ok, reklama}
 
@@ -103,9 +104,10 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
   end
 
   def store_message(args, %{context: %{user_id: user_id}}) do
-    args = Map.put(args.message_details, :user_id, user_id)
-
-    case Complaint.store_message(args) do
+    args.message_details
+    |> Map.put(:user_id, user_id)
+    |> Complaint.store_message()
+    |> case do
       {:ok, message} ->
         {:ok, message}
 
@@ -125,7 +127,7 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
     end
   end
 
-  def put_images(%{images: images} = args) do
+  defp put_images(%{images: images} = args) do
     args
     |> Map.put(
       :images,
@@ -133,7 +135,7 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
     )
   end
 
-  def put_images(args) do
+  defp put_images(args) do
     args
   end
 end
