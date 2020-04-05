@@ -1,7 +1,7 @@
 defmodule RkBackend.Repo.Migrations.CreateRoles do
   use Ecto.Migration
 
-  alias RkBackend.Repo.Auth
+  alias RkBackend.Repo.Auth.Roles
 
   def change do
     create table(:roles) do
@@ -23,6 +23,6 @@ defmodule RkBackend.Repo.Migrations.CreateRoles do
         type: "ADMIN"
       }
     ]
-    |> Enum.each(fn role -> Auth.store_role(role) end)
+    |> Enum.each(fn role -> Roles.store_role(role) end)
   end
 end

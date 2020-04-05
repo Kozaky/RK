@@ -1,7 +1,7 @@
 defmodule RkBackend.Repo.Migrations.CreateUsers do
   use Ecto.Migration
 
-  alias RkBackend.Repo.Auth
+  alias RkBackend.Repo.Auth.Users
 
   def change do
     create table(:users) do
@@ -27,6 +27,6 @@ defmodule RkBackend.Repo.Migrations.CreateUsers do
       password: "adminRK",
       password_confirmation: "adminRK"
     }
-    |> Auth.store_user()
+    |> Users.store_user()
   end
 end
