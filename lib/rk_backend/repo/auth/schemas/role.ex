@@ -1,6 +1,8 @@
-defmodule RkBackend.Repo.Auth.Role do
+defmodule RkBackend.Repo.Auth.Schemas.Role do
   use Ecto.Schema
   import Ecto.Changeset
+
+  alias RkBackend.Repo.Auth.Schemas.User
 
   @moduledoc """
   Role Entity and basic functions
@@ -11,7 +13,7 @@ defmodule RkBackend.Repo.Auth.Role do
 
     timestamps()
 
-    has_many :users, RkBackend.Repo.Auth.User
+    has_many :users, User
   end
 
   @required [:type]
