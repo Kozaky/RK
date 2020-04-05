@@ -1,6 +1,8 @@
-defmodule RkBackend.Repo.Complaint.Reklama.ReklamaImage do
+defmodule RkBackend.Repo.Complaint.Schemas.Reklama.ReklamaImage do
   use Ecto.Schema
   import Ecto.Changeset
+
+  alias RkBackend.Repo.Complaint.Schemas.Reklama
 
   @moduledoc """
   ReklamaImage Entity and basic functions
@@ -10,7 +12,7 @@ defmodule RkBackend.Repo.Complaint.Reklama.ReklamaImage do
     field :name, :string
     field :image, :binary
 
-    belongs_to :reklama, RkBackend.Repo.Complaint.Reklama
+    belongs_to :reklama, Reklama
 
     timestamps()
   end
