@@ -1,24 +1,15 @@
-defmodule RkBackend.Logic.Auth.SessionServiceTest do
+defmodule RkBackend.Auth.SessionServiceTest do
   use ExUnit.Case
 
-  alias RkBackend.Logic.Auth.SessionService
-  alias RkBackend.Repo.Auth.User
-  alias RkBackend.Repo.Auth.Role
-  alias RkBackend.Repo.Auth
+  alias RkBackend.Auth.SessionService
+  alias RkBackend.Repo
+  alias RkBackend.Repo.Auth.Schemas.User
+  alias RkBackend.Repo.Auth.Schemas.Role
 
   @process {SessionService, 8080}
   @user %User{
     id: 8080
   }
-
-  def role_fixture(args \\ %{}) do
-    {:ok, role} =
-      args
-      |> Enum.into(%{type: "ADMIN"})
-      |> Auth.store_role()
-
-    role
-  end
 
   setup_all do
     # Explicitly get a connection before each test
@@ -26,7 +17,7 @@ defmodule RkBackend.Logic.Auth.SessionServiceTest do
     # Setting the shared mode must be done only after checkout
     Ecto.Adapters.SQL.Sandbox.mode(RkBackend.Repo, {:shared, self()})
 
-    state = %{@user | role: role_fixture()}
+    state = %{@user | role: Repo.get_by(Role, type: "USER")}
     {:ok, server_pid} = SessionService.start(state, "demoToken")
     {:ok, server: server_pid}
   end
