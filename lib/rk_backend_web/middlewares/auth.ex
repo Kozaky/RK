@@ -5,7 +5,7 @@ defmodule RkBackend.Middlewares.Auth do
   Middleware used to detect if an user is authenticated and has enough privileges
   """
 
-  alias RkBackend.Logic.Auth.SessionService
+  alias RkBackend.Auth.SessionService
 
   def init(opts) do
     opts

@@ -1,6 +1,10 @@
-defmodule RkBackend.Repo.Auth.User do
+defmodule RkBackend.Repo.Auth.Schemas.User do
   use Ecto.Schema
   import Ecto.Changeset
+
+  alias RkBackend.Repo.Auth.Schemas.Role
+  alias RkBackend.Repo.Complaint.Schemas.Reklama
+  alias RkBackend.Repo.Complaint.Schemas.Message
 
   @moduledoc """
   User Entity and basic functions
@@ -15,9 +19,9 @@ defmodule RkBackend.Repo.Auth.User do
     field :avatar_name, :string
     field :avatar, :binary
 
-    belongs_to :role, RkBackend.Repo.Auth.Role
-    has_many :reklamas, RkBackend.Repo.Complaint.Reklama
-    has_many :messages, RkBackend.Repo.Complaint.Message
+    belongs_to :role, Role
+    has_many :reklamas, Reklama
+    has_many :messages, Message
 
     timestamps()
   end
@@ -30,7 +34,7 @@ defmodule RkBackend.Repo.Auth.User do
     |> cast(args, @required ++ @optional)
     |> validate_required(@required)
     |> unique_constraint(:email)
-    |> validate_confirmation(:password, message: "does not match password")
+    |> validate_confirmation(:password, message: "password does not match")
     |> foreign_key_constraint(:role_id)
     |> put_password_hash
   end

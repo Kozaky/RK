@@ -1,10 +1,10 @@
-defmodule RkBackend.Logic.Auth.SessionServiceTest do
+defmodule RkBackend.Auth.SessionServiceTest do
   use ExUnit.Case
 
-  alias RkBackend.Logic.Auth.SessionService
-  alias RkBackend.Repo.Auth.User
-  alias RkBackend.Repo.Auth.Role
-  alias RkBackend.Repo.Auth
+  alias RkBackend.Auth.SessionService
+  alias RkBackend.Repo.Auth.Schemas.User
+  alias RkBackend.Repo.Auth.Schemas.Role
+  alias RkBackend.Repo.Auth.Roles
 
   @process {SessionService, 8080}
   @user %User{
@@ -15,7 +15,7 @@ defmodule RkBackend.Logic.Auth.SessionServiceTest do
     {:ok, role} =
       args
       |> Enum.into(%{type: "ADMIN"})
-      |> Auth.store_role()
+      |> Roles.store_role()
 
     role
   end

@@ -7,8 +7,8 @@ defmodule Plugs.InjectDetect do
 
   import Plug.Conn
 
-  alias RkBackend.Logic.Auth.SignIn
-  alias RkBackend.Logic.Auth.SessionService
+  alias RkBackend.Auth.SignIn
+  alias RkBackend.Auth.SessionService
 
   @impl Plug
   def init(opts) do

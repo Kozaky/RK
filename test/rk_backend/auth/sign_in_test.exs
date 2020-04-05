@@ -1,8 +1,10 @@
-defmodule RkBackend.Logic.Auth.SignInTest do
+defmodule RkBackend.Auth.SignInTest do
   use RkBackend.DataCase
 
-  alias RkBackend.Logic.Auth.SignIn
-  alias RkBackend.Repo.Auth
+  alias RkBackend.Auth.SignIn
+  alias RkBackend.Repo.Auth.Users
+  alias RkBackend.Repo.Auth.Roles
+  alias RkBackend.Repo.Auth.Schemas.User
 
   describe "SignIn" do
     @valid_args_role %{type: "USER"}
@@ -18,7 +20,7 @@ defmodule RkBackend.Logic.Auth.SignInTest do
       {:ok, role} =
         args
         |> Enum.into(@valid_args_role)
-        |> Auth.store_role()
+        |> Roles.store_role()
 
       role
     end
@@ -33,7 +35,7 @@ defmodule RkBackend.Logic.Auth.SignInTest do
       {:ok, user} =
         args
         |> Enum.into(valid_args)
-        |> Auth.store_user()
+        |> Users.store_user()
 
       user
     end
@@ -52,7 +54,7 @@ defmodule RkBackend.Logic.Auth.SignInTest do
       user = user_fixture()
 
       assert {:ok, _token} = SignIn.sign_in(user.email, user.password)
-      assert {:ok, %Auth.User{}} = SignIn.resolve_user(user.id)
+      assert {:ok, %User{}} = SignIn.resolve_user(user.id)
     end
 
     test "sign_out/2 successful" do

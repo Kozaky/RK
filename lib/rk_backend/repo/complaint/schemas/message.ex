@@ -1,6 +1,9 @@
-defmodule RkBackend.Repo.Complaint.Message do
+defmodule RkBackend.Repo.Complaint.Schemas.Message do
   use Ecto.Schema
   import Ecto.Changeset
+
+  alias RkBackend.Repo.Auth.Schemas.User
+  alias RkBackend.Repo.Complaint.Schemas.Reklama
 
   @moduledoc """
   Message Entity and basic functions
@@ -9,8 +12,8 @@ defmodule RkBackend.Repo.Complaint.Message do
   schema "messages" do
     field :content, :string
 
-    belongs_to :user, RkBackend.Repo.Auth.User
-    belongs_to :reklama, RkBackend.Repo.Complaint.Reklama
+    belongs_to :user, User
+    belongs_to :reklama, Reklama
 
     timestamps()
   end

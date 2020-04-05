@@ -1,6 +1,11 @@
-defmodule RkBackend.Repo.Complaint.Reklama do
+defmodule RkBackend.Repo.Complaint.Schemas.Reklama do
   use Ecto.Schema
   import Ecto.Changeset
+
+  alias RkBackend.Repo.Auth.Schemas.User
+  alias RkBackend.Repo.Complaint.Schemas.Topic
+  alias RkBackend.Repo.Complaint.Schemas.Message
+  alias RkBackend.Repo.Complaint.Schemas.Reklama.ReklamaImage
 
   @moduledoc """
   Reklama Entity and basic functions
@@ -10,10 +15,10 @@ defmodule RkBackend.Repo.Complaint.Reklama do
     field :title, :string
     field :content, :string
 
-    belongs_to :user, RkBackend.Repo.Auth.User
-    belongs_to :topic, RkBackend.Repo.Complaint.Topic
-    has_many :messages, RkBackend.Repo.Complaint.Message
-    has_many :images, RkBackend.Repo.Complaint.Reklama.ReklamaImage, on_replace: :delete
+    belongs_to :user, User
+    belongs_to :topic, Topic
+    has_many :messages, Message
+    has_many :images, ReklamaImage, on_replace: :delete
 
     timestamps()
   end

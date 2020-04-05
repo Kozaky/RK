@@ -1,14 +1,12 @@
-defmodule RkBackend.Repo.Complaint do
-  @moduledoc """
-  Provide functions to manage Complaint entities.
-  """
-
+defmodule RkBackend.Repo.Complaint.Reklamas do
   import Ecto.Query, warn: false
 
   alias RkBackend.Repo
-  alias RkBackend.Repo.Complaint.Reklama
-  alias RkBackend.Repo.Complaint.Topic
-  alias RkBackend.Repo.Complaint.Message
+  alias RkBackend.Repo.Complaint.Schemas.Reklama
+
+  @moduledoc """
+  Provide functions to manage Reklamas.
+  """
 
   @doc """
   Stores a reklama.
@@ -131,68 +129,5 @@ defmodule RkBackend.Repo.Complaint do
       nil ->
         {:error, :not_found}
     end
-  end
-
-  @doc """
-  Stores a topic.
-
-  ## Examples
-
-      iex> store_topic(%{field: value})
-      {:ok, %Topic{}}
-
-      iex> store_topic(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def store_topic(args) do
-    %Topic{}
-    |> Topic.changeset(args)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Updates a topic
-
-  ## Examples
-
-      iex> update_topic(%{field: value})
-      {:ok, %Topic{}}
-
-      iex> update_topic(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_topic(args) do
-    {id, args} = Map.pop(args, :id)
-
-    case Repo.get(Topic, id) do
-      %Topic{} = topic ->
-        topic
-        |> Repo.dynamically_preload(args)
-        |> Topic.changeset(args)
-        |> Repo.update()
-
-      nil ->
-        {:error, :not_found}
-    end
-  end
-
-  @doc """
-  Stores a message.
-
-  ## Examples
-
-      iex> store_message(%{field: value})
-      {:ok, %Message{}}
-
-      iex> store_message(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def store_message(args) do
-    %Message{}
-    |> Message.changeset(args)
-    |> Repo.insert()
   end
 end

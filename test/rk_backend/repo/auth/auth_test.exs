@@ -1,9 +1,10 @@
 defmodule RkBackend.Repo.AuthTest do
   use RkBackend.DataCase
 
-  alias RkBackend.Repo.Auth
-  alias RkBackend.Repo.Auth.Role
-  alias RkBackend.Repo.Auth.User
+  alias RkBackend.Repo.Auth.Roles
+  alias RkBackend.Repo.Auth.Users
+  alias RkBackend.Repo.Auth.Schemas.Role
+  alias RkBackend.Repo.Auth.Schemas.User
 
   describe "users" do
     @valid_args %{
@@ -35,7 +36,7 @@ defmodule RkBackend.Repo.AuthTest do
       {:ok, user} =
         args
         |> Enum.into(valid_args)
-        |> Auth.store_user()
+        |> Users.store_user()
 
       user
     end
@@ -47,7 +48,7 @@ defmodule RkBackend.Repo.AuthTest do
         @valid_args
         |> Map.put(:role_id, role.id)
 
-      assert {:ok, %User{} = user} = Auth.store_user(valid_args)
+      assert {:ok, %User{} = user} = Users.store_user(valid_args)
       assert user.email == "some email"
       assert user.full_name == "some full_name"
       assert user.password == "password"
@@ -57,7 +58,7 @@ defmodule RkBackend.Repo.AuthTest do
     test "store_user/1 with invalid data returns error changeset" do
       role_fixture()
 
-      assert {:error, %Ecto.Changeset{}} = Auth.store_user(@invalid_args)
+      assert {:error, %Ecto.Changeset{}} = Users.store_user(@invalid_args)
     end
 
     test "store_user/3 successful" do
@@ -67,7 +68,7 @@ defmodule RkBackend.Repo.AuthTest do
         @valid_args
         |> Map.put(:role_id, role.id)
 
-      assert {:ok, user = %User{}} = Auth.store_user(valid_args)
+      assert {:ok, user = %User{}} = Users.store_user(valid_args)
       assert user.role_id == role.id
       assert user.full_name == @valid_args.full_name
     end
@@ -76,7 +77,7 @@ defmodule RkBackend.Repo.AuthTest do
       role_fixture()
 
       args = %{user_details: @invalid_args}
-      assert {:error, changeset} = Auth.store_user(args)
+      assert {:error, changeset} = Users.store_user(args)
     end
 
     test "get_user!/1 returns the user with given id" do
@@ -91,7 +92,7 @@ defmodule RkBackend.Repo.AuthTest do
         @update_args
         |> Map.put(:id, user.id)
 
-      assert {:ok, %User{} = user} = Auth.update_user(update_args)
+      assert {:ok, %User{} = user} = Users.update_user(update_args)
       assert user.email == "some updated email"
       assert user.full_name == "some updated full_name"
     end
@@ -103,7 +104,7 @@ defmodule RkBackend.Repo.AuthTest do
         @invalid_args
         |> Map.put(:id, user.id)
 
-      assert {:error, %Ecto.Changeset{}} = Auth.update_user(invalid_args)
+      assert {:error, %Ecto.Changeset{}} = Users.update_user(invalid_args)
     end
 
     test "update_user/2 successful" do
@@ -113,7 +114,7 @@ defmodule RkBackend.Repo.AuthTest do
         @update_args
         |> Map.put(:id, user.id)
 
-      assert {:ok, user = %User{}} = Auth.update_user(update_args)
+      assert {:ok, user = %User{}} = Users.update_user(update_args)
       assert user.password == "password2"
     end
 
@@ -126,7 +127,7 @@ defmodule RkBackend.Repo.AuthTest do
         |> Map.put(:avatar_name, "avatar_name")
         |> Map.put(:avatar, <<25, 07, 15>>)
 
-      assert {:ok, user = %User{}} = Auth.update_user(update_args)
+      assert {:ok, user = %User{}} = Users.update_user(update_args)
       assert user.avatar_name == "avatar_name"
       assert user.avatar == <<25, 07, 15>>
     end
@@ -138,7 +139,7 @@ defmodule RkBackend.Repo.AuthTest do
         @invalid_args
         |> Map.put(:id, user.id)
 
-      assert {:error, reason} = Auth.update_user(update_args)
+      assert {:error, reason} = Users.update_user(update_args)
       assert reason = "password_confirmation: does not match password\n"
     end
 
@@ -150,11 +151,11 @@ defmodule RkBackend.Repo.AuthTest do
 
     test "find_user_by_email/1 successful" do
       user = user_fixture()
-      assert {:ok, %User{}} = Auth.find_user_by_email(user.email)
+      assert {:ok, %User{}} = Users.find_user_by_email(user.email)
     end
 
     test "find_user_by_email/1 unsuccessful" do
-      assert {:error, :not_found} = Auth.find_user_by_email("notFound@gmail.com")
+      assert {:error, :not_found} = Users.find_user_by_email("notFound@gmail.com")
     end
   end
 
@@ -167,7 +168,7 @@ defmodule RkBackend.Repo.AuthTest do
       {:ok, role} =
         args
         |> Enum.into(@valid_args)
-        |> Auth.store_role()
+        |> Roles.store_role()
 
       role
     end
@@ -178,21 +179,21 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "store_role/1 with valid data creates a role" do
-      assert {:ok, %Role{} = role} = Auth.store_role(@valid_args)
+      assert {:ok, %Role{} = role} = Roles.store_role(@valid_args)
       assert role.type == "USER"
     end
 
     test "store_role/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Auth.store_role(@invalid_args)
+      assert {:error, %Ecto.Changeset{}} = Roles.store_role(@invalid_args)
     end
 
     test "store_role/3 successful" do
-      assert {:ok, %Role{} = role} = Auth.store_role(@valid_args)
+      assert {:ok, %Role{} = role} = Roles.store_role(@valid_args)
       assert role.type == "USER"
     end
 
     test "store_role/3 unsuccessful" do
-      assert {:error, _reason} = Auth.store_role(@invalid_args)
+      assert {:error, _reason} = Roles.store_role(@invalid_args)
     end
 
     test "update_role/2 with valid data updates the role" do
@@ -202,7 +203,7 @@ defmodule RkBackend.Repo.AuthTest do
         @update_args
         |> Map.put(:id, role.id)
 
-      assert {:ok, %Role{} = role} = Auth.update_role(update_args)
+      assert {:ok, %Role{} = role} = Roles.update_role(update_args)
       assert role.type == "some updated type"
     end
 
@@ -213,7 +214,7 @@ defmodule RkBackend.Repo.AuthTest do
         @invalid_args
         |> Map.put(:id, role.id)
 
-      assert {:error, %Ecto.Changeset{}} = Auth.update_role(invalid_args)
+      assert {:error, %Ecto.Changeset{}} = Roles.update_role(invalid_args)
     end
   end
 end

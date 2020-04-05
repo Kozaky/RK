@@ -1,9 +1,11 @@
 defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
   alias RkBackend.Repo
-  alias RkBackend.Repo.Complaint
-  alias RkBackend.Repo.Complaint.Reklama
-  alias RkBackend.Repo.Complaint.Topic
-  alias RkBackend.Repo.Complaint.Message
+  alias RkBackend.Repo.Complaint.Reklamas
+  alias RkBackend.Repo.Complaint.Topics
+  alias RkBackend.Repo.Complaint.Messages
+  alias RkBackend.Repo.Complaint.Schemas.Reklama
+  alias RkBackend.Repo.Complaint.Schemas.Topic
+  alias RkBackend.Repo.Complaint.Schemas.Message
   alias RkBackend.Utils
   alias RkBackendWeb.Schema
 
@@ -15,7 +17,7 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
     args.reklama_details
     |> Map.put(:user_id, user_id)
     |> put_images()
-    |> Complaint.store_reklama()
+    |> Reklamas.store_reklama()
     |> case do
       {:ok, reklama} ->
         {:ok, reklama}
@@ -37,7 +39,7 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
   end
 
   def list_reklamas(args, _info) do
-    reklamas = Complaint.list_reklamas(args)
+    reklamas = Reklamas.list_reklamas(args)
     {:ok, reklamas}
   end
 
@@ -54,7 +56,7 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
   def update_reklama(args, _info) do
     args.update_reklama_details
     |> put_images()
-    |> Complaint.update_reklama()
+    |> Reklamas.update_reklama()
     |> case do
       {:ok, reklama} ->
         {:ok, reklama}
@@ -68,7 +70,7 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
   def store_topic(args, _info) do
     args.topic_details
     |> Schema.put_upload(file_bytes: :image, filename: :image_name)
-    |> Complaint.store_topic()
+    |> Topics.store_topic()
     |> case do
       {:ok, topic} ->
         {:ok, topic}
@@ -82,7 +84,7 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
   def update_topic(args, _info) do
     args.topic_details
     |> Schema.put_upload(file_bytes: :image, filename: :image_name)
-    |> Complaint.update_topic()
+    |> Topics.update_topic()
     |> case do
       {:ok, topic} ->
         {:ok, topic}
@@ -106,7 +108,7 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers do
   def store_message(args, %{context: %{user_id: user_id}}) do
     args.message_details
     |> Map.put(:user_id, user_id)
-    |> Complaint.store_message()
+    |> Messages.store_message()
     |> case do
       {:ok, message} ->
         {:ok, message}
