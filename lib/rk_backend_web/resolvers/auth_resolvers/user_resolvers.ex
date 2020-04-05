@@ -1,16 +1,13 @@
-defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
+defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers.UserResolvers do
   alias RkBackend.Repo
-  alias RkBackend.Repo.Auth.Users
-  alias RkBackend.Repo.Auth.Roles
-  alias RkBackend.Repo.Auth.Schemas.User
-  alias RkBackend.Auth.SignIn
   alias RkBackend.Utils
   alias RkBackendWeb.Schema
-
-  require Logger
+  alias RkBackend.Auth.SignIn
+  alias RkBackend.Repo.Auth.Users
+  alias RkBackend.Repo.Auth.Schemas.User
 
   @moduledoc """
-  Module with resolvers for Auth queries and mutations
+  Module with resolvers for User queries and mutations
   """
 
   def sign_in(%{email: email, password: password}, _info) do
@@ -75,20 +72,5 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers do
 
   defp get_user_update_details(%{user_update_role: user_update}) do
     user_update
-  end
-
-  def list_roles(_args, _info) do
-    {:ok, Repo.all(Role)}
-  end
-
-  def store_role(args, _info) do
-    case Roles.store_role(args) do
-      {:ok, role} ->
-        {:ok, role}
-
-      {:error, errors} ->
-        errors = Utils.errors_to_string(errors)
-        {:error, errors}
-    end
   end
 end
