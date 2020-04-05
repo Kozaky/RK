@@ -1,14 +1,13 @@
 defmodule RkBackend.Auth.SignInTest do
   use RkBackend.DataCase
 
+  alias RkBackend.Repo
   alias RkBackend.Auth.SignIn
   alias RkBackend.Repo.Auth.Users
-  alias RkBackend.Repo.Auth.Roles
   alias RkBackend.Repo.Auth.Schemas.User
+  alias RkBackend.Repo.Auth.Schemas.Role
 
   describe "SignIn" do
-    @valid_args_role %{type: "USER"}
-
     @valid_args_user %{
       email: "some email",
       full_name: "some full_name",
@@ -16,17 +15,8 @@ defmodule RkBackend.Auth.SignInTest do
       password_confirmation: "password"
     }
 
-    def role_fixture(args \\ %{}) do
-      {:ok, role} =
-        args
-        |> Enum.into(@valid_args_role)
-        |> Roles.store_role()
-
-      role
-    end
-
     def user_fixture(args \\ %{}) do
-      role = role_fixture()
+      role = Repo.get_by(Role, type: "USER")
 
       valid_args =
         @valid_args_user

@@ -1,6 +1,7 @@
 defmodule RkBackend.Repo.AuthTest do
   use RkBackend.DataCase
 
+  alias RkBackend.Repo
   alias RkBackend.Repo.Auth.Roles
   alias RkBackend.Repo.Auth.Users
   alias RkBackend.Repo.Auth.Schemas.Role
@@ -27,7 +28,7 @@ defmodule RkBackend.Repo.AuthTest do
     }
 
     def user_fixture(args \\ %{}) do
-      role = role_fixture()
+      role = Repo.get_by(Role, type: "USER")
 
       valid_args =
         @valid_args
@@ -42,7 +43,7 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "store_user/1 with valid data creates a user" do
-      role = role_fixture()
+      role = Repo.get_by(Role, type: "USER")
 
       valid_args =
         @valid_args
@@ -56,13 +57,11 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "store_user/1 with invalid data returns error changeset" do
-      role_fixture()
-
       assert {:error, %Ecto.Changeset{}} = Users.store_user(@invalid_args)
     end
 
     test "store_user/3 successful" do
-      role = role_fixture()
+      role = Repo.get_by(Role, type: "USER")
 
       valid_args =
         @valid_args
@@ -74,8 +73,6 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "store_user/3 unsuccessful" do
-      role_fixture()
-
       args = %{user_details: @invalid_args}
       assert {:error, changeset} = Users.store_user(args)
     end
@@ -160,27 +157,18 @@ defmodule RkBackend.Repo.AuthTest do
   end
 
   describe "roles" do
-    @valid_args %{type: "USER"}
+    @valid_args %{type: "NEW_ROLE"}
     @update_args %{type: "some updated type"}
     @invalid_args %{type: nil}
 
-    def role_fixture(args \\ %{}) do
-      {:ok, role} =
-        args
-        |> Enum.into(@valid_args)
-        |> Roles.store_role()
-
-      role
-    end
-
     test "get_role!/1 returns the role with given id" do
-      role = role_fixture()
+      role = Repo.get_by(Role, type: "USER")
       assert Repo.get(Role, role.id) == role
     end
 
     test "store_role/1 with valid data creates a role" do
       assert {:ok, %Role{} = role} = Roles.store_role(@valid_args)
-      assert role.type == "USER"
+      assert role.type == "NEW_ROLE"
     end
 
     test "store_role/1 with invalid data returns error changeset" do
@@ -189,7 +177,7 @@ defmodule RkBackend.Repo.AuthTest do
 
     test "store_role/3 successful" do
       assert {:ok, %Role{} = role} = Roles.store_role(@valid_args)
-      assert role.type == "USER"
+      assert role.type == "NEW_ROLE"
     end
 
     test "store_role/3 unsuccessful" do
@@ -197,7 +185,7 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "update_role/2 with valid data updates the role" do
-      role = role_fixture()
+      role = Repo.get_by(Role, type: "USER")
 
       update_args =
         @update_args
@@ -208,7 +196,7 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "update_role/2 with invalid data returns error changeset" do
-      role = role_fixture()
+      role = Repo.get_by(Role, type: "USER")
 
       invalid_args =
         @invalid_args

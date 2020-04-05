@@ -3,8 +3,8 @@ defmodule RkBackend.Repo.ComplaintTest do
 
   alias RkBackend.Repo
   alias RkBackend.Repo.Auth.Users
-  alias RkBackend.Repo.Auth.Roles
   alias RkBackend.Repo.Auth.Schemas.User
+  alias RkBackend.Repo.Auth.Schemas.Role
   alias RkBackend.Repo.Complaint.Reklamas
   alias RkBackend.Repo.Complaint.Topics
   alias RkBackend.Repo.Complaint.Messages
@@ -66,7 +66,7 @@ defmodule RkBackend.Repo.ComplaintTest do
     end
 
     def user_fixture(args \\ %{}) do
-      role = role_fixture()
+      role = Repo.get_by(Role, type: "USER")
 
       valid_args =
         %{
@@ -83,15 +83,6 @@ defmodule RkBackend.Repo.ComplaintTest do
         |> Users.store_user()
 
       user
-    end
-
-    def role_fixture(args \\ %{}) do
-      {:ok, role} =
-        args
-        |> Enum.into(%{type: "USER"})
-        |> Roles.store_role()
-
-      role
     end
 
     test "store_reklama/0 simple" do
