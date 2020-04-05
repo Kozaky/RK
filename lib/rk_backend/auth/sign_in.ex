@@ -1,9 +1,9 @@
-defmodule RkBackend.Logic.Auth.SignIn do
-  alias RkBackend.Repo.Auth
+defmodule RkBackend.Auth.SignIn do
+  alias RkBackend.Repo.Auth.Users
   alias Argon2
   alias Phoenix.Token
   alias RkBackend.Repo
-  alias RkBackend.Logic.Auth.SessionService
+  alias RkBackend.Auth.SessionService
 
   @moduledoc """
   Provides functions related with the user's login
@@ -40,7 +40,7 @@ defmodule RkBackend.Logic.Auth.SignIn do
       {:error, reason}
   """
   def sign_in(email, password) do
-    with {:ok, user} <- Auth.find_user_by_email(email),
+    with {:ok, user} <- Users.find_user_by_email(email),
          {:ok, user} <- Argon2.check_pass(user, password) do
       token = Token.sign(@secret, @salt, user.id)
 

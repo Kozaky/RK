@@ -1,8 +1,8 @@
-defmodule RkBackend.Logic.Auth.SessionService do
+defmodule RkBackend.Auth.SessionService do
   use GenServer, restart: :transient
 
-  alias RkBackend.Repo.Auth.User
-  alias RkBackend.Logic.Auth.SignIn
+  alias RkBackend.Repo.Auth.Schemas.User
+  alias RkBackend.Auth.SignIn
 
   defstruct user: nil, token: nil
 

@@ -2,12 +2,16 @@ defmodule RkBackend.Repo.ComplaintTest do
   use RkBackend.DataCase
 
   alias RkBackend.Repo
-  alias RkBackend.Repo.Auth
-  alias RkBackend.Repo.Complaint
-  alias RkBackend.Repo.Complaint.Reklama
-  alias RkBackend.Repo.Complaint.Reklama.ReklamaImage
-  alias RkBackend.Repo.Complaint.Topic
-  alias RkBackend.Repo.Complaint.Message
+  alias RkBackend.Repo.Auth.Users
+  alias RkBackend.Repo.Auth.Schemas.User
+  alias RkBackend.Repo.Auth.Schemas.Role
+  alias RkBackend.Repo.Complaint.Reklamas
+  alias RkBackend.Repo.Complaint.Topics
+  alias RkBackend.Repo.Complaint.Messages
+  alias RkBackend.Repo.Complaint.Schemas.Reklama
+  alias RkBackend.Repo.Complaint.Schemas.Reklama.ReklamaImage
+  alias RkBackend.Repo.Complaint.Schemas.Topic
+  alias RkBackend.Repo.Complaint.Schemas.Message
 
   describe "reklamas" do
     @valid_args %{
@@ -25,7 +29,7 @@ defmodule RkBackend.Repo.ComplaintTest do
 
     def reklama_fixture(args \\ %{}) do
       user =
-        Repo.get_by(Auth.User, email: "some email")
+        Repo.get_by(User, email: "some email")
         |> case do
           nil ->
             user_fixture()
@@ -51,7 +55,7 @@ defmodule RkBackend.Repo.ComplaintTest do
 
       args
       |> Enum.into(valid_args)
-      |> Complaint.store_reklama()
+      |> Reklamas.store_reklama()
       |> case do
         {:ok, reklama} ->
           reklama
@@ -62,7 +66,7 @@ defmodule RkBackend.Repo.ComplaintTest do
     end
 
     def user_fixture(args \\ %{}) do
-      role = role_fixture()
+      role = Repo.get_by(Role, type: "USER")
 
       valid_args =
         %{
@@ -76,18 +80,9 @@ defmodule RkBackend.Repo.ComplaintTest do
       {:ok, user} =
         args
         |> Enum.into(valid_args)
-        |> Auth.store_user()
+        |> Users.store_user()
 
       user
-    end
-
-    def role_fixture(args \\ %{}) do
-      {:ok, role} =
-        args
-        |> Enum.into(%{type: "USER"})
-        |> Auth.store_role()
-
-      role
     end
 
     test "store_reklama/0 simple" do
@@ -131,7 +126,7 @@ defmodule RkBackend.Repo.ComplaintTest do
         per_page: 10
       }
 
-      assert [%Reklama{}] = Complaint.list_reklamas(metadata).reklamas
+      assert [%Reklama{}] = Reklamas.list_reklamas(metadata).reklamas
     end
 
     test "list_reklama/1 returns reklamas paginated and filtered" do
@@ -145,7 +140,7 @@ defmodule RkBackend.Repo.ComplaintTest do
         }
       }
 
-      assert [%Reklama{title: "Some Title"}] = Complaint.list_reklamas(metadata).reklamas
+      assert [%Reklama{title: "Some Title"}] = Reklamas.list_reklamas(metadata).reklamas
     end
 
     test "list_reklama/1 returns reklamas paginated and filtered not found" do
@@ -159,7 +154,7 @@ defmodule RkBackend.Repo.ComplaintTest do
         }
       }
 
-      assert [] = Complaint.list_reklamas(metadata).reklamas
+      assert [] = Reklamas.list_reklamas(metadata).reklamas
     end
 
     test "list_reklama/1 returns reklamas paginated and ordered" do
@@ -174,14 +169,14 @@ defmodule RkBackend.Repo.ComplaintTest do
         }
       }
 
-      assert [%Reklama{title: "A"}] = Complaint.list_reklamas(metadata).reklamas
+      assert [%Reklama{title: "A"}] = Reklamas.list_reklamas(metadata).reklamas
     end
 
     test "update_reklama/1 without associations" do
       reklama = reklama_fixture(@valid_args)
       update = Map.put(@update_args, :id, reklama.id)
 
-      assert {:ok, %Reklama{title: "Updated Title"}} = Complaint.update_reklama(update)
+      assert {:ok, %Reklama{title: "Updated Title"}} = Reklamas.update_reklama(update)
     end
 
     test "update_reklama/1 with associations" do
@@ -219,7 +214,7 @@ defmodule RkBackend.Repo.ComplaintTest do
         |> Map.put(:id, reklama.id)
         |> Map.put(:images, images_update)
 
-      assert {:ok, %Reklama{title: "Updated Title"}} = result = Complaint.update_reklama(update)
+      assert {:ok, %Reklama{title: "Updated Title"}} = result = Reklamas.update_reklama(update)
 
       assert {:ok, %Reklama{images: [%{name: "image_updated_1"}, %{name: "image_updated_2"}]}} =
                result
@@ -249,7 +244,7 @@ defmodule RkBackend.Repo.ComplaintTest do
         |> Map.put(:id, reklama.id)
         |> Map.put(:images, images_update)
 
-      assert {:ok, %Reklama{title: "Updated Title"}} = result = Complaint.update_reklama(update)
+      assert {:ok, %Reklama{title: "Updated Title"}} = result = Reklamas.update_reklama(update)
       assert {:ok, %Reklama{images: []}} = result
       assert [] = Repo.all(ReklamaImage)
     end
@@ -274,7 +269,7 @@ defmodule RkBackend.Repo.ComplaintTest do
     def topic_fixture(args \\ %{}) do
       args
       |> Enum.into(@valid_args)
-      |> Complaint.store_topic()
+      |> Topics.store_topic()
       |> case do
         {:ok, topic} ->
           topic
@@ -300,7 +295,7 @@ defmodule RkBackend.Repo.ComplaintTest do
       topic = topic_fixture(@valid_args)
       update = Map.put(@update_args, :id, topic.id)
 
-      assert {:ok, %Topic{description: "Updated description"}} = Complaint.update_topic(update)
+      assert {:ok, %Topic{description: "Updated description"}} = Topics.update_topic(update)
     end
 
     test "update_topic/1 with new  image" do
@@ -311,7 +306,7 @@ defmodule RkBackend.Repo.ComplaintTest do
         |> Map.put(:image, <<0, 255, 42>>)
         |> Map.put(:image_name, "imageUpdated")
 
-      assert {:ok, %Topic{image_name: "imageUpdated"}} = Complaint.update_topic(update)
+      assert {:ok, %Topic{image_name: "imageUpdated"}} = Topics.update_topic(update)
     end
   end
 
@@ -325,7 +320,7 @@ defmodule RkBackend.Repo.ComplaintTest do
 
     def message_fixture(args \\ %{}) do
       user =
-        Repo.get_by(Auth.User, email: "some email")
+        Repo.get_by(User, email: "some email")
         |> case do
           nil ->
             user_fixture()
@@ -343,7 +338,7 @@ defmodule RkBackend.Repo.ComplaintTest do
 
       args
       |> Enum.into(valid_args)
-      |> Complaint.store_message()
+      |> Messages.store_message()
       |> case do
         {:ok, topic} ->
           topic
