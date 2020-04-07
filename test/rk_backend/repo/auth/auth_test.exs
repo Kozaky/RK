@@ -1,9 +1,12 @@
 defmodule RkBackend.Repo.AuthTest do
   use RkBackend.DataCase
 
-  alias RkBackend.Repo.Auth
-  alias RkBackend.Repo.Auth.Role
-  alias RkBackend.Repo.Auth.User
+  alias RkBackend.Repo
+  alias RkBackend.Fixture
+  alias RkBackend.Repo.Auth.Roles
+  alias RkBackend.Repo.Auth.Users
+  alias RkBackend.Repo.Auth.Schemas.Role
+  alias RkBackend.Repo.Auth.Schemas.User
 
   describe "users" do
     @valid_args %{
@@ -25,29 +28,19 @@ defmodule RkBackend.Repo.AuthTest do
       password_confirmation: "password2"
     }
 
-    def user_fixture(args \\ %{}) do
-      role = role_fixture()
-
-      valid_args =
-        @valid_args
-        |> Map.put(:role_id, role.id)
-
-      {:ok, user} =
-        args
-        |> Enum.into(valid_args)
-        |> Auth.store_user()
-
-      user
+    setup do
+      Fixture.create(:user)
+      :ok
     end
 
     test "store_user/1 with valid data creates a user" do
-      role = role_fixture()
+      role = Repo.get_by(Role, type: "USER")
 
       valid_args =
         @valid_args
         |> Map.put(:role_id, role.id)
 
-      assert {:ok, %User{} = user} = Auth.store_user(valid_args)
+      assert {:ok, %User{} = user} = Users.store_user(valid_args)
       assert user.email == "some email"
       assert user.full_name == "some full_name"
       assert user.password == "password"
@@ -55,70 +48,121 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "store_user/1 with invalid data returns error changeset" do
-      role_fixture()
-
-      assert {:error, %Ecto.Changeset{}} = Auth.store_user(@invalid_args)
+      assert {:error, %Ecto.Changeset{}} = Users.store_user(@invalid_args)
     end
 
     test "store_user/3 successful" do
-      role = role_fixture()
+      role = Repo.get_by(Role, type: "USER")
 
       valid_args =
         @valid_args
         |> Map.put(:role_id, role.id)
 
-      assert {:ok, user = %User{}} = Auth.store_user(valid_args)
+      assert {:ok, user = %User{}} = Users.store_user(valid_args)
       assert user.role_id == role.id
       assert user.full_name == @valid_args.full_name
     end
 
     test "store_user/3 unsuccessful" do
-      role_fixture()
-
       args = %{user_details: @invalid_args}
-      assert {:error, changeset} = Auth.store_user(args)
+      assert {:error, changeset} = Users.store_user(args)
     end
 
-    test "get_user!/1 returns the user with given id" do
-      user = user_fixture()
+    test "get_user/1 returns the user with given id" do
+      user = Fixture.create(:user, @valid_args)
       assert Repo.get(User, user.id).id == user.id
     end
 
+    test "list_users/1 returns users paginated" do
+      metadata = %{
+        page: 1,
+        per_page: 10
+      }
+
+      assert [%User{} | _] = Users.list_users(metadata).users
+    end
+
+    test "list_users/1 returns users paginated and filtered" do
+      metadata = %{
+        page: 1,
+        per_page: 10,
+        filter: %{
+          full_name: "some full_name",
+          email: "new_email@email.com"
+        }
+      }
+
+      Fixture.create(:user, %{full_name: "some full_name", email: "new_email@email.com"})
+
+      assert [%User{full_name: "some full_name"}] = Users.list_users(metadata).users
+    end
+
+    test "list_users/1 returns users paginated and filtered not found" do
+      metadata = %{
+        page: 1,
+        per_page: 10,
+        filter: %{
+          full_name: "Not Found"
+        }
+      }
+
+      assert [] = Users.list_users(metadata).users
+    end
+
+    test "list_users/1 returns users paginated and ordered" do
+      another_user_args =
+        @valid_args
+        |> Map.put(:full_name, "A")
+        |> Map.put(:email, "another@email.com")
+
+      Fixture.create(:user, another_user_args)
+
+      metadata = %{
+        page: 1,
+        per_page: 1,
+        order: %{
+          order_asc: "full_name"
+        }
+      }
+
+      assert [%User{full_name: "A"}] = Users.list_users(metadata).users
+    end
+
     test "update_user/2 with valid data updates the user" do
-      user = user_fixture()
+      user = Fixture.create(:user, @valid_args)
 
       update_args =
         @update_args
         |> Map.put(:id, user.id)
 
-      assert {:ok, %User{} = user} = Auth.update_user(update_args)
+      assert {:ok, %User{} = user} = Users.update_user(update_args)
       assert user.email == "some updated email"
       assert user.full_name == "some updated full_name"
     end
 
     test "update_user/2 with invalid data returns error changeset" do
-      user = user_fixture()
+      user = Fixture.create(:user, @valid_args)
 
       invalid_args =
         @invalid_args
         |> Map.put(:id, user.id)
 
-      assert {:error, %Ecto.Changeset{}} = Auth.update_user(invalid_args)
+      assert {:error, %Ecto.Changeset{}} = Users.update_user(invalid_args)
     end
 
     test "update_user/2 successful" do
-      user = user_fixture()
+      user = Fixture.create(:user, @valid_args)
 
       update_args =
         @update_args
         |> Map.put(:id, user.id)
 
-      assert {:ok, user = %User{}} = Auth.update_user(update_args)
+      assert {:ok, user = %User{}} = Users.update_user(update_args)
       assert user.password == "password2"
     end
 
     test "update_user/2 with avatar" do
-      user = user_fixture()
+      user = Fixture.create(:user, @valid_args)
 
       update_args =
         @update_args
@@ -126,94 +170,85 @@ defmodule RkBackend.Repo.AuthTest do
         |> Map.put(:avatar_name, "avatar_name")
         |> Map.put(:avatar, <<25, 07, 15>>)
 
-      assert {:ok, user = %User{}} = Auth.update_user(update_args)
+      assert {:ok, user = %User{}} = Users.update_user(update_args)
       assert user.avatar_name == "avatar_name"
       assert user.avatar == <<25, 07, 15>>
     end
 
     test "update_user/2 with bad update" do
-      user = user_fixture()
+      user = Fixture.create(:user, @valid_args)
 
       update_args =
         @invalid_args
         |> Map.put(:id, user.id)
 
-      assert {:error, reason} = Auth.update_user(update_args)
+      assert {:error, reason} = Users.update_user(update_args)
       assert reason = "password_confirmation: does not match password\n"
     end
 
     test "delete_user/1 deletes the user" do
-      user = user_fixture()
+      user = Fixture.create(:user, @valid_args)
       assert {:ok, %User{}} = Repo.delete(user)
       assert Repo.get(User, user.id) == nil
     end
 
     test "find_user_by_email/1 successful" do
-      user = user_fixture()
-      assert {:ok, %User{}} = Auth.find_user_by_email(user.email)
+      user = Fixture.create(:user, @valid_args)
+      assert {:ok, %User{}} = Users.find_user_by_email(user.email)
     end
 
     test "find_user_by_email/1 unsuccessful" do
-      assert {:error, :not_found} = Auth.find_user_by_email("notFound@gmail.com")
+      assert {:error, :not_found} = Users.find_user_by_email("notFound@gmail.com")
     end
   end
 
   describe "roles" do
-    @valid_args %{type: "USER"}
+    @valid_args %{type: "NEW_ROLE"}
     @update_args %{type: "some updated type"}
     @invalid_args %{type: nil}
 
-    def role_fixture(args \\ %{}) do
-      {:ok, role} =
-        args
-        |> Enum.into(@valid_args)
-        |> Auth.store_role()
-
-      role
-    end
-
     test "get_role!/1 returns the role with given id" do
-      role = role_fixture()
+      role = Repo.get_by(Role, type: "USER")
       assert Repo.get(Role, role.id) == role
     end
 
     test "store_role/1 with valid data creates a role" do
-      assert {:ok, %Role{} = role} = Auth.store_role(@valid_args)
-      assert role.type == "USER"
+      assert {:ok, %Role{} = role} = Roles.store_role(@valid_args)
+      assert role.type == "NEW_ROLE"
     end
 
     test "store_role/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Auth.store_role(@invalid_args)
+      assert {:error, %Ecto.Changeset{}} = Roles.store_role(@invalid_args)
     end
 
     test "store_role/3 successful" do
-      assert {:ok, %Role{} = role} = Auth.store_role(@valid_args)
-      assert role.type == "USER"
+      assert {:ok, %Role{} = role} = Roles.store_role(@valid_args)
+      assert role.type == "NEW_ROLE"
     end
 
     test "store_role/3 unsuccessful" do
-      assert {:error, _reason} = Auth.store_role(@invalid_args)
+      assert {:error, _reason} = Roles.store_role(@invalid_args)
     end
 
     test "update_role/2 with valid data updates the role" do
-      role = role_fixture()
+      role = Repo.get_by(Role, type: "USER")
 
       update_args =
         @update_args
         |> Map.put(:id, role.id)
 
-      assert {:ok, %Role{} = role} = Auth.update_role(update_args)
+      assert {:ok, %Role{} = role} = Roles.update_role(update_args)
       assert role.type == "some updated type"
     end
 
     test "update_role/2 with invalid data returns error changeset" do
-      role = role_fixture()
+      role = Repo.get_by(Role, type: "USER")
 
       invalid_args =
         @invalid_args
         |> Map.put(:id, role.id)
 
-      assert {:error, %Ecto.Changeset{}} = Auth.update_role(invalid_args)
+      assert {:error, %Ecto.Changeset{}} = Roles.update_role(invalid_args)
     end
   end
 end

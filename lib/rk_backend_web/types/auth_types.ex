@@ -56,6 +56,11 @@ defmodule RkBackendWeb.Schema.Types.AuthTypes do
     interface(:user_entity)
   end
 
+  object :paginated_users do
+    field :users, list_of(:user)
+    field :metadata, :page_info
+  end
+
   input_object :user_details do
     field :email, non_null(:string)
     field :full_name, non_null(:string)
@@ -73,7 +78,16 @@ defmodule RkBackendWeb.Schema.Types.AuthTypes do
     field :avatar, :upload
   end
 
-  input_object :user_update_role do
+  input_object :user_filter do
+    field :id, :integer
+    field :email, :string
+    field :full_name, :string
+    field :role, :string
+    field :inserted_before, :naive_datetime
+    field :inserted_after, :naive_datetime
+  end
+
+  input_object :user_update_role_details do
     field :id, non_null(:integer)
     field :role_id, non_null(:integer)
   end
