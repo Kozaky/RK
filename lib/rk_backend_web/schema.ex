@@ -21,8 +21,11 @@ defmodule RkBackendWeb.Schema do
   import_types(Absinthe.Type.Custom)
   import_types(RkBackendWeb.Schema.Types.AuthTypes)
   import_types(RkBackendWeb.Schema.Types.ComplaintTypes)
-  import_types(RkBackendWeb.Schema.Queries.AuthQueries)
-  import_types(RkBackendWeb.Schema.Queries.ComplaintQueries)
+  import_types(RkBackendWeb.Schema.Queries.AuthQueries.RoleQueries)
+  import_types(RkBackendWeb.Schema.Queries.AuthQueries.UserQueries)
+  import_types(RkBackendWeb.Schema.Queries.ComplaintQueries.ReklamaQueries)
+  import_types(RkBackendWeb.Schema.Queries.ComplaintQueries.TopicQueries)
+  import_types(RkBackendWeb.Schema.Queries.ComplaintQueries.MessageQueries)
 
   scalar :base64 do
     description("Base 64")
@@ -41,13 +44,19 @@ defmodule RkBackendWeb.Schema do
   end
 
   query do
-    import_fields(:auth_queries)
-    import_fields(:complaint_queries)
+    import_fields(:user_queries)
+    import_fields(:role_queries)
+    import_fields(:reklama_queries)
+    import_fields(:topic_queries)
+    import_fields(:message_queries)
   end
 
   mutation do
-    import_fields(:auth_mutations)
-    import_fields(:complaint_mutations)
+    import_fields(:user_mutations)
+    import_fields(:role_mutations)
+    import_fields(:reklama_mutations)
+    import_fields(:topic_mutations)
+    import_fields(:message_mutations)
   end
 
   @doc """

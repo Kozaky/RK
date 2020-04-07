@@ -2,7 +2,7 @@ defmodule RkBackend.UtilsTest do
   use RkBackend.DataCase
 
   alias RkBackend.Utils
-  alias RkBackend.Repo.Auth.User
+  alias RkBackend.Repo.Auth.Schemas.User
 
   describe "utils" do
     @invalid_args %{
