@@ -7,6 +7,18 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries.TopicQueries do
   """
 
   object :topic_queries do
+    @desc "Get a topic"
+    field :topic, :topic do
+      arg(:id, non_null(:integer))
+      middleware(RkBackend.Middlewares.Auth)
+      resolve(&TopicResolvers.get_topic/2)
+    end
+
+    @desc "Get a list of topics"
+    field :topics, list_of(:topic) do
+      middleware(RkBackend.Middlewares.Auth)
+      resolve(&TopicResolvers.list_topics/2)
+    end
   end
 
   object :topic_mutations do

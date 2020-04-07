@@ -24,8 +24,12 @@ defmodule RkBackend.Utils do
     rescue
       error ->
         Logger.error("Error: #{inspect(error)}")
-        "Unexpected error"
+        :to_string_error
     end
+  end
+
+  def errors_to_string(errors) when is_atom(errors) do
+    errors
   end
 
   def errors_to_string(errors) when is_bitstring(errors) do
@@ -33,6 +37,6 @@ defmodule RkBackend.Utils do
   end
 
   def errors_to_string(_errors) do
-    "Unexpected error"
+    :to_string_error
   end
 end

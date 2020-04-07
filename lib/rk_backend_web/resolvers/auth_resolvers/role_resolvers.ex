@@ -22,4 +22,14 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers.RoleResolvers do
         {:error, errors}
     end
   end
+
+  def delete_role(%{id: id}, _info) do
+    case Repo.get(Role, id) do
+      %Role{} = role ->
+        Repo.delete(role)
+
+      nil ->
+        {:error, :not_found}
+    end
+  end
 end

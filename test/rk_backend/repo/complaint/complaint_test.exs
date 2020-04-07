@@ -2,9 +2,7 @@ defmodule RkBackend.Repo.ComplaintTest do
   use RkBackend.DataCase
 
   alias RkBackend.Repo
-  alias RkBackend.Repo.Auth.Users
-  alias RkBackend.Repo.Auth.Schemas.User
-  alias RkBackend.Repo.Auth.Schemas.Role
+  alias RkBackend.Fixture
   alias RkBackend.Repo.Complaint.Reklamas
   alias RkBackend.Repo.Complaint.Topics
   alias RkBackend.Repo.Complaint.Messages
@@ -27,77 +25,41 @@ defmodule RkBackend.Repo.ComplaintTest do
       content: 1
     }
 
-    def reklama_fixture(args \\ %{}) do
-      user =
-        Repo.get_by(User, email: "some email")
-        |> case do
-          nil ->
-            user_fixture()
-
-          user ->
-            user
-        end
-
-      topic =
-        Repo.get_by(Topic, title: "Some Title")
-        |> case do
-          nil ->
-            topic_fixture()
-
-          topic ->
-            topic
-        end
-
-      valid_args =
-        @valid_args
-        |> Map.put(:user_id, user.id)
-        |> Map.put(:topic_id, topic.id)
-
-      args
-      |> Enum.into(valid_args)
-      |> Reklamas.store_reklama()
-      |> case do
-        {:ok, reklama} ->
-          reklama
-
-        {:error, _changeset} = error ->
-          error
-      end
-    end
-
-    def user_fixture(args \\ %{}) do
-      role = Repo.get_by(Role, type: "USER")
-
-      valid_args =
-        %{
-          email: "some email",
-          full_name: "some full_name",
-          password: "password",
-          password_confirmation: "password"
-        }
-        |> Map.put(:role_id, role.id)
-
-      {:ok, user} =
-        args
-        |> Enum.into(valid_args)
-        |> Users.store_user()
-
-      user
+    setup do
+      Fixture.create(:reklama)
+      :ok
     end
 
     test "store_reklama/0 simple" do
-      reklama = reklama_fixture(@valid_args)
+      user = Fixture.create(:user, %{email: "newEmail@email.com"})
+      topic = Fixture.create(:topic, %{title: "New Title"})
 
-      assert %Reklama{} = reklama
+      reklama =
+        @valid_args
+        |> Map.put(:user_id, user.id)
+        |> Map.put(:topic_id, topic.id)
+        |> Reklamas.store_reklama()
+
+      assert {:ok, %Reklama{}} = reklama
     end
 
     test "store_reklama/0 with invalid args" do
-      reklama = reklama_fixture(@invalid_args)
+      user = Fixture.create(:user, %{email: "newEmail@email.com"})
+      topic = Fixture.create(:topic, %{title: "New Title"})
+
+      reklama =
+        @invalid_args
+        |> Map.put(:user_id, user.id)
+        |> Map.put(:topic_id, topic.id)
+        |> Reklamas.store_reklama()
 
       assert {:error, changeset} = reklama
     end
 
     test "store_reklama/0 with images" do
+      user = Fixture.create(:user, %{email: "newEmail@email.com"})
+      topic = Fixture.create(:topic, %{title: "New Title"})
+
       images = [
         %{
           image: <<0, 255, 42>>,
@@ -111,16 +73,16 @@ defmodule RkBackend.Repo.ComplaintTest do
 
       reklama =
         @valid_args
+        |> Map.put(:user_id, user.id)
+        |> Map.put(:topic_id, topic.id)
         |> Map.put(:images, images)
-        |> reklama_fixture()
+        |> Reklamas.store_reklama()
 
-      assert %Reklama{images: images} = reklama
+      assert {:ok, %Reklama{images: [%{} | _]}} = reklama
       assert length(images) == 2
     end
 
     test "list_reklama/1 returns reklamas paginated" do
-      reklama_fixture(@valid_args)
-
       metadata = %{
         page: 1,
         per_page: 10
@@ -130,7 +92,7 @@ defmodule RkBackend.Repo.ComplaintTest do
     end
 
     test "list_reklama/1 returns reklamas paginated and filtered" do
-      reklama_fixture(@valid_args)
+      Fixture.create(:reklama, %{title: "Some Title"})
 
       metadata = %{
         page: 1,
@@ -144,8 +106,6 @@ defmodule RkBackend.Repo.ComplaintTest do
     end
 
     test "list_reklama/1 returns reklamas paginated and filtered not found" do
-      reklama_fixture(@valid_args)
-
       metadata = %{
         page: 1,
         per_page: 10,
@@ -158,8 +118,7 @@ defmodule RkBackend.Repo.ComplaintTest do
     end
 
     test "list_reklama/1 returns reklamas paginated and ordered" do
-      reklama_fixture(@valid_args)
-      reklama_fixture(Map.put(@valid_args, :title, "A"))
+      Fixture.create(:reklama, %{title: "A"})
 
       metadata = %{
         page: 1,
@@ -173,7 +132,7 @@ defmodule RkBackend.Repo.ComplaintTest do
     end
 
     test "update_reklama/1 without associations" do
-      reklama = reklama_fixture(@valid_args)
+      reklama = Fixture.create(:reklama, @valid_args)
       update = Map.put(@update_args, :id, reklama.id)
 
       assert {:ok, %Reklama{title: "Updated Title"}} = Reklamas.update_reklama(update)
@@ -191,10 +150,7 @@ defmodule RkBackend.Repo.ComplaintTest do
         }
       ]
 
-      reklama =
-        @valid_args
-        |> Map.put(:images, images)
-        |> reklama_fixture()
+      reklama = Fixture.create(:reklama, Map.put(@valid_args, :images, images))
 
       images_update = [
         %{
@@ -221,21 +177,7 @@ defmodule RkBackend.Repo.ComplaintTest do
     end
 
     test "update_reklama/1 with empty associations" do
-      images = [
-        %{
-          image: <<0, 255, 42>>,
-          name: "image"
-        },
-        %{
-          image: <<0, 255, 42>>,
-          name: "image"
-        }
-      ]
-
-      reklama =
-        @valid_args
-        |> Map.put(:images, images)
-        |> reklama_fixture()
+      reklama = Fixture.create(:reklama, @valid_args)
 
       images_update = []
 
@@ -266,40 +208,27 @@ defmodule RkBackend.Repo.ComplaintTest do
       description: nil
     }
 
-    def topic_fixture(args \\ %{}) do
-      args
-      |> Enum.into(@valid_args)
-      |> Topics.store_topic()
-      |> case do
-        {:ok, topic} ->
-          topic
-
-        {:error, _changeset} = error ->
-          error
-      end
-    end
-
     test "store_topic/1 simple" do
-      topic = topic_fixture(@valid_args)
+      topic = Topics.store_topic(@valid_args)
 
-      assert %Topic{} = topic
+      assert {:ok, %Topic{}} = topic
     end
 
     test "store_topic/1 with invalid args" do
-      topic = topic_fixture(@invalid_args)
+      topic = Topics.store_topic(@invalid_args)
 
       assert {:error, changeset} = topic
     end
 
     test "update_topic/1 with valid args" do
-      topic = topic_fixture(@valid_args)
+      topic = Fixture.create(:topic, @valid_args)
       update = Map.put(@update_args, :id, topic.id)
 
       assert {:ok, %Topic{description: "Updated description"}} = Topics.update_topic(update)
     end
 
     test "update_topic/1 with new  image" do
-      topic = topic_fixture(@valid_args)
+      topic = Fixture.create(:topic, @valid_args)
 
       update =
         Map.put(@update_args, :id, topic.id)
@@ -318,44 +247,28 @@ defmodule RkBackend.Repo.ComplaintTest do
       content: 2
     }
 
-    def message_fixture(args \\ %{}) do
-      user =
-        Repo.get_by(User, email: "some email")
-        |> case do
-          nil ->
-            user_fixture()
+    test "store_message/1 simple" do
+      user = Fixture.create(:user, %{email: "newEmail.email.com"})
+      reklama = Fixture.create(:reklama)
 
-          user ->
-            user
-        end
-
-      reklama = reklama_fixture()
-
-      valid_args =
+      message =
         @valid_args
         |> Map.put(:user_id, user.id)
         |> Map.put(:reklama_id, reklama.id)
+        |> Messages.store_message()
 
-      args
-      |> Enum.into(valid_args)
-      |> Messages.store_message()
-      |> case do
-        {:ok, topic} ->
-          topic
-
-        {:error, _changeset} = error ->
-          error
-      end
-    end
-
-    test "store_message/1 simple" do
-      message = message_fixture(@valid_args)
-
-      assert %Message{} = message
+      assert {:ok, %Message{}} = message
     end
 
     test "store_message/1 with invalid args" do
-      message = message_fixture(@invalid_args)
+      user = Fixture.create(:user, %{email: "newEmail.email.com"})
+      reklama = Fixture.create(:reklama)
+
+      message =
+        @invalid_args
+        |> Map.put(:user_id, user.id)
+        |> Map.put(:reklama_id, reklama.id)
+        |> Messages.store_message()
 
       assert {:error, changeset} = message
     end

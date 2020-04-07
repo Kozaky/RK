@@ -24,7 +24,7 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers.TopicResolvers do
   end
 
   def update_topic(args, _info) do
-    args.topic_details
+    args.update_topic_details
     |> Schema.put_upload(file_bytes: :image, filename: :image_name)
     |> Topics.update_topic()
     |> case do
@@ -45,5 +45,19 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers.TopicResolvers do
       nil ->
         {:error, :not_found}
     end
+  end
+
+  def get_topic(%{id: id} = _args, _info) do
+    case Repo.get(Topic, id) do
+      %Topic{} = topic ->
+        {:ok, topic}
+
+      nil ->
+        {:error, :not_found}
+    end
+  end
+
+  def list_topics(_args, _info) do
+    {:ok, Repo.all(Topic)}
   end
 end

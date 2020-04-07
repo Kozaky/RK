@@ -24,8 +24,9 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers.UserResolvers do
 
   def resolve_user(_args, _context), do: {:error, "Not Authenticated"}
 
-  def list_users(_args, _info) do
-    {:ok, Repo.all(User)}
+  def list_users(args, _info) do
+    users = Users.list_users(args)
+    {:ok, users}
   end
 
   def get_user(%{id: id} = _args, _info) do
@@ -70,7 +71,17 @@ defmodule RkBackendWeb.Schema.Resolvers.AuthResolvers.UserResolvers do
     user_update
   end
 
-  defp get_user_update_details(%{user_update_role: user_update}) do
+  defp get_user_update_details(%{user_update_role_details: user_update}) do
     user_update
+  end
+
+  def delete_my_user(_arg, %{context: %{user_id: user_id}}) do
+    case Repo.get(User, user_id) do
+      %User{} = user ->
+        Repo.delete(user)
+
+      nil ->
+        {:error, :not_found}
+    end
   end
 end
