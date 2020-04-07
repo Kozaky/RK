@@ -2,6 +2,7 @@ defmodule RkBackend.Repo.AuthTest do
   use RkBackend.DataCase
 
   alias RkBackend.Repo
+  alias RkBackend.Fixture
   alias RkBackend.Repo.Auth.Roles
   alias RkBackend.Repo.Auth.Users
   alias RkBackend.Repo.Auth.Schemas.Role
@@ -27,19 +28,9 @@ defmodule RkBackend.Repo.AuthTest do
       password_confirmation: "password2"
     }
 
-    def user_fixture(args \\ %{}) do
-      role = Repo.get_by(Role, type: "USER")
-
-      valid_args =
-        @valid_args
-        |> Map.put(:role_id, role.id)
-
-      {:ok, user} =
-        args
-        |> Enum.into(valid_args)
-        |> Users.store_user()
-
-      user
+    setup do
+      Fixture.create(:user)
+      :ok
     end
 
     test "store_user/1 with valid data creates a user" do
@@ -77,13 +68,68 @@ defmodule RkBackend.Repo.AuthTest do
       assert {:error, changeset} = Users.store_user(args)
     end
 
-    test "get_user!/1 returns the user with given id" do
-      user = user_fixture()
+    test "get_user/1 returns the user with given id" do
+      user = Fixture.create(:user, @valid_args)
       assert Repo.get(User, user.id).id == user.id
     end
 
+    test "list_users/1 returns users paginated" do
+      metadata = %{
+        page: 1,
+        per_page: 10
+      }
+
+      assert [%User{} | _] = Users.list_users(metadata).users
+    end
+
+    test "list_users/1 returns users paginated and filtered" do
+      metadata = %{
+        page: 1,
+        per_page: 10,
+        filter: %{
+          full_name: "some full_name",
+          email: "new_email@email.com"
+        }
+      }
+
+      Fixture.create(:user, %{full_name: "some full_name", email: "new_email@email.com"})
+
+      assert [%User{full_name: "some full_name"}] = Users.list_users(metadata).users
+    end
+
+    test "list_users/1 returns users paginated and filtered not found" do
+      metadata = %{
+        page: 1,
+        per_page: 10,
+        filter: %{
+          full_name: "Not Found"
+        }
+      }
+
+      assert [] = Users.list_users(metadata).users
+    end
+
+    test "list_users/1 returns users paginated and ordered" do
+      another_user_args =
+        @valid_args
+        |> Map.put(:full_name, "A")
+        |> Map.put(:email, "another@email.com")
+
+      Fixture.create(:user, another_user_args)
+
+      metadata = %{
+        page: 1,
+        per_page: 1,
+        order: %{
+          order_asc: "full_name"
+        }
+      }
+
+      assert [%User{full_name: "A"}] = Users.list_users(metadata).users
+    end
+
     test "update_user/2 with valid data updates the user" do
-      user = user_fixture()
+      user = Fixture.create(:user, @valid_args)
 
       update_args =
         @update_args
@@ -95,7 +141,7 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "update_user/2 with invalid data returns error changeset" do
-      user = user_fixture()
+      user = Fixture.create(:user, @valid_args)
 
       invalid_args =
         @invalid_args
@@ -105,7 +151,7 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "update_user/2 successful" do
-      user = user_fixture()
+      user = Fixture.create(:user, @valid_args)
 
       update_args =
         @update_args
@@ -116,7 +162,7 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "update_user/2 with avatar" do
-      user = user_fixture()
+      user = Fixture.create(:user, @valid_args)
 
       update_args =
         @update_args
@@ -130,7 +176,7 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "update_user/2 with bad update" do
-      user = user_fixture()
+      user = Fixture.create(:user, @valid_args)
 
       update_args =
         @invalid_args
@@ -141,13 +187,13 @@ defmodule RkBackend.Repo.AuthTest do
     end
 
     test "delete_user/1 deletes the user" do
-      user = user_fixture()
+      user = Fixture.create(:user, @valid_args)
       assert {:ok, %User{}} = Repo.delete(user)
       assert Repo.get(User, user.id) == nil
     end
 
     test "find_user_by_email/1 successful" do
-      user = user_fixture()
+      user = Fixture.create(:user, @valid_args)
       assert {:ok, %User{}} = Users.find_user_by_email(user.email)
     end
 
