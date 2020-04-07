@@ -26,17 +26,17 @@ defmodule RkBackend.Repo.Auth.Schemas.User do
     timestamps()
   end
 
-  @required [:email, :full_name, :password, :password_confirmation, :role_id]
-  @optional [:avatar, :avatar_name]
+  @required [:email, :full_name, :password_hash, :role_id]
+  @optional [:password, :password_confirmation, :avatar, :avatar_name]
   @doc false
   def changeset(user, args) do
     user
     |> cast(args, @required ++ @optional)
-    |> validate_required(@required)
+    |> foreign_key_constraint(:role_id)
     |> unique_constraint(:email)
     |> validate_confirmation(:password, message: "password does not match")
-    |> foreign_key_constraint(:role_id)
     |> put_password_hash
+    |> validate_required(@required)
   end
 
   defp put_password_hash(%Ecto.Changeset{changes: %{password: pass}} = changeset),

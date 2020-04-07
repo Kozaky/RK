@@ -15,7 +15,7 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries.ReklamaQueries do
     end
 
     @desc "Get a list of reklamas"
-    field :reklamas, :paginated_reklama do
+    field :reklamas, :paginated_reklamas do
       arg(:filter, :reklama_filter)
       arg(:order, :sort_order)
       arg(:page, non_null(:integer))

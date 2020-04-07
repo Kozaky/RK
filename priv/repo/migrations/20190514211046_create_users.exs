@@ -1,7 +1,8 @@
 defmodule RkBackend.Repo.Migrations.CreateUsers do
   use Ecto.Migration
 
-  alias RkBackend.Repo.Auth.Users
+  alias RkBackend.Repo
+  alias RkBackend.Repo.Auth.Schemas.User
 
   def change do
     create table(:users) do
@@ -21,12 +22,16 @@ defmodule RkBackend.Repo.Migrations.CreateUsers do
     flush()
 
     # Basic Admin user
-    %{
+    admin_args = %{
       full_name: "admin",
       email: "admin@rk.com",
       password: "adminRK",
-      password_confirmation: "adminRK"
+      password_confirmation: "adminRK",
+      role_id: 2
     }
-    |> Users.store_user()
+
+    %User{}
+    |> User.changeset(admin_args)
+    |> Repo.insert()
   end
 end

@@ -32,7 +32,7 @@ defmodule RkBackend.Repo.Complaint.Reklamas do
   ## Examples
 
       iex> list_reklamas()
-      [%Reklama{}, ...]
+      [%PaginatedReklama{}, ...]
 
   """
   def list_reklamas(args) do

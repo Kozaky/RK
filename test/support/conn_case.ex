@@ -1,4 +1,6 @@
 defmodule RkBackendWeb.ConnCase do
+  alias RkBackend.Auth.SignIn
+
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -33,6 +35,13 @@ defmodule RkBackendWeb.ConnCase do
       Ecto.Adapters.SQL.Sandbox.mode(RkBackend.Repo, {:shared, self()})
     end
 
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    {:ok, %{token: token}} = SignIn.sign_in("admin@rk.com", "adminRK")
+
+    conn =
+      Phoenix.ConnTest.build_conn()
+      |> Plug.Conn.put_req_header("authorization", "Bearer #{token}")
+      |> Plug.Conn.put_req_header("content-type", "application/json")
+
+    {:ok, conn: conn}
   end
 end

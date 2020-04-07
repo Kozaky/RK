@@ -21,5 +21,12 @@ defmodule RkBackendWeb.Schema.Queries.AuthQueries.RoleQueries do
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
       resolve(&RoleResolvers.store_role/2)
     end
+
+    @desc "Delete a role"
+    field :delete_role, :role do
+      arg(:id, non_null(:integer))
+      middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
+      resolve(&RoleResolvers.delete_role/2)
+    end
   end
 end

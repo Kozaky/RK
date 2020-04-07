@@ -14,7 +14,11 @@ defmodule RkBackendWeb.Schema.Queries.AuthQueries.UserQueries do
     end
 
     @desc "Get a list of users"
-    field :users, list_of(:user) do
+    field :users, :paginated_users do
+      arg(:filter, :user_filter)
+      arg(:order, :sort_order)
+      arg(:page, non_null(:integer))
+      arg(:per_page, non_null(:integer))
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
       resolve(&UserResolvers.list_users/2)
     end
@@ -56,9 +60,15 @@ defmodule RkBackendWeb.Schema.Queries.AuthQueries.UserQueries do
 
     @desc "Update user ADMIN"
     field :update_users_role, :user do
-      arg(:user_update_role, non_null(:user_update_role))
+      arg(:user_update_role_details, non_null(:user_update_role_details))
       middleware(RkBackend.Middlewares.Auth, ["ADMIN"])
       resolve(&UserResolvers.update_user/2)
+    end
+
+    @desc "Delete current logged in user"
+    field :delete_my_user, :user do
+      middleware(RkBackend.Middlewares.Auth)
+      resolve(&UserResolvers.delete_my_user/2)
     end
   end
 end
