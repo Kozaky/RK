@@ -43,7 +43,7 @@ defmodule RkBackendWeb.Endpoint do
   plug Corsica,
     origins: "*",
     allow_credentials: true,
-    allow_headers: ["Content-Type"],
+    allow_headers: ["Content-Type", "Authorization"],
     log: [rejected: :error, invalid: :warn, accepted: :debug]
 
   plug RkBackendWeb.Router
