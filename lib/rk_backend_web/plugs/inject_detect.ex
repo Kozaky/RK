@@ -1,14 +1,14 @@
 defmodule Plugs.InjectDetect do
   @behaviour Plug
 
-  @moduledoc """
-  Plug that take introduces the user's id in the context, if it is authenticated
-  """
-
   import Plug.Conn
 
   alias RkBackend.Auth.SignIn
   alias RkBackend.Auth.SessionService
+
+  @moduledoc """
+  Plug that take introduces the user's id in the context, if it is authenticated
+  """
 
   @impl Plug
   def init(opts) do
@@ -22,10 +22,7 @@ defmodule Plugs.InjectDetect do
         put_private(conn, :absinthe, %{context: context})
 
       {:error, reason} when is_atom(reason) ->
-        conn |> send_resp(403, Atom.to_string(reason)) |> halt()
-
-      _ ->
-        conn |> send_resp(400, "Bad request") |> halt()
+        put_private(conn, :absinthe, %{})
     end
   end
 
@@ -34,7 +31,7 @@ defmodule Plugs.InjectDetect do
          {:ok, user_id} <- authorize(auth_token) do
       {:ok, %{user_id: user_id}}
     else
-      [] -> {:ok, %{}}
+      auth when is_list(auth) -> {:ok, %{}}
       error -> error
     end
   end
