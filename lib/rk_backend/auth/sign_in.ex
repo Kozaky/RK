@@ -58,7 +58,7 @@ defmodule RkBackend.Auth.SignIn do
   ## Examples
 
       iex> sign_out(user_id)
-      {:ok, "Session Deleted"}
+      {:ok, :signed_out}
 
       iex> sign_out(wrong_args)
       {:error, reason}
@@ -68,9 +68,8 @@ defmodule RkBackend.Auth.SignIn do
       {:ok, pid} ->
         SessionService.delete_session(pid)
         {:ok, :signed_out}
-
-      {:error, reason} ->
-        {:error, reason}
+      error ->
+        error
     end
   end
 
@@ -81,12 +80,18 @@ defmodule RkBackend.Auth.SignIn do
 
       iex> resolve_user(user_id)
       {:ok, %User{}}
+
+       iex> resolve_user(user_id)
+      {:error, reason}
   """
   def resolve_user(user_id) do
-    {:ok, pid} = SessionService.lookup({SessionService, user_id})
-    %SessionService{user: user} = SessionService.get_state(pid)
-
-    {:ok, user}
+    case SessionService.lookup({SessionService, user_id}) do
+      {:ok, pid} ->
+        %SessionService{user: user} = SessionService.get_state(pid)
+        {:ok, user}
+      error ->
+        error
+    end
   end
 
   @spec get_max_age :: integer()
