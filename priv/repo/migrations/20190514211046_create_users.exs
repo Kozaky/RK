@@ -6,10 +6,10 @@ defmodule RkBackend.Repo.Migrations.CreateUsers do
 
   def change do
     create table(:users) do
-      add :full_name, :string, null: false
-      add :email, :string, null: false
-      add :password_hash, :string, null: false
-      add :avatar_name, :string
+      add :full_name, :string, size: 100, null: false
+      add :email, :string, size: 50, null: false
+      add :password_hash, :string, size: 250, null: false
+      add :avatar_name, :string, size: 40
       add :avatar, :binary
 
       add :role_id, references(:roles), null: false
