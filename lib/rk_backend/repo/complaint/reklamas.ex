@@ -3,6 +3,7 @@ defmodule RkBackend.Repo.Complaint.Reklamas do
 
   alias RkBackend.Repo
   alias RkBackend.Repo.Complaint.Schemas.Reklama
+  alias RkBackend.Repo.Complaint.Schemas.Topic
 
   @moduledoc """
   Provide functions to manage Reklamas.
@@ -21,6 +22,9 @@ defmodule RkBackend.Repo.Complaint.Reklamas do
 
   """
   def store_reklama(args) do
+    general_topic = Repo.get_by!(Topic, title: "General")
+    args = Map.put(args, :topic_id, general_topic.id)
+
     %Reklama{}
     |> Reklama.changeset(args)
     |> Repo.insert()
