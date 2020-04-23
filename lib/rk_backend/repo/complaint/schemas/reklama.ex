@@ -1,5 +1,7 @@
 defmodule RkBackend.Repo.Complaint.Schemas.Reklama do
   use Ecto.Schema
+  @timestamps_opts [type: :utc_datetime]
+
   import Ecto.Changeset
 
   alias RkBackend.Repo.Auth.Schemas.User
