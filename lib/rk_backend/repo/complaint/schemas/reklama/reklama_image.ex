@@ -1,5 +1,7 @@
 defmodule RkBackend.Repo.Complaint.Schemas.Reklama.ReklamaImage do
   use Ecto.Schema
+  @timestamps_opts [type: :utc_datetime]
+
   import Ecto.Changeset
 
   alias RkBackend.Repo.Complaint.Schemas.Reklama

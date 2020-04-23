@@ -3,7 +3,7 @@ defmodule RkBackend.Repo.Migrations.CreateReklamaImages do
 
   def change do
     create table(:reklama_images) do
-      add :name, :string, null: false
+      add :name, :string, size: 50, null: false
       add :image, :binary, null: false
 
       add :reklama_id, references(:reklamas, on_delete: :delete_all), null: false
