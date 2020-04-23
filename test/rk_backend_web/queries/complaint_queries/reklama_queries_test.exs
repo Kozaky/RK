@@ -135,19 +135,15 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries.ReklamaQueriesTest do
 
   describe "Mutations" do
     test "create reklama", %{conn: conn} do
-      topic = Fixture.create(:topic)
-
       reklama_details = %{
         title: "Title",
-        content: "Content",
-        topic_id: topic.id
+        content: "Content"
       }
 
       query = """
         mutation { createReklama(reklamaDetails: {
           title: "#{reklama_details.title}",
-          content: "#{reklama_details.content}",
-          topicId: #{reklama_details.topic_id}
+          content: "#{reklama_details.content}"
         }) { id }}
       """
 
