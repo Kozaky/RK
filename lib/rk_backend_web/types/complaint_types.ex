@@ -49,7 +49,6 @@ defmodule RkBackendWeb.Schema.Types.ComplaintTypes do
     field :title, non_null(:string)
     field :content, non_null(:string)
     field :images, list_of(:reklama_image_details)
-    field :topic_id, non_null(:integer)
   end
 
   input_object :update_reklama_details do
@@ -87,7 +86,7 @@ defmodule RkBackendWeb.Schema.Types.ComplaintTypes do
     field :id, non_null(:integer)
     field :title, :string
     field :description, :string
-    field :images, :upload
+    field :image, :upload
   end
 
   input_object :message_details do
