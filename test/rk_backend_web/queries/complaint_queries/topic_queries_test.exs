@@ -49,7 +49,7 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries.TopicQueriesTest do
         |> post("/graphiql", %{"query" => query})
 
       decode_response = json_response(res, 200)["data"]["topics"]
-      assert [%{"id" => _}] = decode_response
+      assert [%{"id" => _} | _] = decode_response
     end
   end
 
