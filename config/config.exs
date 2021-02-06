@@ -21,7 +21,7 @@ config :rk_backend, RkBackendWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "NbyO8hHIS93Gbo1GFICgUVzacXHELFUoQjnd3VVtD2MZtXXYUk80cm2FIznNd7uC",
   render_errors: [view: RkBackendWeb.ErrorView, accepts: ~w(json)],
-  pubsub: [name: RkBackend.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub_server: RkBackend.PubSub
 
 # Configures Elixir's Logger
 config :logger,
