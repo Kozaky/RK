@@ -10,7 +10,10 @@ defmodule RkBackend.MixProject do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      dialyzer: [
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
+      ]
     ]
   end
 
@@ -47,7 +50,8 @@ defmodule RkBackend.MixProject do
       {:logger_file_backend, "~> 0.0.11"},
       {:argon2_elixir, "~> 2.4.0"},
       {:credo, "~> 1.5.5", only: [:dev, :test], runtime: false},
-      {:corsica, "~> 1.1.3"}
+      {:corsica, "~> 1.1.3"},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
   end
 

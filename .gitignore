@@ -35,4 +35,3 @@ rk_backend-*.tar
 # variables.
 /config/*.secret.exs
 .elixir_ls/
-mix.lock

@@ -7,7 +7,7 @@ defmodule RkBackend.Auth.SessionService do
   defstruct user: nil, token: nil
 
   @type t :: %__MODULE__{
-          user: User.t(),
+          user: User,
           token: String.t()
         }
 
@@ -29,7 +29,6 @@ defmodule RkBackend.Auth.SessionService do
   @doc """
   Initiate a SessionService
   """
-  @spec start(User.__struct__(), String.t()) :: DynamicSupervisor.on_start_child()
   def start(%User{} = user, token) do
     opts = [
       user: user,
