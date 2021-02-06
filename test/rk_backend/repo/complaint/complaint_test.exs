@@ -53,7 +53,7 @@ defmodule RkBackend.Repo.ComplaintTest do
         |> Map.put(:topic_id, topic.id)
         |> Reklamas.store_reklama()
 
-      assert {:error, changeset} = reklama
+      assert {:error, _changeset} = reklama
     end
 
     test "store_reklama/0 with images" do
@@ -217,7 +217,7 @@ defmodule RkBackend.Repo.ComplaintTest do
     test "store_topic/1 with invalid args" do
       topic = Topics.store_topic(@invalid_args)
 
-      assert {:error, changeset} = topic
+      assert {:error, _changeset} = topic
     end
 
     test "update_topic/1 with valid args" do
@@ -270,7 +270,7 @@ defmodule RkBackend.Repo.ComplaintTest do
         |> Map.put(:reklama_id, reklama.id)
         |> Messages.store_message()
 
-      assert {:error, changeset} = message
+      assert {:error, _changeset} = message
     end
   end
 end
