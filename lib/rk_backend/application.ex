@@ -13,6 +13,7 @@ defmodule RkBackend.Application do
       # Start the endpoint when the application starts
       RkBackendWeb.Endpoint,
       # Starts a worker by calling: RkBackend.Worker.start_link(arg)
+      {Phoenix.PubSub, [name: RkBackend.PubSub, adapter: Phoenix.PubSub.PG2]},
       {Registry, keys: :unique, name: SessionService.Registry},
       {DynamicSupervisor, name: SessionService.Supervisor, strategy: :one_for_one}
     ]

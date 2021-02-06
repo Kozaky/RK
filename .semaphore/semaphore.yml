@@ -12,7 +12,7 @@ blocks:
           commands:
             - checkout
             - bin/setup_ci_elixir
-            - sem-version elixir 1.10.3
+            - sem-version elixir 1.11.3
             - cache restore
             - mix deps.get
             - mix do compile
@@ -24,7 +24,7 @@ blocks:
         commands:
           - checkout
           - bin/setup_ci_elixir
-          - sem-version elixir 1.10.3
+          - sem-version elixir 1.11.3
           - cache restore
       jobs:
         - name: credo
@@ -39,7 +39,7 @@ blocks:
         commands:
           - checkout
           - bin/setup_ci_elixir
-          - sem-version elixir 1.10.3
+          - sem-version elixir 1.11.3
           - cache restore
       jobs:
         - name: ex_unit
