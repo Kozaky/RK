@@ -65,7 +65,7 @@ defmodule RkBackend.Repo.AuthTest do
 
     test "store_user/3 unsuccessful" do
       args = %{user_details: @invalid_args}
-      assert {:error, changeset} = Users.store_user(args)
+      assert {:error, _changeset} = Users.store_user(args)
     end
 
     test "get_user/1 returns the user with given id" do
@@ -182,8 +182,7 @@ defmodule RkBackend.Repo.AuthTest do
         @invalid_args
         |> Map.put(:id, user.id)
 
-      assert {:error, reason} = Users.update_user(update_args)
-      assert reason = "password_confirmation: does not match password\n"
+      assert {:error, %Ecto.Changeset{}} = Users.update_user(update_args)
     end
 
     test "delete_user/1 deletes the user" do
