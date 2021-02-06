@@ -47,7 +47,8 @@ defmodule RkBackend.MixProject do
       {:logger_file_backend, "~> 0.0.11"},
       {:argon2_elixir, "~> 2.4.0"},
       {:credo, "~> 1.5.5", only: [:dev, :test], runtime: false},
-      {:corsica, "~> 1.1.3"}
+      {:corsica, "~> 1.1.3"},
+      {:dialyzex, "~> 1.2.1"}
     ]
   end
 
