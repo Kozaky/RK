@@ -29,6 +29,7 @@ blocks:
       jobs:
         - name: credo
           commands:
+            - mix deps.get
             - mix credo -a
         - name: formatter
           commands:
