@@ -11,7 +11,7 @@ defmodule RkBackend.Auth.SignIn do
 
   @salt "RKApplicationDefaultSalt"
   @max_age 7200
-  @secret Application.get_env(:rk_backend, RkBackendWeb.Endpoint)[:secret_key_base]
+  @secret Application.compile_env(:rk_backend, RkBackendWeb.Endpoint)[:secret_key_base]
 
   @doc """
   Verify if the token provided is valid

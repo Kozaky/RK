@@ -5,7 +5,7 @@ defmodule RkBackend.MixProject do
     [
       app: :rk_backend,
       version: "0.1.0",
-      elixir: "~> 1.10.3",
+      elixir: "~> 1.11.3",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -33,21 +33,21 @@ defmodule RkBackend.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.4.10"},
-      {:phoenix_pubsub, "~> 1.1.2"},
-      {:phoenix_ecto, "~> 4.0"},
-      {:ecto_sql, "~> 3.2.0"},
-      {:postgrex, ">= 0.0.0"},
-      {:gettext, "~> 0.17.0"},
-      {:plug_cowboy, "~> 2.1.0"},
-      {:absinthe, "~> 1.4.16"},
+      {:phoenix, "~> 1.5.7"},
+      {:phoenix_pubsub, "~> 2.0.0"},
+      {:phoenix_ecto, "~> 4.2"},
+      {:ecto_sql, "~> 3.5.0"},
+      {:postgrex, ">= 0.15.0"},
+      {:gettext, "~> 0.18.0"},
+      {:plug_cowboy, "~> 2.4.0"},
+      {:absinthe, "~> 1.6.2"},
       {:dataloader, "~> 1.0.0"},
-      {:absinthe_plug, "~> 1.4.7"},
-      {:jason, "~> 1.1.2"},
+      {:absinthe_plug, "~> 1.5.5"},
+      {:jason, "~> 1.2.2"},
       {:logger_file_backend, "~> 0.0.11"},
-      {:argon2_elixir, "~> 2.1.0"},
-      {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
-      {:corsica, "~> 1.1.2"}
+      {:argon2_elixir, "~> 2.4.0"},
+      {:credo, "~> 1.5.5", only: [:dev, :test], runtime: false},
+      {:corsica, "~> 1.1.3"}
     ]
   end
 
