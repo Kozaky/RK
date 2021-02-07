@@ -7,7 +7,7 @@ defmodule RkBackend.Auth.SessionService do
   defstruct user: nil, token: nil
 
   @type t :: %__MODULE__{
-          user: User.t(),
+          user: User,
           token: String.t()
         }
 
@@ -29,7 +29,6 @@ defmodule RkBackend.Auth.SessionService do
   @doc """
   Initiate a SessionService
   """
-  @spec start(User.__struct__(), String.t()) :: DynamicSupervisor.on_start_child()
   def start(%User{} = user, token) do
     opts = [
       user: user,
@@ -57,6 +56,11 @@ defmodule RkBackend.Auth.SessionService do
   """
   @spec update_role(GenServer.server(), %{field: any()}) :: :ok
   def update_role(pid, args), do: GenServer.cast(pid, {:update_role, args})
+
+  @doc """
+  Updates the token of this user
+  """
+  def update_token(pid, args), do: GenServer.cast(pid, {:update_token, args})
 
   @doc """
   Gets the current state
@@ -115,6 +119,11 @@ defmodule RkBackend.Auth.SessionService do
   @impl true
   def handle_cast({:update_role, args}, state) do
     {:noreply, put_in(state.user.role.type, args.type)}
+  end
+
+  @impl true
+  def handle_cast({:update_token, args}, state) do
+    {:noreply, put_in(state.token, args.token)}
   end
 
   @impl true

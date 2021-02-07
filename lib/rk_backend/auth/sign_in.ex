@@ -45,10 +45,26 @@ defmodule RkBackend.Auth.SignIn do
       token = Token.sign(@secret, @salt, user.id)
 
       user = Repo.preload(user, :role)
-      SessionService.start(user, token)
-      {:ok, Map.merge(user, %{token: token})}
+
+      case SessionService.lookup({SessionService, user.id}) do
+        {:ok, pid} -> refresh_token(pid, user, token)
+        {:error, :not_found} -> assign_token(user, token)
+      end
     else
       {:error, reason} -> {:error, reason}
+    end
+  end
+
+  defp refresh_token(pid, user, token) do
+    SessionService.update_token(pid, %{token: token})
+    {:ok, Map.merge(user, %{token: token})}
+  end
+
+  defp assign_token(user, token) do
+    case SessionService.start(user, token) do
+      {:ok, _} -> {:ok, Map.merge(user, %{token: token})}
+      {:ok, _, _} -> {:ok, Map.merge(user, %{token: token})}
+      _err -> {:error, "Could not start a new SessionService"}
     end
   end
 
@@ -96,6 +112,6 @@ defmodule RkBackend.Auth.SignIn do
     end
   end
 
-  @spec get_max_age :: integer()
+  @spec get_max_age :: 7200
   def get_max_age(), do: @max_age
 end
