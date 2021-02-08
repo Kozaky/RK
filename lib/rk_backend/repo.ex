@@ -1,4 +1,5 @@
 defmodule RkBackend.Repo do
+  import Ecto.Query, except: [preload: 2]
   use Ecto.Repo,
     otp_app: :rk_backend,
     adapter: Ecto.Adapters.Postgres
@@ -73,5 +74,53 @@ defmodule RkBackend.Repo do
 
   defp merge_nested_list(name, associations, acc, index) do
     List.replace_at(acc, index, {name, merge(Enum.at(acc, index), {name, associations})})
+  end
+
+  def pageable_select(entity, key, args, filter_fn) do
+    {page, args} = Map.pop(args, :page)
+    {per_page, args} = Map.pop(args, :per_page)
+
+    query =
+      args
+      |> Enum.reduce(entity, fn
+        {:order, %{order_asc: field}}, query ->
+          field = String.to_existing_atom(field)
+          query |> order_by(asc: ^field)
+
+        {:order, %{order_desc: field}}, query ->
+          field = String.to_existing_atom(field)
+          query |> order_by(desc: ^field)
+
+        {:filter, filter}, query ->
+          filter_fn.(query, filter)
+      end)
+
+    entities =
+      query
+      |> limit(^per_page)
+      |> offset((^page - 1) * ^per_page)
+      |> all()
+
+    total_results = query |> count_total_results
+    total_pages = count_total_pages(total_results, per_page)
+
+    %{
+      key => entities,
+      metadata: %{
+        page: page,
+        total_pages: total_pages,
+        total_results: total_results
+      }
+    }
+  end
+
+  defp count_total_results(query) do
+    aggregate(query, :count, :id)
+  end
+
+  defp count_total_pages(total_results, per_page) do
+    total_pages = ceil(total_results / per_page)
+
+    if total_pages > 0, do: total_pages, else: 1
   end
 end
