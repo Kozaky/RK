@@ -15,7 +15,11 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries.TopicQueries do
     end
 
     @desc "Get a list of topics"
-    field :topics, list_of(:topic) do
+    field :topics, :paginated_topics do
+      arg(:filter, :topic_filter)
+      arg(:order, :sort_order)
+      arg(:page, non_null(:integer))
+      arg(:per_page, non_null(:integer))
       middleware(RkBackend.Middlewares.Auth)
       resolve(&TopicResolvers.list_topics/2)
     end
