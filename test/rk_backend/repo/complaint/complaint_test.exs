@@ -237,6 +237,83 @@ defmodule RkBackend.Repo.ComplaintTest do
 
       assert {:ok, %Topic{image_name: "imageUpdated"}} = Topics.update_topic(update)
     end
+
+    test "list_topic/1 returns topics paginated" do
+      metadata = %{
+        page: 1,
+        per_page: 10
+      }
+
+      assert [%Topic{}] = Topics.list_topics(metadata).topics
+    end
+
+    test "list_topic/1 returns topics paginated and filtered by id" do
+      %{id: topic_id} = Fixture.create(:topic)
+
+      metadata = %{
+        page: 1,
+        per_page: 10,
+        filter: %{
+          id: topic_id
+        }
+      }
+
+      assert [%Topic{id: ^topic_id}] = Topics.list_topics(metadata).topics
+    end
+
+    test "list_topic/1 returns topics paginated and filtered by title" do
+      Fixture.create(:topic, %{title: "Some Title"})
+
+      metadata = %{
+        page: 1,
+        per_page: 10,
+        filter: %{
+          title: "Some Title"
+        }
+      }
+
+      assert [%Topic{title: "Some Title"}] = Topics.list_topics(metadata).topics
+    end
+
+    test "list_topic/1 returns topics paginated and filtered by description" do
+      Fixture.create(:topic, %{description: "Some Description"})
+
+      metadata = %{
+        page: 1,
+        per_page: 10,
+        filter: %{
+          description: "Some Description"
+        }
+      }
+
+      assert [%Topic{description: "Some Description"}] = Topics.list_topics(metadata).topics
+    end
+
+    test "list_topic/1 returns topics paginated and filtered not found" do
+      metadata = %{
+        page: 1,
+        per_page: 10,
+        filter: %{
+          title: "Not Found"
+        }
+      }
+
+      assert [] = Topics.list_topics(metadata).topics
+    end
+
+    test "list_topic/1 returns topics paginated and ordered" do
+      Fixture.create(:topic, %{title: "A"})
+
+      metadata = %{
+        page: 1,
+        per_page: 1,
+        order: %{
+          order_asc: "title"
+        }
+      }
+
+      assert [%Topic{title: "A"}] = Topics.list_topics(metadata).topics
+    end
   end
 
   describe "messages" do

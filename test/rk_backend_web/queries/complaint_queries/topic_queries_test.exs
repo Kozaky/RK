@@ -39,18 +39,53 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries.TopicQueriesTest do
       assert [%{"message" => "not_found"}] = decode_response
     end
 
-    test "get a list of topics", %{conn: conn} do
+    test "get a list of topics by id", %{conn: conn} do
+      %{id: topic_id} = Fixture.create(:topic)
+
       query = """
-        query { topics { id }}
+        query { topics(page: 1, per_page: 1, filter: { id: #{topic_id} }) { metadata { totalResults }, topics { title }}}
       """
+
+      IO.inspect(topic_id)
 
       res =
         conn
         |> post("/graphiql", %{"query" => query})
 
       decode_response = json_response(res, 200)["data"]["topics"]
-      assert [%{"id" => _} | _] = decode_response
+      assert %{"metadata" => %{"totalResults" => 1}} = decode_response
+      assert %{"topics" => [%{"title" => _}]} = decode_response
     end
+  end
+
+  test "get list of topics by title", %{conn: conn} do
+    %{title: title} = Fixture.create(:topic)
+
+    query = """
+      query { topics(page: 1, per_page: 1, filter: { title: "#{title}" }) { metadata { totalResults }, topics { title }}}
+    """
+
+    res =
+      conn
+      |> post("/graphiql", %{"query" => query})
+
+    decode_response = json_response(res, 200)["data"]["topics"]
+    assert %{"topics" => [%{"title" => ^title} | _]} = decode_response
+  end
+
+  test "get list of topics by description", %{conn: conn} do
+    %{description: description} = Fixture.create(:topic)
+
+    query = """
+      query { topics(page: 1, per_page: 1, filter: { description: "#{description}" }) { metadata { totalResults }, topics { description }}}
+    """
+
+    res =
+      conn
+      |> post("/graphiql", %{"query" => query})
+
+    decode_response = json_response(res, 200)["data"]["topics"]
+    assert %{"topics" => [%{"description" => ^description} | _]} = decode_response
   end
 
   describe "Mutations" do
