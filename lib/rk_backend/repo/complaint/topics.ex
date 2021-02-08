@@ -52,4 +52,31 @@ defmodule RkBackend.Repo.Complaint.Topics do
         {:error, :not_found}
     end
   end
+
+  @doc """
+  Returns a list of topics.
+
+  ## Examples
+
+      iex> list_topics()
+      [%PaginatedTopic{}, ...]
+
+  """
+  def list_topics(args) do
+    Repo.pageable_select(Topic, :topics, args, &filter_with/2)
+  end
+
+  defp filter_with(query, filter) do
+    Enum.reduce(filter, query, fn
+      {:id, id}, query ->
+        from q in query, where: q.id == ^id
+
+      {:title, title}, query ->
+        from q in query, where: ilike(q.title, ^"%#{title}%")
+
+      {:description, description}, query ->
+        from q in query, where: ilike(q.description, ^"%#{description}%")
+    end)
+  end
+
 end

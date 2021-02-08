@@ -37,6 +37,11 @@ defmodule RkBackendWeb.Schema.Types.ComplaintTypes do
     field :image, :base64
   end
 
+  object :paginated_topics do
+    field :topics, list_of(:topic)
+    field :metadata, :page_info
+  end
+
   object :message do
     field :id, :id
     field :content, :string
@@ -80,6 +85,12 @@ defmodule RkBackendWeb.Schema.Types.ComplaintTypes do
     field :title, non_null(:string)
     field :description, non_null(:string)
     field :image, non_null(:upload)
+  end
+
+  input_object :topic_filter do
+    field :id, :integer
+    field :title, :string
+    field :description, :string
   end
 
   input_object :update_topic_details do
