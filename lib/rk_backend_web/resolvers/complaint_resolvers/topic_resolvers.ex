@@ -57,7 +57,8 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers.TopicResolvers do
     end
   end
 
-  def list_topics(_args, _info) do
-    {:ok, Repo.all(Topic)}
+  def list_topics(args, _info) do
+    topics = Topics.list_topics(args)
+    {:ok, topics}
   end
 end
