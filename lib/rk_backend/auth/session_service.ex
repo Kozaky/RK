@@ -4,10 +4,11 @@ defmodule RkBackend.Auth.SessionService do
   alias RkBackend.Repo.Auth.Schemas.User
   alias RkBackend.Auth.SignIn
 
-  defstruct user: nil, token: nil
+  defstruct [:user_id, :role, :token]
 
   @type t :: %__MODULE__{
-          user: User,
+          user_id: Integer.t(),
+          role: String.t(),
           token: String.t()
         }
 
@@ -92,8 +93,11 @@ defmodule RkBackend.Auth.SessionService do
   @impl true
   @spec init(keyword) :: {:ok, __MODULE__.t()}
   def init(opts) do
+    user = Keyword.fetch!(opts, :user)
+
     state = %__MODULE__{
-      user: Keyword.fetch!(opts, :user),
+      user_id: user.id,
+      role: user.role.type,
       token: Keyword.fetch!(opts, :token)
     }
 
@@ -108,7 +112,7 @@ defmodule RkBackend.Auth.SessionService do
 
   @impl true
   def handle_call({:has_any_role, roles}, _from, state) do
-    {:reply, state.user.role.type in roles, state}
+    {:reply, state.role in roles, state}
   end
 
   @impl true
@@ -118,7 +122,7 @@ defmodule RkBackend.Auth.SessionService do
 
   @impl true
   def handle_cast({:update_role, args}, state) do
-    {:noreply, put_in(state.user.role.type, args.type)}
+    {:noreply, put_in(state.role, args.type)}
   end
 
   @impl true
