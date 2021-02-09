@@ -191,12 +191,17 @@ defmodule RkBackend.Repo.AuthTest do
       assert Repo.get(User, user.id) == nil
     end
 
-    test "find_user_by_email/1 successful" do
+    test "find_user_by_email/2 successful" do
       user = Fixture.create(:user, @valid_args)
       assert {:ok, %User{}} = Users.find_user_by_email(user.email)
     end
 
-    test "find_user_by_email/1 unsuccessful" do
+    test "find_user_by_email/2 with fields successful" do
+      user = Fixture.create(:user, @valid_args)
+      assert {:ok, %User{}} = Users.find_user_by_email(user.email, [:full_name, :email])
+    end
+
+    test "find_user_by_email/2 unsuccessful" do
       assert {:error, :not_found} = Users.find_user_by_email("notFound@gmail.com")
     end
   end
