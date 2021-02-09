@@ -1,5 +1,6 @@
 defmodule RkBackend.Auth.SignIn do
   alias RkBackend.Repo.Auth.Users
+  alias RkBackend.Repo.Auth.Schemas.User
   alias Argon2
   alias Phoenix.Token
   alias RkBackend.Repo
@@ -102,13 +103,12 @@ defmodule RkBackend.Auth.SignIn do
       {:error, reason}
   """
   def resolve_user(user_id) do
-    case SessionService.lookup({SessionService, user_id}) do
-      {:ok, pid} ->
-        %SessionService{user: user} = SessionService.get_state(pid)
+    case Repo.get(User, user_id) do
+      %User{} = user ->
         {:ok, user}
 
-      error ->
-        error
+      nil ->
+        {:error, :not_found}
     end
   end
 
