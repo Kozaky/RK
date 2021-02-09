@@ -53,8 +53,7 @@ defmodule RkBackend.Auth.SessionServiceTest do
       {:ok, pid} = SessionService.lookup(@process)
       SessionService.update_role(pid, %{type: "CONSULTANT"})
 
-      assert %SessionService{user: %User{role: %Role{type: "CONSULTANT"}}} =
-               SessionService.get_state(pid)
+      assert %SessionService{role: "CONSULTANT"} = SessionService.get_state(pid)
     end
   end
 end
