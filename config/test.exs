@@ -20,3 +20,8 @@ else
     password: "D4N60",
     pool: Ecto.Adapters.SQL.Sandbox
 end
+
+config :rk_backend, RkBackend.Categorization,
+  protocol: "http",
+  address: "127.0.0.1",
+  port: "3030"
