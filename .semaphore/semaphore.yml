@@ -70,7 +70,7 @@ blocks:
 
       - name: dialyzer
         commands:
-        - mix dialyzer --halt-exit-status --no-compile
+        - mix dialyzer --no-compile
 
       - name: formatter
         commands:

@@ -21,13 +21,33 @@ defmodule RkBackend.Repo.Complaint.Reklamas do
       {:error, %Ecto.Changeset{}}
 
   """
-  def store_reklama(args) do
-    general_topic = Repo.get_by!(Topic, title: "General")
-    args = Map.put(args, :topic_id, general_topic.id)
+  def store_reklama(args) when is_map(args) do
+    args =
+      args
+      |> Map.pop(:category)
+      |> put_topic_id()
 
     %Reklama{}
     |> Reklama.changeset(args)
     |> Repo.insert()
+  end
+
+  def store_reklama({:error, reason}) do
+    {:error, reason}
+  end
+
+  defp put_topic_id({nil, args}) do
+    %{id: topic_id} = Repo.get_by!(Topic, title: "General")
+    put_topic_id(topic_id, args)
+  end
+
+  defp put_topic_id({category, args}) when is_binary(category) do
+    %{id: topic_id} = Repo.get_by!(Topic, title: category)
+    put_topic_id(topic_id, args)
+  end
+
+  defp put_topic_id(topic_id, args) when is_integer(topic_id) do
+    Map.put(args, :topic_id, topic_id)
   end
 
   @doc """
