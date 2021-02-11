@@ -13,6 +13,7 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers.ReklamaResolvers do
     args.reklama_details
     |> Map.put(:user_id, user_id)
     |> put_images()
+    |> put_category()
     |> Reklamas.store_reklama()
     |> case do
       {:ok, reklama} ->
@@ -21,6 +22,15 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers.ReklamaResolvers do
       {:error, errors} ->
         errors = Utils.errors_to_string(errors)
         {:error, errors}
+    end
+  end
+
+  defp put_category(args) do
+    with {:ok, category} <-
+           RkBackend.Categorization.CategorizationService.get_category(args.content) do
+      Map.put(args, :category, category)
+    else
+      _err -> args
     end
   end
 
