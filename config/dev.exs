@@ -47,6 +47,11 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
+config :rk_backend, RkBackend.Categorization,
+  protocol: "http",
+  address: "127.0.0.1",
+  port: "3030"
+
 # Configure your database
 config :rk_backend, RkBackend.Repo,
   username: "rk",
