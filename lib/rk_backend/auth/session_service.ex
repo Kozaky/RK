@@ -7,7 +7,7 @@ defmodule RkBackend.Auth.SessionService do
   defstruct [:user_id, :role, :token]
 
   @type t :: %__MODULE__{
-          user_id: Integer.t(),
+          user_id: integer(),
           role: String.t(),
           token: String.t()
         }
