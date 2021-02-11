@@ -51,6 +51,7 @@ defmodule RkBackend.MixProject do
       {:argon2_elixir, "~> 2.4.0"},
       {:credo, "~> 1.5.5", only: [:dev, :test], runtime: false},
       {:corsica, "~> 1.1.3"},
+      {:httpoison, "~> 1.8"},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
   end
