@@ -60,22 +60,35 @@ defmodule RkBackend.Repo.Auth.Users do
   end
 
   @doc """
-  Returns an `%Auth.User{}` with the selected email.
+  Returns an `%Auth.User{}` with the given email and the selected columns.
 
   ## Examples
 
       iex> find_user_by_email(email)
       {:ok, user}
 
+      iex> find_user_by_email(email, [:full_name, :email])
+      {:ok, user}
+
       iex> find_user_by_email(email)
       {:error, reason}
 
   """
-  def find_user_by_email(email) when is_binary(email) do
-    case Repo.get_by(User, email: email) do
+  def find_user_by_email(email, select \\ []) when is_binary(email) and is_list(select) do
+    build_find_user_by_email_query(email, select)
+    |> Repo.one()
+    |> case do
       nil -> {:error, :not_found}
       user -> {:ok, user}
     end
+  end
+
+  defp build_find_user_by_email_query(email, []) do
+    from User, where: [email: ^email]
+  end
+
+  defp build_find_user_by_email_query(email, select) do
+    from User, where: [email: ^email], select: ^select
   end
 
   @doc """
@@ -88,41 +101,7 @@ defmodule RkBackend.Repo.Auth.Users do
 
   """
   def list_users(args) do
-    {page, args} = Map.pop(args, :page)
-    {per_page, args} = Map.pop(args, :per_page)
-
-    query =
-      args
-      |> Enum.reduce(User, fn
-        {:order, %{order_asc: field}}, query ->
-          field = String.to_existing_atom(field)
-          query |> order_by(asc: ^field)
-
-        {:order, %{order_desc: field}}, query ->
-          field = String.to_existing_atom(field)
-          query |> order_by(desc: ^field)
-
-        {:filter, filter}, query ->
-          query |> filter_with(filter)
-      end)
-
-    users =
-      query
-      |> limit(^per_page)
-      |> offset((^page - 1) * ^per_page)
-      |> Repo.all()
-
-    total_results = query |> count_total_results
-    total_pages = count_total_pages(total_results, per_page)
-
-    %{
-      users: users,
-      metadata: %{
-        page: page,
-        total_pages: total_pages,
-        total_results: total_results
-      }
-    }
+    Repo.pageable_select(User, :users, args, &filter_with/2)
   end
 
   defp filter_with(query, filter) do
@@ -147,15 +126,5 @@ defmodule RkBackend.Repo.Auth.Users do
       {:inserted_after, date}, query ->
         from q in query, where: q.inserted_at >= ^date
     end)
-  end
-
-  defp count_total_results(query) do
-    Repo.aggregate(query, :count, :id)
-  end
-
-  defp count_total_pages(total_results, per_page) do
-    total_pages = ceil(total_results / per_page)
-
-    if total_pages > 0, do: total_pages, else: 1
   end
 end
