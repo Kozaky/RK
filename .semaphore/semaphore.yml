@@ -49,6 +49,7 @@ blocks:
           # Store deps after compilation, otherwise rebar3 deps (that is, most
           # Erlang deps) won't be cached:
           - cache store
+          - cache delete dialyzer-plt
           - cache store dialyzer-plt priv/plts/
 
   - name: Analyze code
@@ -70,7 +71,7 @@ blocks:
 
       - name: dialyzer
         commands:
-        - mix dialyzer --halt-exit-status --no-compile
+        - mix dialyzer --no-compile
 
       - name: formatter
         commands:
