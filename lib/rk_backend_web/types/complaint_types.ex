@@ -68,6 +68,7 @@ defmodule RkBackendWeb.Schema.Types.ComplaintTypes do
     field :id, :integer
     field :title, :string
     field :topic_id, :integer
+    field :current_user, :boolean
     field :inserted_before, :naive_datetime
     field :inserted_after, :naive_datetime
   end
