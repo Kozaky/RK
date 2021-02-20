@@ -60,41 +60,7 @@ defmodule RkBackend.Repo.Complaint.Reklamas do
 
   """
   def list_reklamas(args) do
-    {page, args} = Map.pop(args, :page)
-    {per_page, args} = Map.pop(args, :per_page)
-
-    query =
-      args
-      |> Enum.reduce(Reklama, fn
-        {:order, %{order_asc: field}}, query ->
-          field = String.to_existing_atom(field)
-          query |> order_by(asc: ^field)
-
-        {:order, %{order_desc: field}}, query ->
-          field = String.to_existing_atom(field)
-          query |> order_by(desc: ^field)
-
-        {:filter, filter}, query ->
-          query |> filter_with(filter)
-      end)
-
-    reklamas =
-      query
-      |> limit(^per_page)
-      |> offset((^page - 1) * ^per_page)
-      |> Repo.all()
-
-    total_results = query |> count_total_results
-    total_pages = count_total_pages(total_results, per_page)
-
-    %{
-      reklamas: reklamas,
-      metadata: %{
-        page: page,
-        total_pages: total_pages,
-        total_results: total_results
-      }
-    }
+    Repo.pageable_select(Reklama, :reklamas, args, &filter_with/2)
   end
 
   defp filter_with(query, filter) do
@@ -106,26 +72,17 @@ defmodule RkBackend.Repo.Complaint.Reklamas do
         from q in query, where: ilike(q.title, ^"%#{title}%")
 
       {:topic_id, topic_id}, query ->
-        from q in query,
-          join: t in assoc(q, :topic),
-          where: t.id == ^topic_id
+        from q in query, where: q.topic_id == ^topic_id
 
       {:inserted_before, date}, query ->
         from q in query, where: q.inserted_at <= ^date
 
       {:inserted_after, date}, query ->
         from q in query, where: q.inserted_at >= ^date
+
+      {:current_user_id, user_id}, query ->
+        from q in query, where: q.user_id == ^user_id
     end)
-  end
-
-  defp count_total_results(query) do
-    Repo.aggregate(query, :count, :id)
-  end
-
-  defp count_total_pages(total_results, per_page) do
-    total_pages = ceil(total_results / per_page)
-
-    if total_pages > 0, do: total_pages, else: 1
   end
 
   @doc """
