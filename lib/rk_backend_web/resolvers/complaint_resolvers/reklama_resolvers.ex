@@ -56,6 +56,13 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers.ReklamaResolvers do
     {:ok, reklamas}
   end
 
+  def list_reklamas(%{filter: %{current_user: false}} = args, info) do
+    args
+    |> pop_in([:filter, :current_user])
+    |> elem(1)
+    |> list_reklamas(info)
+  end
+
   def list_reklamas(args, _info) do
     reklamas = Reklamas.list_reklamas(args)
     {:ok, reklamas}
