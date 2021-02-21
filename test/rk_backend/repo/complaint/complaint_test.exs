@@ -13,10 +13,12 @@ defmodule RkBackend.Repo.ComplaintTest do
 
   describe "reklamas" do
     @valid_args %{
+      user_id: 1,
       title: "Some Title",
       content: "Some content"
     }
     @update_args %{
+      current_user: 1,
       title: "Updated Title",
       content: "Some updated content"
     }
