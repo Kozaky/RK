@@ -156,7 +156,7 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries.ReklamaQueriesTest do
     end
 
     test "update reklama success", %{conn: conn} do
-      reklama = Fixture.create(:reklama)
+      reklama = Fixture.create(:reklama, %{user_id: conn.assigns.current_user_id})
 
       update_reklama_details = %{
         id: reklama.id,
@@ -199,8 +199,31 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries.ReklamaQueriesTest do
       assert [%{"message" => "not_found"}] = decode_response
     end
 
-    test "delete reklama success", %{conn: conn} do
+    test "update reklama resource not owned", %{conn: conn} do
       reklama = Fixture.create(:reklama)
+
+      update_reklama_details = %{
+        id: reklama.id,
+        title: "Updated"
+      }
+
+      query = """
+        mutation { updateReklama(updateReklamaDetails: {
+          id: #{update_reklama_details.id},
+          title: "#{update_reklama_details.title}"
+        }) { title }}
+      """
+
+      res =
+        conn
+        |> post("/graphiql", %{"query" => query})
+
+      decode_response = json_response(res, 200)["errors"]
+      assert [%{"message" => "resource_not_owned"}] = decode_response
+    end
+
+    test "delete reklama success", %{conn: conn} do
+      reklama = Fixture.create(:reklama, %{user_id: conn.assigns.current_user_id})
 
       query = """
         mutation { deleteReklama(id: #{reklama.id}) { id }}
@@ -227,6 +250,21 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries.ReklamaQueriesTest do
 
       decode_response = json_response(res, 200)["errors"]
       assert [%{"message" => "not_found"}] = decode_response
+    end
+
+    test "delete reklama resource not owned", %{conn: conn} do
+      reklama = Fixture.create(:reklama)
+
+      query = """
+        mutation { deleteReklama(id: #{reklama.id}) { id }}
+      """
+
+      res =
+        conn
+        |> post("/graphiql", %{"query" => query})
+
+      decode_response = json_response(res, 200)["errors"]
+      assert [%{"message" => "resource_not_owned"}] = decode_response
     end
   end
 end

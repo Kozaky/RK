@@ -35,10 +35,13 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers.ReklamaResolvers do
     end
   end
 
-  def delete_reklama(%{id: id}, _info) do
+  def delete_reklama(%{id: id}, %{context: %{user_id: user_id}}) do
     case Repo.get(Reklama, id) do
-      %Reklama{} = reklama ->
+      %Reklama{user_id: ^user_id} = reklama ->
         Repo.delete(reklama)
+
+      %Reklama{} ->
+        {:error, :resource_not_owned}
 
       nil ->
         {:error, :not_found}
@@ -56,6 +59,13 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers.ReklamaResolvers do
     {:ok, reklamas}
   end
 
+  def list_reklamas(%{filter: %{current_user: false}} = args, info) do
+    args
+    |> pop_in([:filter, :current_user])
+    |> elem(1)
+    |> list_reklamas(info)
+  end
+
   def list_reklamas(args, _info) do
     reklamas = Reklamas.list_reklamas(args)
     {:ok, reklamas}
@@ -71,8 +81,9 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers.ReklamaResolvers do
     end
   end
 
-  def update_reklama(args, _info) do
+  def update_reklama(args, %{context: %{user_id: user_id}}) do
     args.update_reklama_details
+    |> Map.put(:current_user, user_id)
     |> put_images()
     |> Reklamas.update_reklama()
     |> case do

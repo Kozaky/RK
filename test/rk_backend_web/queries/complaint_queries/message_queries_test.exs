@@ -31,7 +31,7 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries.MessageQueriesTest do
     end
 
     test "delete message", %{conn: conn} do
-      message = Fixture.create(:message)
+      message = Fixture.create(:message, %{user_id: conn.assigns.current_user_id})
 
       query = """
         mutation { deleteMessage(id: #{message.id}) { id }}
@@ -43,6 +43,21 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries.MessageQueriesTest do
 
       decode_response = json_response(res, 200)["data"]["deleteMessage"]
       assert %{"id" => _} = decode_response
+    end
+
+    test "delete message resource not owned", %{conn: conn} do
+      message = Fixture.create(:message)
+
+      query = """
+        mutation { deleteMessage(id: #{message.id}) { id }}
+      """
+
+      res =
+        conn
+        |> post("/graphiql", %{"query" => query})
+
+      decode_response = json_response(res, 200)["errors"]
+      assert [%{"message" => "resource_not_owned"}] = decode_response
     end
   end
 end
