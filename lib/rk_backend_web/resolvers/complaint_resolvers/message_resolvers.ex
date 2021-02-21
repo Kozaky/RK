@@ -22,10 +22,13 @@ defmodule RkBackendWeb.Schema.Resolvers.ComplaintResolvers.MessageResolvers do
     end
   end
 
-  def delete_message(%{id: id}, _info) do
+  def delete_message(%{id: id}, %{context: %{user_id: user_id}}) do
     case Repo.get(Message, id) do
-      %Message{} = message ->
+      %Message{user_id: ^user_id} = message ->
         Repo.delete(message)
+
+      %Message{} ->
+        {:error, :resource_not_owned}
 
       nil ->
         {:error, :not_found}
