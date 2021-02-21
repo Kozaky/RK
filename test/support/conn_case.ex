@@ -42,6 +42,7 @@ defmodule RkBackendWeb.ConnCase do
       Phoenix.ConnTest.build_conn()
       |> Plug.Conn.put_req_header("authorization", "Bearer #{token}")
       |> Plug.Conn.put_req_header("content-type", "application/json")
+      |> Plug.Conn.assign(:current_user_id, 1)
 
     {:ok, conn: conn}
   end

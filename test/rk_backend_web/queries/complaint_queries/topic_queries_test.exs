@@ -46,8 +46,6 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries.TopicQueriesTest do
         query { topics(page: 1, per_page: 1, filter: { id: #{topic_id} }) { metadata { totalResults }, topics { title }}}
       """
 
-      IO.inspect(topic_id)
-
       res =
         conn
         |> post("/graphiql", %{"query" => query})

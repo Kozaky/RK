@@ -99,13 +99,17 @@ defmodule RkBackend.Repo.Complaint.Reklamas do
   """
   def update_reklama(args) do
     {id, args} = Map.pop(args, :id)
+    {current_user, args} = Map.pop(args, :current_user)
 
     case Repo.get(Reklama, id) do
-      %Reklama{} = reklama ->
+      %Reklama{user_id: ^current_user} = reklama ->
         reklama
         |> Repo.dynamically_preload(args)
         |> Reklama.changeset(args)
         |> Repo.update()
+
+      %Reklama{} ->
+        {:error, :resource_not_owned}
 
       nil ->
         {:error, :not_found}
