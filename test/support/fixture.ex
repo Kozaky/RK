@@ -73,7 +73,8 @@ defmodule RkBackend.Fixture do
       title: "Reklama Title",
       content: "Content",
       user_id: user.id,
-      topic_id: topic.id
+      topic_id: topic.id,
+      location_id: 1
     }
     |> Map.merge(args)
     |> Reklamas.store_reklama()
