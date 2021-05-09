@@ -137,13 +137,15 @@ defmodule RkBackendWeb.Schema.Queries.ComplaintQueries.ReklamaQueriesTest do
     test "create reklama", %{conn: conn} do
       reklama_details = %{
         title: "Title",
-        content: "Content"
+        content: "Content",
+        location_id: 1
       }
 
       query = """
         mutation { createReklama(reklamaDetails: {
           title: "#{reklama_details.title}",
-          content: "#{reklama_details.content}"
+          content: "#{reklama_details.content}",
+          locationId: #{reklama_details.location_id}
         }) { id }}
       """
 

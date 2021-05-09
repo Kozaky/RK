@@ -8,6 +8,7 @@ defmodule RkBackend.Repo.Complaint.Schemas.Reklama do
   alias RkBackend.Repo.Complaint.Schemas.Topic
   alias RkBackend.Repo.Complaint.Schemas.Message
   alias RkBackend.Repo.Complaint.Schemas.Reklama.ReklamaImage
+  alias RkBackend.Repo.Complaint.Schemas.Location
 
   @moduledoc """
   Reklama Entity and basic functions
@@ -19,13 +20,14 @@ defmodule RkBackend.Repo.Complaint.Schemas.Reklama do
 
     belongs_to :user, User
     belongs_to :topic, Topic
+    belongs_to :location, Location
     has_many :messages, Message
     has_many :images, ReklamaImage, on_replace: :delete
 
     timestamps()
   end
 
-  @required [:title, :content, :user_id, :topic_id]
+  @required [:title, :content, :user_id, :topic_id, :location_id]
   @optional []
   @doc false
   def changeset(reklama, args) do
@@ -34,6 +36,7 @@ defmodule RkBackend.Repo.Complaint.Schemas.Reklama do
     |> cast_assoc(:images, required: false)
     |> foreign_key_constraint(:topic_id)
     |> foreign_key_constraint(:user_id)
+    |> foreign_key_constraint(:location_id)
     |> validate_required(@required)
   end
 end
