@@ -8,6 +8,7 @@ defmodule RkBackend.Repo.Migrations.CreateReklamas do
 
       add :user_id, references(:users), null: false
       add :topic_id, references(:topics, on_delete: :delete_all), null: false
+      add :location_id, references(:locations), null: false
 
       timestamps()
     end
