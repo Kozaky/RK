@@ -40,6 +40,7 @@ defmodule RkBackend.Repo.ComplaintTest do
         @valid_args
         |> Map.put(:user_id, user.id)
         |> Map.put(:topic_id, topic.id)
+        |> Map.put(:location_id, 1)
         |> Reklamas.store_reklama()
 
       assert {:ok, %Reklama{}} = reklama
@@ -53,6 +54,7 @@ defmodule RkBackend.Repo.ComplaintTest do
         @invalid_args
         |> Map.put(:user_id, user.id)
         |> Map.put(:topic_id, topic.id)
+        |> Map.put(:location_id, 1)
         |> Reklamas.store_reklama()
 
       assert {:error, _changeset} = reklama
@@ -77,6 +79,7 @@ defmodule RkBackend.Repo.ComplaintTest do
         @valid_args
         |> Map.put(:user_id, user.id)
         |> Map.put(:topic_id, topic.id)
+        |> Map.put(:location_id, 1)
         |> Map.put(:images, images)
         |> Reklamas.store_reklama()
 

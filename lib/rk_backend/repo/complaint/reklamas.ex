@@ -74,6 +74,9 @@ defmodule RkBackend.Repo.Complaint.Reklamas do
       {:topic_id, topic_id}, query ->
         from q in query, where: q.topic_id == ^topic_id
 
+      {:location_id, location_id}, query ->
+        from q in query, where: q.location_id == ^location_id
+
       {:inserted_before, date}, query ->
         from q in query, where: q.inserted_at <= ^date
 

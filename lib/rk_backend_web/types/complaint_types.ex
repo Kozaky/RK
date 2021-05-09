@@ -16,6 +16,7 @@ defmodule RkBackendWeb.Schema.Types.ComplaintTypes do
     field :topic, :topic, resolve: dataloader(RkBackend)
     field :messages, list_of(:message), resolve: dataloader(RkBackend)
     field :images, list_of(:image), resolve: dataloader(RkBackend)
+    field :location, :location, resolve: dataloader(RkBackend)
   end
 
   object :paginated_reklamas do
@@ -50,10 +51,16 @@ defmodule RkBackendWeb.Schema.Types.ComplaintTypes do
     field :reklama, :reklama, resolve: dataloader(RkBackend)
   end
 
+  object :location do
+    field :id, :id
+    field :name, :string
+  end
+
   input_object :reklama_details do
     field :title, non_null(:string)
     field :content, non_null(:string)
     field :images, list_of(:reklama_image_details)
+    field :location_id, non_null(:integer)
   end
 
   input_object :update_reklama_details do
@@ -62,6 +69,7 @@ defmodule RkBackendWeb.Schema.Types.ComplaintTypes do
     field :content, :string
     field :images, list_of(:update_reklama_image_details)
     field :topic_id, :integer
+    field :location_id, :integer
   end
 
   input_object :reklama_filter do
@@ -71,6 +79,7 @@ defmodule RkBackendWeb.Schema.Types.ComplaintTypes do
     field :current_user, :boolean
     field :inserted_before, :naive_datetime
     field :inserted_after, :naive_datetime
+    field :location_id, :integer
   end
 
   input_object :update_reklama_image_details do
