@@ -26,6 +26,7 @@ defmodule RkBackendWeb.Schema do
   import_types(RkBackendWeb.Schema.Queries.ComplaintQueries.ReklamaQueries)
   import_types(RkBackendWeb.Schema.Queries.ComplaintQueries.TopicQueries)
   import_types(RkBackendWeb.Schema.Queries.ComplaintQueries.MessageQueries)
+  import_types(RkBackendWeb.Schema.Queries.ComplaintQueries.LocationQueries)
 
   scalar :base64 do
     description("Base 64")
@@ -49,6 +50,7 @@ defmodule RkBackendWeb.Schema do
     import_fields(:reklama_queries)
     import_fields(:topic_queries)
     import_fields(:message_queries)
+    import_fields(:location_queries)
   end
 
   mutation do
